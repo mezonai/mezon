@@ -72,5 +72,14 @@
 		"description": "Crie ou entre em um clã para configurar seu perfil de clã.",
 		"createClan": "Criar clã",
 		"joinClan": "Participar de um clã"
+	},
+	"proAvatarFrame": {
+		"title": "Moldura de avatar Pro",
+		"description": "Escolha uma moldura decorativa Pro para exibir ao redor do seu avatar.",
+		"noFrame": "Sem moldura",
+		"automatic": "Automático",
+		"notPro": "Atualize para o Mezon Pro para escolher uma moldura de avatar.",
+		"saved": "Moldura de avatar salva.",
+		"saveFailed": "Falha ao salvar a moldura de avatar. Tente novamente."
 	}
 }

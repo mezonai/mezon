@@ -5,7 +5,7 @@ import type { EntityState, PayloadAction, Update } from '@reduxjs/toolkit';
 import { createAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiMentionUser, ChannelUserListChannelUser, ClanUserListClanUser } from 'mezon-js';
 import { batch } from 'react-redux';
-import { ACCOUNT_FEATURE_KEY, selectAllAccount, selectCurrentUserId, type AccountState } from '../account/account.slice';
+import { ACCOUNT_FEATURE_KEY, selectAllAccount, selectCurrentUserId, updateUserFrame, type AccountState } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { convertStatusClan, selectStatusEntities, statusActions } from '../direct/status.slice';
@@ -17,6 +17,8 @@ export const USERS_CLANS_FEATURE_KEY = 'usersClan';
 // ListClanUsers stops at this many members, newest joiners first: a clan that fills it has members the store never sees.
 type WithProPlan = { pro_plan?: boolean };
 const readProPlan = (value: unknown): boolean | undefined => (value as WithProPlan | null | undefined)?.pro_plan;
+type WithFrame = { frame?: number };
+const readFrame = (value: unknown): number | undefined => (value as WithFrame | null | undefined)?.frame;
 
 export const CLAN_USERS_LIST_LIMIT = 1000;
 
@@ -326,14 +328,20 @@ export const UsersClanSlice = createSlice({
 			}
 			const existingEntities = state.byClans[clanId].entities.entities;
 			const mergedUsers = users.map((incoming) => {
-				const existingProPlan = readProPlan(existingEntities[incoming.id]?.user);
+				const existingUser = existingEntities[incoming.id]?.user;
+				const existingProPlan = readProPlan(existingUser);
 				const incomingProPlan = readProPlan(incoming.user);
-				if (incomingProPlan === undefined && existingProPlan !== undefined && incoming.user) {
+				const existingFrame = readFrame(existingUser);
+				const incomingFrame = readFrame(incoming.user);
+				const preserveProPlan = incomingProPlan === undefined && existingProPlan !== undefined;
+				const preserveFrame = incomingFrame === undefined && existingFrame !== undefined;
+				if ((preserveProPlan || preserveFrame) && incoming.user) {
 					return {
 						...incoming,
 						user: {
 							...incoming.user,
-							pro_plan: existingProPlan
+							...(preserveProPlan ? { pro_plan: existingProPlan } : {}),
+							...(preserveFrame ? { frame: existingFrame } : {})
 						}
 					};
 				}
@@ -483,9 +491,9 @@ export const UsersClanSlice = createSlice({
 		},
 		updateUserProfileAcrossClans: (
 			state,
-			action: PayloadAction<{ userId: string; avatar?: string; display_name?: string; about_me?: string }>
+			action: PayloadAction<{ userId: string; avatar?: string; display_name?: string; about_me?: string; frame?: number }>
 		) => {
-			const { userId, avatar, display_name, about_me } = action.payload;
+			const { userId, avatar, display_name, about_me, frame } = action.payload;
 			Object.keys(state.byClans).forEach((clanId) => {
 				const existingMember = state.byClans[clanId].entities.entities[userId];
 				if (existingMember) {
@@ -505,6 +513,10 @@ export const UsersClanSlice = createSlice({
 
 					if (about_me !== undefined) {
 						updates.user!.about_me = about_me;
+					}
+
+					if (frame !== undefined) {
+						(updates.user as WithFrame).frame = frame;
 					}
 
 					UsersClanAdapter.updateOne(state.byClans[clanId].entities, {
@@ -679,6 +691,24 @@ export const UsersClanSlice = createSlice({
 						state.byClans[clanId].cache = createCacheMetadata();
 					}
 				}
+			})
+			.addCase(updateUserFrame.fulfilled, (state, action) => {
+				const { userId, frame } = action.payload;
+				if (!userId) return;
+				Object.keys(state.byClans).forEach((clanId) => {
+					const existingMember = state.byClans[clanId].entities.entities[userId];
+					if (existingMember) {
+						UsersClanAdapter.updateOne(state.byClans[clanId].entities, {
+							id: userId,
+							changes: {
+								user: {
+									...existingMember.user,
+									frame
+								}
+							}
+						});
+					}
+				});
 			});
 	}
 });
@@ -874,5 +904,37 @@ export const selectIsProUser = createSelector(
 			}
 		}
 		return false;
+	}
+);
+
+export const selectUserFrame = createSelector(
+	[
+		(state: ProUserRootState) => state[ACCOUNT_FEATURE_KEY]?.userProfile,
+		(state: ProUserRootState) => state[USERS_CLANS_FEATURE_KEY]?.byClans,
+		(state: ProUserRootState) => state.clans?.currentClanId,
+		(_state: ProUserRootState, userId?: string) => userId
+	],
+	(accountProfile, byClans, currentClanId, userId): number | undefined => {
+		if (!userId) return undefined;
+		if (accountProfile?.user?.id === userId) {
+			return readFrame(accountProfile?.user);
+		}
+		if (!byClans) return undefined;
+		if (currentClanId) {
+			const currentMember = byClans[currentClanId]?.entities?.entities?.[userId];
+			const currentFrame = readFrame(currentMember?.user);
+			if (currentFrame !== undefined) {
+				return currentFrame;
+			}
+		}
+		for (const clanId of Object.keys(byClans)) {
+			if (clanId === currentClanId) continue;
+			const member = byClans[clanId]?.entities?.entities?.[userId];
+			const memberFrame = readFrame(member?.user);
+			if (memberFrame !== undefined) {
+				return memberFrame;
+			}
+		}
+		return undefined;
 	}
 );

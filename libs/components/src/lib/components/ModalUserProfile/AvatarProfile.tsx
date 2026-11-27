@@ -1,7 +1,7 @@
-import { channelMembersActions, selectCurrentClanId, useAppDispatch, userClanProfileActions } from '@mezon/store';
+import { channelMembersActions, selectCurrentClanId, selectUserFrame, useAppDispatch, useAppSelector, userClanProfileActions } from '@mezon/store';
 import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { ChannelMembersEntity, EUserStatus, IUserAccount } from '@mezon/utils';
-import { ActivitiesType, createImgproxyUrl, generateE2eId } from '@mezon/utils';
+import { ActivitiesType, createImgproxyUrl, generateE2eId, userFrameId } from '@mezon/utils';
 import type { ApiUserActivity } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -24,6 +24,7 @@ type AvatarProfileProps = {
 	identifierE2E?: string;
 	isMobile?: boolean;
 	isPro?: boolean;
+	frame?: number;
 };
 
 const AvatarProfile = ({
@@ -38,7 +39,8 @@ const AvatarProfile = ({
 	activityByUserId,
 	statusOnline,
 	isMobile,
-	isPro
+	isPro,
+	frame
 }: AvatarProfileProps) => {
 	const currentClanId = useSelector(selectCurrentClanId);
 
@@ -59,6 +61,10 @@ const AvatarProfile = ({
 
 	const isUserLeft = !avatar && !username;
 	const showProFrame = Boolean(isPro && !isUserLeft && !isAnonymous);
+	const resolvedFrameUserId = frameUserId || userID || '';
+	const storedFrame = useAppSelector((state) => selectUserFrame(state, resolvedFrameUserId));
+	const effectiveFrame = frame !== undefined ? frame : storedFrame;
+	const resolvedFrameId = userFrameId(showProFrame, effectiveFrame, resolvedFrameUserId);
 	const activityStatus = useMemo(() => {
 		return typeof customStatus === 'string'
 			? customStatus
@@ -71,7 +77,7 @@ const AvatarProfile = ({
 			data-e2e={generateE2eId('user_setting.profile.user_profile.preview.avatar')}
 		>
 			<div className="relative h-fit">
-				<ProAvatarFrame isPro={showProFrame} userId={frameUserId || userID || ''} animated>
+				<ProAvatarFrame isPro={Boolean(resolvedFrameId)} userId="" frameId={resolvedFrameId} animated>
 					<AvatarImage
 						alt={username || ''}
 						username={username || ''}

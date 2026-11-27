@@ -3,14 +3,14 @@ import type { ChannelMembersEntity } from '@mezon/store';
 import { selectCurrentChannelId, selectCurrentDmChannelId, useAppSelector } from '@mezon/store';
 import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { UsersClanEntity } from '@mezon/utils';
-import { EUserStatus, createImgproxyUrl, generateE2eId } from '@mezon/utils';
+import { EUserStatus, createImgproxyUrl, generateE2eId, userFrameId } from '@mezon/utils';
 import type { ReactNode } from 'react';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../components';
 import { ProAvatarFrame } from '../ProfileBadges';
 import { UserStatusIconClan } from './IconStatus';
 
-type WithProPlan = { pro_plan?: boolean };
+type WithProPlan = { pro_plan?: boolean; frame?: number };
 
 type BaseMemberProfileProps = {
 	id: string;
@@ -22,6 +22,7 @@ type BaseMemberProfileProps = {
 	userStatus?: ReactNode;
 	isPro?: boolean;
 	ownProUserId?: string;
+	ownFrame?: number;
 	onContextMenu: (event: React.MouseEvent<Element, MouseEvent>, channelId: string, user: UsersClanEntity) => void;
 	onClick: (event: React.MouseEvent) => void;
 };
@@ -36,6 +37,7 @@ export const BaseMemberProfile = ({
 	userStatus,
 	isPro: isProProp,
 	ownProUserId,
+	ownFrame,
 	onContextMenu,
 	onClick
 }: BaseMemberProfileProps) => {
@@ -58,7 +60,12 @@ export const BaseMemberProfile = ({
 	};
 
 	const isOffline = userMeta?.status === EUserStatus.INVISIBLE || !userMeta?.online;
-	const isPro = isProProp ?? (Boolean((user?.user as WithProPlan | undefined)?.pro_plan) || Boolean(ownProUserId && id === ownProUserId));
+	const memberUser = user?.user as WithProPlan | undefined;
+	const isOwnPro = Boolean(ownProUserId && id === ownProUserId);
+	const isPro = isProProp ?? (Boolean(memberUser?.pro_plan) || isOwnPro);
+	const frame = isOwnPro ? ownFrame : memberUser?.frame;
+	const frameUserId = user?.user?.id || user?.id || id;
+	const resolvedFrameId = userFrameId(isPro, frame, frameUserId);
 
 	return (
 		<div className={`relative group w-full ${isOffline ? 'opacity-50' : ''}`}>
@@ -69,7 +76,7 @@ export const BaseMemberProfile = ({
 				data-e2e={generateE2eId('clan_page.secondary_side_bar.member')}
 			>
 				<div className="relative">
-					<ProAvatarFrame isPro={isPro} userId={user?.user?.id || user?.id || id}>
+					<ProAvatarFrame isPro={Boolean(resolvedFrameId)} userId="" frameId={resolvedFrameId}>
 						<AvatarImage
 							alt={username}
 							username={user?.user?.username ?? username}

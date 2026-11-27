@@ -10,6 +10,7 @@ import {
 	audioCallActions,
 	authActions,
 	badgeService,
+	buildOwnProfileAccountPatch,
 	canvasAPIActions,
 	categoriesActions,
 	cdnSignatureActions,
@@ -49,6 +50,7 @@ import {
 	referencesActions,
 	resetRefreshState,
 	rolesClanActions,
+	selectAllAccount,
 	selectAllChannels,
 	selectCategoryById,
 	selectChannelById,
@@ -2077,7 +2079,19 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	const onuserprofileupdate = useCallback(
 		(userUpdated: UserProfileUpdatedEvent) => {
 			if (userUpdated.user_id === userId) {
-				dispatch(accountActions.setUpdateAccount({ encrypt_private_key: userUpdated?.encrypt_private_key }));
+				const currentEncryptKey = selectAllAccount(getStore().getState() as unknown as RootState)?.encrypt_private_key;
+				const accountPatch = buildOwnProfileAccountPatch(userUpdated, currentEncryptKey);
+				if (accountPatch) {
+					dispatch(accountActions.setUpdateAccount(accountPatch));
+				}
+				if (userUpdated.frame !== undefined) {
+					dispatch(
+						usersClanActions.updateUserProfileAcrossClans({
+							userId: userUpdated.user_id,
+							frame: userUpdated.frame
+						})
+					);
+				}
 			} else {
 				if (userUpdated.channel_id) {
 					dispatch(
@@ -2095,7 +2109,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						userId: userUpdated.user_id,
 						...(userUpdated.avatar && { avatar: userUpdated.avatar }),
 						...(userUpdated.display_name && { display_name: userUpdated.display_name }),
-						about_me: userUpdated.about_me
+						about_me: userUpdated.about_me,
+						...(userUpdated.frame !== undefined ? { frame: userUpdated.frame } : {})
 					})
 				);
 				dispatch(

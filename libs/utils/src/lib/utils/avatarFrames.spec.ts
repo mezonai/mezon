@@ -1,4 +1,12 @@
-import { AVATAR_FRAMES, avatarFrameUrl, clanFrameId, defaultAvatarFrameForUser } from './avatarFrames';
+import {
+	AVATAR_FRAMES,
+	USER_FRAME_AUTO,
+	USER_FRAME_HIDDEN,
+	avatarFrameUrl,
+	clanFrameId,
+	defaultAvatarFrameForUser,
+	userFrameId
+} from './avatarFrames';
 
 describe('avatarFrames', () => {
 	it('has 18 unique frame ids', () => {
@@ -58,5 +66,34 @@ describe('avatarFrames', () => {
 		[true, undefined, undefined]
 	])('clanFrameId(%s, %s) returns %s', (proPlan, frame, expected) => {
 		expect(clanFrameId(proPlan, frame)).toBe(expected);
+	});
+
+	it('exports sentinel constants for hidden and automatic user frames', () => {
+		expect(USER_FRAME_HIDDEN).toBe(-1);
+		expect(USER_FRAME_AUTO).toBe(0);
+	});
+
+	it.each([
+		[false, -1, '1775731111020111872', undefined],
+		[false, 0, '1775731111020111872', undefined],
+		[false, 5, '1775731111020111872', undefined],
+		[undefined, 5, '1775731111020111872', undefined],
+		[true, -1, '1775731111020111872', undefined],
+		[true, -5, '1775731111020111872', undefined],
+		[true, 0, '1775731111020111872', 'mascot_2'],
+		[true, undefined, '1775731111020111872', 'mascot_2'],
+		[true, Number.NaN, '1775731111020111872', 'mascot_2'],
+		[true, 99, '1775731111020111872', 'mascot_2'],
+		[true, 19, '1775731111020111872', 'mascot_2'],
+		[true, 1.5, '1775731111020111872', 'mascot_2'],
+		[true, -1.5, '1775731111020111872', 'mascot_2'],
+		[true, 1, '1775731111020111872', 'edu_1'],
+		[true, 18, '1775731111020111872', 'food_2'],
+		[true, 1, undefined, 'edu_1'],
+		[true, 0, undefined, undefined],
+		[true, 0, '', undefined],
+		[true, undefined, '', undefined]
+	])('userFrameId(%s, %s, %s) returns %s', (proPlan, frame, userId, expected) => {
+		expect(userFrameId(proPlan, frame, userId)).toBe(expected);
 	});
 });

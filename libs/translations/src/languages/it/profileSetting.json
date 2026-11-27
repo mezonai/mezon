@@ -72,5 +72,14 @@
 		"description": "Crea o unisciti a un clan per impostare il tuo profilo clan.",
 		"createClan": "Crea clan",
 		"joinClan": "Unisciti al clan"
+	},
+	"proAvatarFrame": {
+		"title": "Cornice avatar Pro",
+		"description": "Scegli una cornice decorativa Pro da mostrare attorno al tuo avatar.",
+		"noFrame": "Nessuna cornice",
+		"automatic": "Automatico",
+		"notPro": "Passa a Mezon Pro per scegliere una cornice avatar.",
+		"saved": "Cornice avatar salvata.",
+		"saveFailed": "Impossibile salvare la cornice avatar. Riprova."
 	}
 }

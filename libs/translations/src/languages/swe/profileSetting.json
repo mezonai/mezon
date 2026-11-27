@@ -72,5 +72,14 @@
 		"description": "Skapa eller gå med i en clan för att ställa in din clan profil.",
 		"createClan": "Skapa clan",
 		"joinClan": "Gå med i clan"
+	},
+	"proAvatarFrame": {
+		"title": "Pro-avatarram",
+		"description": "Välj en Pro-dekorationsram att visa runt din avatar.",
+		"noFrame": "Ingen ram",
+		"automatic": "Automatisk",
+		"notPro": "Uppgradera till Mezon Pro för att välja en avatarram.",
+		"saved": "Avatarramen har sparats.",
+		"saveFailed": "Det gick inte att spara avatarramen. Försök igen."
 	}
 }

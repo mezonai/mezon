@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
-import { ACCOUNT_FEATURE_KEY, accountActions, accountReducer } from '../account/account.slice';
-import { USERS_CLANS_FEATURE_KEY, selectIsProUser, usersClanActions, usersClanReducer } from './clan.members';
+import { configureStore } from '@reduxjs/toolkit';
+import { ACCOUNT_FEATURE_KEY, accountActions, accountReducer, selectAccountFrame, updateUserFrame } from '../account/account.slice';
+import { ensureSession } from '../helpers';
+import { USERS_CLANS_FEATURE_KEY, selectIsProUser, selectUserFrame, usersClanActions, usersClanReducer } from './clan.members';
 
 jest.mock('@mezon/logger', () => ({ captureSentryError: jest.fn() }));
 jest.mock('@mezon/utils', () => ({
@@ -197,5 +199,149 @@ describe('selectIsProUser and pro_plan preservation', () => {
 			clans: { currentClanId: CLAN_1 }
 		};
 		expect(selectIsProUser(state, ME)).toBe(true);
+	});
+});
+
+describe('selectUserFrame and frame preservation', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
+	it('resolves own account frame before clan members and supports -1, 0, and positive ids', () => {
+		const hiddenState = makeRootState({
+			accountProfile: { pro_plan: true, user: { id: ME, frame: -1 } },
+			clan1Users: [{ id: ME, user: { id: ME, frame: 5 } }]
+		});
+		expect(selectUserFrame(hiddenState, ME)).toBe(-1);
+
+		const autoState = makeRootState({
+			accountProfile: { pro_plan: true, user: { id: ME, frame: 0 } },
+			clan1Users: [{ id: ME, user: { id: ME, frame: 5 } }]
+		});
+		expect(selectUserFrame(autoState, ME)).toBe(0);
+
+		const undefinedState = makeRootState({
+			accountProfile: { pro_plan: true, user: { id: ME } },
+			clan1Users: [{ id: ME, user: { id: ME, frame: 5 } }]
+		});
+		expect(selectUserFrame(undefinedState, ME)).toBeUndefined();
+	});
+
+	it('reads peer frames from current clan first and falls back across clans in DM view', () => {
+		const clanState = makeRootState({
+			accountProfile: { user: { id: ME } },
+			clan1Users: [
+				{ id: PEER_PRO, user: { id: PEER_PRO, frame: 0 } },
+				{ id: PEER_FREE, user: { id: PEER_FREE, frame: -1 } }
+			],
+			clan2Users: [
+				{ id: PEER_PRO, user: { id: PEER_PRO, frame: 9 } },
+				{ id: 'other-peer', user: { id: 'other-peer', frame: 12 } }
+			],
+			currentClanId: CLAN_1
+		});
+
+		expect(selectUserFrame(clanState, PEER_PRO)).toBe(0);
+		expect(selectUserFrame(clanState, PEER_FREE)).toBe(-1);
+		expect(selectUserFrame(clanState, 'other-peer')).toBe(12);
+		expect(selectUserFrame(clanState, 'unknown-user')).toBeUndefined();
+		expect(selectUserFrame(clanState, '')).toBeUndefined();
+
+		const dmState = { ...clanState, clans: { currentClanId: '0' } };
+		expect(selectUserFrame(dmState, 'other-peer')).toBe(12);
+	});
+
+	it('applies frame in updateUserProfileAcrossClans for -1, 0, and 5 and preserves when omitted', () => {
+		let usersClanState = usersClanReducer(undefined, { type: 'init' });
+		usersClanState = usersClanReducer(
+			usersClanState,
+			usersClanActions.upsertMany({
+				clanId: CLAN_1,
+				users: [{ id: PEER_PRO, user: { id: PEER_PRO, frame: 3 } }] as never
+			})
+		);
+		usersClanState = usersClanReducer(
+			usersClanState,
+			usersClanActions.upsertMany({
+				clanId: CLAN_2,
+				users: [{ id: PEER_PRO, user: { id: PEER_PRO, frame: 3 } }] as never
+			})
+		);
+
+		usersClanState = usersClanReducer(usersClanState, usersClanActions.updateUserProfileAcrossClans({ userId: PEER_PRO, frame: -1 }));
+		expect((usersClanState.byClans[CLAN_1].entities.entities[PEER_PRO]?.user as { frame?: number })?.frame).toBe(-1);
+		expect((usersClanState.byClans[CLAN_2].entities.entities[PEER_PRO]?.user as { frame?: number })?.frame).toBe(-1);
+
+		usersClanState = usersClanReducer(usersClanState, usersClanActions.updateUserProfileAcrossClans({ userId: PEER_PRO, frame: 0 }));
+		expect((usersClanState.byClans[CLAN_1].entities.entities[PEER_PRO]?.user as { frame?: number })?.frame).toBe(0);
+
+		usersClanState = usersClanReducer(usersClanState, usersClanActions.updateUserProfileAcrossClans({ userId: PEER_PRO, frame: 5 }));
+		expect((usersClanState.byClans[CLAN_1].entities.entities[PEER_PRO]?.user as { frame?: number })?.frame).toBe(5);
+
+		usersClanState = usersClanReducer(
+			usersClanState,
+			usersClanActions.updateUserProfileAcrossClans({ userId: PEER_PRO, display_name: 'Renamed' })
+		);
+		expect((usersClanState.byClans[CLAN_1].entities.entities[PEER_PRO]?.user as { frame?: number })?.frame).toBe(5);
+	});
+
+	it('preserves existing frame on upsertMany when incoming lacks frame and overwrites when provided', () => {
+		let usersClanState = usersClanReducer(undefined, { type: 'init' });
+		usersClanState = usersClanReducer(
+			usersClanState,
+			usersClanActions.upsertMany({
+				clanId: CLAN_1,
+				users: [{ id: PEER_PRO, user: { id: PEER_PRO, pro_plan: true, frame: -1 } }] as never
+			})
+		);
+
+		usersClanState = usersClanReducer(
+			usersClanState,
+			usersClanActions.upsertMany({
+				clanId: CLAN_1,
+				users: [{ id: PEER_PRO, user: { id: PEER_PRO, display_name: 'Refetched' } }] as never
+			})
+		);
+		expect((usersClanState.byClans[CLAN_1].entities.entities[PEER_PRO]?.user as { frame?: number; pro_plan?: boolean })?.frame).toBe(-1);
+		expect((usersClanState.byClans[CLAN_1].entities.entities[PEER_PRO]?.user as { frame?: number; pro_plan?: boolean })?.pro_plan).toBe(true);
+
+		usersClanState = usersClanReducer(
+			usersClanState,
+			usersClanActions.upsertMany({
+				clanId: CLAN_1,
+				users: [{ id: PEER_PRO, user: { id: PEER_PRO, frame: 0 } }] as never
+			})
+		);
+		expect((usersClanState.byClans[CLAN_1].entities.entities[PEER_PRO]?.user as { frame?: number })?.frame).toBe(0);
+	});
+
+	it('updates both account and clan members across clans when updateUserFrame fulfills', async () => {
+		const updateAccount = jest.fn(async () => true);
+		jest.mocked(ensureSession).mockResolvedValueOnce({
+			client: { updateAccount },
+			session: { token: 't' }
+		} as never);
+
+		const preloaded = makeRootState({
+			accountProfile: { pro_plan: true, user: { id: ME, pro_plan: true, frame: 0 } },
+			clan1Users: [{ id: ME, user: { id: ME, pro_plan: true, frame: 0 } }],
+			clan2Users: [{ id: ME, user: { id: ME, pro_plan: true, frame: 0 } }]
+		});
+
+		const store = configureStore({
+			reducer: {
+				[ACCOUNT_FEATURE_KEY]: accountReducer,
+				[USERS_CLANS_FEATURE_KEY]: usersClanReducer,
+				clans: (state = { currentClanId: CLAN_1 }) => state
+			},
+			preloadedState: preloaded
+		});
+
+		const action = await store.dispatch(updateUserFrame(11));
+
+		expect(updateUserFrame.fulfilled.match(action)).toBe(true);
+		expect(selectAccountFrame(store.getState())).toBe(11);
+		expect((store.getState()[USERS_CLANS_FEATURE_KEY].byClans[CLAN_1].entities.entities[ME]?.user as { frame?: number })?.frame).toBe(11);
+		expect((store.getState()[USERS_CLANS_FEATURE_KEY].byClans[CLAN_2].entities.entities[ME]?.user as { frame?: number })?.frame).toBe(11);
 	});
 });

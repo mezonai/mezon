@@ -72,5 +72,14 @@
 		"description": "Tạo hoăc tham gia một clan để thiết lập hồ sơ clan của bạn.",
 		"createClan": "Tạo clan",
 		"joinClan": "Tham gia clan"
+	},
+	"proAvatarFrame": {
+		"title": "Khung ảnh đại diện Pro",
+		"description": "Chọn khung trang trí Pro để hiển thị quanh ảnh đại diện của bạn.",
+		"noFrame": "Không có khung",
+		"automatic": "Tự động",
+		"notPro": "Nâng cấp lên Mezon Pro để chọn khung ảnh đại diện.",
+		"saved": "Đã lưu khung ảnh đại diện.",
+		"saveFailed": "Lưu khung ảnh đại diện thất bại. Vui lòng thử lại."
 	}
 }

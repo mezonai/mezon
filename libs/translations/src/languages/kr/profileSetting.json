@@ -72,5 +72,14 @@
 		"description": "클랜 프로필을 설정하려면 클랜을 만들거나 참가하세요.",
 		"createClan": "클랜 만들기",
 		"joinClan": "클랜 참가"
+	},
+	"proAvatarFrame": {
+		"title": "Pro 아바타 프레임",
+		"description": "아바타 주위에 표시할 Pro 장식 프레임을 선택하세요.",
+		"noFrame": "프레임 없음",
+		"automatic": "자동",
+		"notPro": "아바타 프레임을 선택하려면 Mezon Pro로 업그레이드하세요.",
+		"saved": "아바타 프레임이 저장되었습니다.",
+		"saveFailed": "아바타 프레임을 저장하지 못했습니다. 다시 시도해 주세요."
 	}
 }

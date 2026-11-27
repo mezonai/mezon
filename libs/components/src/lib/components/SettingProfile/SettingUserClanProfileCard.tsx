@@ -1,5 +1,5 @@
 import { useAuth, useMemberStatus } from '@mezon/core';
-import { selectAccountCustomStatus } from '@mezon/store';
+import { selectAccountCustomStatus, selectAccountProPlan } from '@mezon/store';
 import { MzIcons20, SpinningIcon } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { useEffect, useState } from 'react';
@@ -14,12 +14,14 @@ export type propProfilesform = {
 	profiles: Profilesform;
 	currentDisplayName?: string;
 	isLoading?: boolean;
+	draftFrame?: number;
 };
 const SettingUserClanProfileCard = (props: propProfilesform) => {
 	const { userProfile } = useAuth();
 	const { profiles, currentDisplayName } = props;
 	const checkUrl = profiles.urlImage === undefined || profiles.urlImage === '';
 	const userStatusProfile = useSelector(selectAccountCustomStatus);
+	const isPro = useSelector(selectAccountProPlan);
 	const [color, setColor] = useState<string>('#323232');
 	const userStatus = useMemberStatus(userProfile?.user?.id || '');
 
@@ -52,6 +54,8 @@ const SettingUserClanProfileCard = (props: propProfilesform) => {
 				userID={userProfile?.user?.id}
 				statusOnline={userStatus.status}
 				identifierE2E="avatar_clan_profile"
+				isPro={isPro}
+				frame={props.draftFrame}
 			/>
 
 			<div className="p-4 flex flex-col gap-4">

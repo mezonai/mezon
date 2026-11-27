@@ -572,7 +572,7 @@ export interface ThreadProps {
 
 export type IUserAccount = ApiAccount & {
 	pro_plan?: boolean;
-	user?: ApiUser & { pro_plan?: boolean };
+	user?: ApiUser & { pro_plan?: boolean; frame?: number };
 };
 
 export type IPermission = ApiPermission;

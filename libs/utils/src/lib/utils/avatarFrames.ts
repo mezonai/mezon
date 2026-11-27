@@ -47,3 +47,21 @@ export function clanFrameId(proPlan?: boolean, frame?: number): AvatarFrameId | 
 	}
 	return AVATAR_FRAMES[frame - 1];
 }
+
+export const USER_FRAME_HIDDEN = -1;
+export const USER_FRAME_AUTO = 0;
+
+export function userFrameId(proPlan?: boolean, frame?: number, userId?: string): AvatarFrameId | undefined {
+	if (!proPlan) {
+		return undefined;
+	}
+	if (typeof frame === 'number' && Number.isInteger(frame)) {
+		if (frame < 0) {
+			return undefined;
+		}
+		if (frame >= 1 && frame <= AVATAR_FRAMES.length) {
+			return AVATAR_FRAMES[frame - 1];
+		}
+	}
+	return userId ? defaultAvatarFrameForUser(userId) : undefined;
+}
