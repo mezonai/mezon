@@ -68,6 +68,7 @@ export type LoadingStatus = 'not loaded' | 'loading' | 'loaded' | 'error';
 export type IClan = ApiClanDesc & {
 	id: string;
 	hashtags?: string;
+	pro_plan?: boolean;
 };
 
 export type IChannelAttachment = ApiChannelAttachment & {
@@ -569,7 +570,10 @@ export interface ThreadProps {
 	name: string;
 }
 
-export type IUserAccount = ApiAccount;
+export type IUserAccount = ApiAccount & {
+	pro_plan?: boolean;
+	user?: ApiUser & { pro_plan?: boolean };
+};
 
 export type IPermission = ApiPermission;
 

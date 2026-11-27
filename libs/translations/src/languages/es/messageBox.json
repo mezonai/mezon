@@ -16,5 +16,12 @@
 			"description": "Enviar un mensaje efímero (solo visible para el usuario seleccionado)"
 		}
 	},
-	"convertLongToFile": "Convertir un mensaje largo en archivo"
+	"convertLongToFile": "Convertir un mensaje largo en archivo",
+	"longMessage": {
+		"title": "Mensaje demasiado largo",
+		"description": "Este mensaje tiene {{count}} caracteres, más de {{multiplier}} veces el límite de {{limit}} caracteres, por lo que no se puede enviar como mensajes. ¿Convertirlo en un archivo .txt? Todavía puedes editarlo si cancelas.",
+		"convert": "Convertir en archivo",
+		"size": "{{size}}",
+		"chars": "{{count}} caracteres"
+	}
 }

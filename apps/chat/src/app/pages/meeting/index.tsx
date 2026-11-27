@@ -7,8 +7,11 @@ import {
 	MezonSfuVoiceRoom,
 	MicrophoneControl,
 	VideoPreview,
+	openCameraStream,
+	requestExternalChatNotificationPermission,
 	useMicTest,
 	usePreferredOutputDevice,
+	withPreferredCamera,
 	type BackgroundMode,
 	type SfuJoinRole
 } from '@mezon/components';
@@ -123,6 +126,7 @@ export default function PreJoinCalling() {
 	});
 
 	const rawStreamRef = useRef<MediaStream | null>(null);
+	const currentDeviceIdRef = useRef(selectedCamera);
 	const processorRef = useRef<MediaPipeBackgroundProcessor | null>(null);
 	const cameraRequestRef = useRef(0);
 	const cameraStartQueueRef = useRef<Promise<void>>(Promise.resolve());
@@ -137,6 +141,10 @@ export default function PreJoinCalling() {
 	const isVoiceFullScreen = useSelector(selectVoiceFullScreen);
 	const roomCameraOn = useSelector(selectShowCamera);
 	const cameraEnabled = getExternalToken ? joinRole === 'speaker' && roomCameraOn : cameraOn;
+	// Audience cannot send video, so the room gets neither the pre-join camera nor its background menu
+	const shareCamera = cameraEnabled && joinRole === 'speaker';
+	// In-meeting without virtual background: let MezonSfuVoiceRoom own the raw camera track directly so tab switching does not depend on canvas processing
+	const needsManagedCamera = getExternalToken ? Boolean(shareCamera && selectedBg) : cameraOn;
 
 	useEffect(() => {
 		function decodeJWT(token: string) {
@@ -228,21 +236,32 @@ export default function PreJoinCalling() {
 		[devices]
 	);
 
+	const stopProcessor = useCallback(() => {
+		processorRef.current?.stop();
+		setProcessorCanvas(null);
+		setCustomVideoTrack((prev) => {
+			prev?.stop();
+			return null;
+		});
+	}, []);
+
 	const startCamera = useCallback(
 		(deviceId: string, inMeeting = false) => {
 			const request = ++cameraRequestRef.current;
 			const run = async () => {
 				if (request !== cameraRequestRef.current) return;
+				if (inMeeting && !selectedBgRef.current) return;
 				try {
-					const stream = await navigator.mediaDevices.getUserMedia({
-						video: {
+					const videoConstraints = withPreferredCamera(
+						{
 							width: { ideal: 1280 },
 							height: { ideal: 720 },
-							...(deviceId === 'default' ? { facingMode: 'user' } : { deviceId: { exact: deviceId } })
+							...(deviceId === 'default' ? { facingMode: 'user' } : {})
 						},
-						audio: false
-					});
-					if (request !== cameraRequestRef.current) {
+						deviceId
+					);
+					const stream = await openCameraStream(videoConstraints);
+					if (request !== cameraRequestRef.current || (inMeeting && !selectedBgRef.current)) {
 						stream.getTracks().forEach((track) => track.stop());
 						return;
 					}
@@ -250,26 +269,37 @@ export default function PreJoinCalling() {
 					rawStreamRef.current?.getTracks().forEach((track) => track.stop());
 					rawStreamRef.current = stream;
 
-					if (!processorRef.current) {
-						processorRef.current = new MediaPipeBackgroundProcessor();
-					}
-
-					const outStream = await processorRef.current.start(stream, selectedBgRef.current);
-					if (request !== cameraRequestRef.current) {
-						stream.getTracks().forEach((track) => track.stop());
-						// Not already cleaned up by turning the camera off or unmounting, so stop the processor too
-						if (rawStreamRef.current === stream) {
-							rawStreamRef.current = null;
-							processorRef.current?.stop();
+					const activeBg = selectedBgRef.current;
+					if (activeBg) {
+						if (!processorRef.current) {
+							processorRef.current = new MediaPipeBackgroundProcessor();
 						}
-						return;
+
+						const outStream = await processorRef.current.start(stream, activeBg);
+						if (request !== cameraRequestRef.current || (inMeeting && !selectedBgRef.current)) {
+							stream.getTracks().forEach((track) => track.stop());
+							// Not already cleaned up by turning the camera off or unmounting, so stop the processor too
+							if (rawStreamRef.current === stream) {
+								rawStreamRef.current = null;
+								processorRef.current?.stop();
+							}
+							return;
+						}
+
+						setProcessedStream(outStream);
+						setProcessorCanvas(processorRef.current.getCanvas());
+						setCustomVideoTrack(processorRef.current.getVideoTrack());
+					} else {
+						stopProcessor();
+						setProcessedStream(stream);
 					}
 
-					setProcessedStream(outStream);
-					setProcessorCanvas(processorRef.current.getCanvas());
-					setCustomVideoTrack(processorRef.current.getVideoTrack());
-					setSelectedCamera(stream.getVideoTracks()[0]?.getSettings().deviceId || deviceId);
-					setCameraOn(true);
+					const resolvedDeviceId = stream.getVideoTracks()[0]?.getSettings().deviceId || deviceId;
+					currentDeviceIdRef.current = resolvedDeviceId;
+					setSelectedCamera(resolvedDeviceId);
+					if (!inMeeting) {
+						setCameraOn(true);
+					}
 					setError(null);
 					setPermissionsState((prev) => ({ ...prev, camera: true }));
 				} catch (err) {
@@ -285,16 +315,40 @@ export default function PreJoinCalling() {
 			cameraStartQueueRef.current = cameraStartQueueRef.current.then(run);
 			return cameraStartQueueRef.current;
 		},
-		[dispatch]
+		[dispatch, stopProcessor]
 	);
 
-	// Stops the camera device; the processed track is left alone
+	const startProcessorOnRawStream = useCallback((mode: BackgroundMode) => {
+		const request = ++cameraRequestRef.current;
+		const run = async () => {
+			const stream = rawStreamRef.current;
+			if (request !== cameraRequestRef.current || !stream || selectedBgRef.current !== mode) return;
+			if (!processorRef.current) {
+				processorRef.current = new MediaPipeBackgroundProcessor();
+			}
+			const outStream = await processorRef.current.start(stream, mode);
+			if (request !== cameraRequestRef.current || rawStreamRef.current !== stream || selectedBgRef.current !== mode) {
+				if (rawStreamRef.current !== stream || !selectedBgRef.current) {
+					processorRef.current?.stop();
+				}
+				return;
+			}
+			setProcessedStream(outStream);
+			setProcessorCanvas(processorRef.current.getCanvas());
+			setCustomVideoTrack(processorRef.current.getVideoTrack());
+		};
+		cameraStartQueueRef.current = cameraStartQueueRef.current.then(run);
+		return cameraStartQueueRef.current;
+	}, []);
+
+	// Stops the camera device and any virtual background processor
 	const releaseCamera = useCallback(() => {
 		cameraRequestRef.current += 1;
 		rawStreamRef.current?.getTracks().forEach((track) => track.stop());
 		rawStreamRef.current = null;
-		processorRef.current?.stop();
-	}, []);
+		stopProcessor();
+		setProcessedStream(null);
+	}, [stopProcessor]);
 
 	const toggleCamera = useCallback(() => {
 		if (!cameraOn) {
@@ -303,25 +357,31 @@ export default function PreJoinCalling() {
 		}
 		releaseCamera();
 		setCameraOn(false);
-		setProcessedStream(null);
-		setCustomVideoTrack(null);
 	}, [cameraOn, selectedCamera, releaseCamera, startCamera]);
 
 	const handleSelectCamera = useCallback(
 		(deviceId: string) => {
 			setSelectedCamera(deviceId);
-			if (cameraEnabled) void startCamera(deviceId, !!getExternalToken);
+			currentDeviceIdRef.current = deviceId;
+			if (getExternalToken) {
+				if (shareCamera && selectedBg) void startCamera(deviceId, true);
+				return;
+			}
+			if (cameraOn) void startCamera(deviceId, false);
 		},
-		[cameraEnabled, getExternalToken, startCamera]
+		[cameraOn, getExternalToken, selectedBg, shareCamera, startCamera]
 	);
 
 	useEffect(() => {
-		if (!cameraEnabled) {
-			if (getExternalToken) releaseCamera();
+		if (!needsManagedCamera) {
+			if (getExternalToken || rawStreamRef.current) releaseCamera();
 			return;
 		}
-		if (!rawStreamRef.current) void startCamera(selectedCamera, !!getExternalToken);
-	}, [cameraEnabled, getExternalToken, selectedCamera, releaseCamera, startCamera]);
+		if (!rawStreamRef.current || (getExternalToken && currentDeviceIdRef.current !== selectedCamera)) {
+			currentDeviceIdRef.current = selectedCamera;
+			void startCamera(selectedCamera, !!getExternalToken);
+		}
+	}, [needsManagedCamera, getExternalToken, selectedCamera, releaseCamera, startCamera]);
 
 	const requestCameraPermission = useCallback(async () => {
 		const enableCamera = () => void startCamera(selectedCamera);
@@ -360,13 +420,35 @@ export default function PreJoinCalling() {
 	useEffect(() => stopMicTest, [selectedMic, selectedSpeaker, stopMicTest]);
 
 	// Handle background selection
-	const handleSelectBg = useCallback((mode: BackgroundMode | null) => {
-		setSelectedBg(mode);
-		selectedBgRef.current = mode;
-		if (processorRef.current) {
-			processorRef.current.setMode(mode);
-		}
-	}, []);
+	const handleSelectBg = useCallback(
+		(mode: BackgroundMode | null) => {
+			setSelectedBg(mode);
+			selectedBgRef.current = mode;
+			if (getExternalToken) {
+				if (mode) {
+					if (processorRef.current?.isActive() && rawStreamRef.current) {
+						processorRef.current.setMode(mode);
+					}
+				} else {
+					releaseCamera();
+				}
+				return;
+			}
+
+			if (mode) {
+				if (processorRef.current?.isActive() && rawStreamRef.current) {
+					processorRef.current.setMode(mode);
+				} else if (rawStreamRef.current) {
+					void startProcessorOnRawStream(mode);
+				}
+			} else {
+				cameraRequestRef.current += 1;
+				stopProcessor();
+				setProcessedStream(rawStreamRef.current);
+			}
+		},
+		[getExternalToken, releaseCamera, startProcessorOnRawStream, stopProcessor]
+	);
 
 	const isUser = !!(getDisplayName && getAvatar);
 
@@ -384,18 +466,23 @@ export default function PreJoinCalling() {
 				return;
 			}
 
+			requestExternalChatNotificationPermission();
+
 			setError(null);
 			setAvatar(avatar as string);
 			setJoinRole(role);
 			stopMicTest();
 			const cameraAllowed = role === 'speaker' && cameraOn;
-			if (!cameraAllowed) cameraRequestRef.current += 1;
+			const keepManagedProcessor = cameraAllowed && Boolean(selectedBgRef.current);
+			if (!keepManagedProcessor) {
+				releaseCamera();
+			}
 
 			dispatch(voiceActions.setShowCamera(cameraAllowed));
 			dispatch(voiceActions.setShowMicrophone(role === 'speaker' && micOn));
 
 			const metadata = trimmed || avatar || getAvatar ? `${trimmed};${avatar || getAvatar || ''}` : '';
-			await dispatch(
+			const result = await dispatch(
 				generateMeetTokenExternal({
 					token: code as string,
 					username: sanitizeUsername(account?.user?.username || trimmed),
@@ -403,8 +490,25 @@ export default function PreJoinCalling() {
 					isGuest: !isUser as boolean
 				})
 			);
+			if ((!generateMeetTokenExternal.fulfilled.match(result) || !result.payload?.token) && cameraOn && !keepManagedProcessor) {
+				void startCamera(selectedCamera, false);
+			}
 		},
-		[dispatch, username, isUser, code, avatar, getAvatar, cameraOn, micOn, stopMicTest]
+		[
+			dispatch,
+			username,
+			isUser,
+			code,
+			avatar,
+			getAvatar,
+			cameraOn,
+			micOn,
+			stopMicTest,
+			releaseCamera,
+			startCamera,
+			selectedCamera,
+			account?.user?.username
+		]
 	);
 
 	const handleRefreshToken = useCallback(async () => {
@@ -450,9 +554,6 @@ export default function PreJoinCalling() {
 		dispatch(voiceActions.setToggleChatBox());
 	}, [dispatch]);
 
-	// Audience cannot send video, so the room gets neither the pre-join camera nor its background menu
-	const shareCamera = cameraEnabled && joinRole === 'speaker';
-
 	return (
 		<div className="h-screen w-screen flex bg-black">
 			{getExternalToken ? (
@@ -471,14 +572,8 @@ export default function PreJoinCalling() {
 						onFullScreen={handleFullScreen}
 						onToggleChat={toggleChat}
 						username={username}
-						cameraManagedExternally
-						customVideoTrack={
-							shareCamera
-								? customVideoTrack && customVideoTrack.readyState === 'live'
-									? customVideoTrack
-									: processorRef.current?.getVideoTrack()
-								: null
-						}
+						cameraManagedExternally={Boolean(selectedBg)}
+						customVideoTrack={shareCamera && selectedBg && customVideoTrack?.readyState === 'live' ? customVideoTrack : null}
 						preferredCameraId={selectedCamera}
 						onSelectCamera={handleSelectCamera}
 						headerActions={

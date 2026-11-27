@@ -1,9 +1,17 @@
 import { captureSentryError } from '@mezon/logger';
-import type { IAttachmentEntity, IChannelAttachment, LoadingStatus } from '@mezon/utils';
-import { AttachmentTypeUpload, EMimeTypes, ETypeLinkMedia, isMediaTypeNotSupported } from '@mezon/utils';
+import type { IAttachmentEntity, IChannelAttachment, IMessageWithUser, LoadingStatus } from '@mezon/utils';
+import {
+	AttachmentTypeUpload,
+	EMimeTypes,
+	ETypeLinkMedia,
+	filterExpiredPresignAttachments,
+	getMessageCreateTimeSeconds,
+	isAttachmentPresignPendingForMessage,
+	isMediaTypeNotSupported
+} from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiChannelAttachment, ChannelStreamMode } from 'mezon-js';
+import type { ApiChannelAttachment, ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
 import type { MultipartUploadAttachmentPart } from 'mezon-js-protobuf';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, isCacheValid, markApiFirstCalled } from '../cache-metadata';
@@ -41,6 +49,7 @@ export interface AttachmentState extends EntityState<AttachmentEntity, string> {
 		}
 	>;
 	isSendHDImageMobile?: boolean;
+	listChannelId?: string;
 }
 
 export const attachmentAdapter = createEntityAdapter({
@@ -127,6 +136,46 @@ export const mapChannelAttachmentsToEntity = (attachmentRes: ApiChannelAttachmen
 	const create_time = attachmentRes.create_time_seconds ? new Date(Number(attachmentRes.create_time_seconds) * 1000).toISOString() : undefined;
 	const attachmentEntity: IAttachmentEntity = { ...attachmentRes, id: uniqueId, channelId, clanId, isVideo, create_time };
 	return attachmentEntity;
+};
+
+export const buildTopicAttachmentList = (
+	messages: IMessageWithUser[],
+	pickMedia: (attachments: ApiMessageAttachment[], message: IMessageWithUser) => ApiMessageAttachment[]
+): AttachmentEntity[] => {
+	const seenIds = new Set<string>();
+	const result: AttachmentEntity[] = [];
+
+	for (const message of messages) {
+		if (!message || message.isSending || message.isError) continue;
+		const rawAttachments = (message.attachments || []).filter((attachment) => attachment && Object.keys(attachment).length !== 0);
+		if (!rawAttachments.length) continue;
+
+		const createTimeSeconds = getMessageCreateTimeSeconds(message);
+		const visibleAttachments = filterExpiredPresignAttachments(rawAttachments, message.content, createTimeSeconds);
+		if (!visibleAttachments.length) continue;
+
+		const mediaAttachments = pickMedia(visibleAttachments, message);
+		for (const attachment of mediaAttachments) {
+			if (!attachment?.url) continue;
+			if (isAttachmentPresignPendingForMessage(attachment.url, message)) continue;
+
+			const id = `${message.id}_${attachment.url}`;
+			if (seenIds.has(id)) continue;
+			seenIds.add(id);
+
+			const create_time = createTimeSeconds ? new Date(createTimeSeconds * 1000).toISOString() : undefined;
+			result.push({
+				...attachment,
+				id,
+				message_id: message.id,
+				uploader: message.sender_id,
+				create_time_seconds: createTimeSeconds,
+				create_time
+			});
+		}
+	}
+
+	return result.reverse();
 };
 
 export const fetchChannelAttachments = createAsyncThunk(
@@ -286,6 +335,10 @@ export const attachmentSlice = createSlice({
 		},
 		setOpenModalAttachment: (state, action) => {
 			state.openModalAttachment = action.payload;
+			state.listChannelId = undefined;
+		},
+		setListChannelId: (state, action: PayloadAction<string | undefined>) => {
+			state.listChannelId = action.payload;
 		},
 		setMode: (state, action) => {
 			state.mode = action.payload;
@@ -519,6 +572,9 @@ export const selectAllListAttachmentByChannel = createSelector([getAttachmentSta
 	if (!Object.prototype.hasOwnProperty.call(state?.listAttachmentsByChannel, channelId)) {
 		return undefined;
 	}
+	if (state.listChannelId && state.listChannelId === channelId) {
+		return state.listAttachmentsByChannel[channelId]?.attachments;
+	}
 	return state.listAttachmentsByChannel[channelId]?.attachments?.filter(
 		(att) =>
 			!isMediaTypeNotSupported(att?.filetype, att?.url) &&
@@ -577,3 +633,5 @@ export const selectAttachmentPaginationByChannel = createSelector(
 );
 
 export const selectIsSendHDImageMobile = createSelector(getAttachmentState, (state: AttachmentState) => state?.isSendHDImageMobile);
+
+export const selectAttachmentListChannelId = createSelector(getAttachmentState, (state: AttachmentState) => state?.listChannelId);

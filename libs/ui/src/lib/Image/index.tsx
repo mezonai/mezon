@@ -1,5 +1,6 @@
 export type ImageProps = {
 	src: string;
+	alt?: string;
 	width?: number;
 	height?: number;
 	placeholder?: string;
@@ -9,8 +10,8 @@ export type ImageProps = {
 	draggable?: 'true' | 'false';
 };
 
-function Image({ loading = 'lazy', src, className, draggable, ...rest }: ImageProps) {
-	return <img {...rest} src={src} alt={'image'} loading={loading} className={className} draggable={draggable} />;
+function Image({ loading = 'lazy', src, alt = 'image', className, draggable, ...rest }: ImageProps) {
+	return <img {...rest} src={src} alt={alt} loading={loading} className={className} draggable={draggable} />;
 }
 
 export default Image;

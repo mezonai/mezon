@@ -22,6 +22,7 @@ import {
 	generatePathAttachments,
 	getMessageCreateTimeSeconds,
 	getPresignIngestKeys,
+	getPresignUploadKey,
 	getPublicKeys,
 	getWebUploadedAttachments,
 	isDMStreamMode,
@@ -95,6 +96,7 @@ export const MESSAGES_FEATURE_KEY = 'messages';
 
 /** Retry schedule for the presign_finish patch; the last entry means "no more waiting". */
 const PRESIGN_PATCH_BACKOFF_MS = [1000, 3000, 0];
+const SOCKET_MESSAGE_MAX_BYTES = 4 * 1024;
 
 export const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenId?: string): IMessageWithUser => {
 	const isAnonymous = channelMess?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
@@ -202,6 +204,7 @@ type FetchMessagesPayloadAction = {
 	foundE2ee?: boolean;
 	fromCache?: boolean;
 	toPresent?: boolean;
+	notModified?: boolean;
 };
 
 export interface MessagesRootState {
@@ -241,6 +244,40 @@ export const mapMessageChannelToEntityAction = createAsyncThunk(
 
 export const TYPING_TIMEOUT = 3000;
 
+function isNumericServerMessageId(id: string | undefined): id is string {
+	return Boolean(id && id !== '0' && /^\d+$/.test(id));
+}
+
+function getLatestCachedServerMessageId(
+	channelData: (EntityState<MessagesEntity, string> & { cache?: CacheMetadata }) | undefined
+): string | undefined {
+	if (!channelData?.cache || !channelData.ids?.length) {
+		return undefined;
+	}
+	let latest: string | undefined;
+	let latestBigInt = BigInt(0);
+	for (let i = 0; i < channelData.ids.length; i++) {
+		const id = channelData.ids[i];
+		const entity = channelData.entities[id];
+		if (!entity || entity.isSending || entity.isError || entity.code === TypeMessage.Ephemeral) {
+			continue;
+		}
+		if (!isNumericServerMessageId(entity.id)) {
+			continue;
+		}
+		try {
+			const parsed = BigInt(entity.id);
+			if (parsed > latestBigInt) {
+				latestBigInt = parsed;
+				latest = entity.id;
+			}
+		} catch {
+			// Ignore non-integer IDs.
+		}
+	}
+	return latest;
+}
+
 export const fetchMessagesCached = async (
 	getState: () => RootState,
 	ensuredMezon: MezonValueContext,
@@ -250,7 +287,8 @@ export const fetchMessagesCached = async (
 	direction?: number,
 	topicId?: string,
 	noCache = false,
-	dispatch?: AppDispatch
+	dispatch?: AppDispatch,
+	lastSeenMessageId?: string
 ) => {
 	const state = getState();
 
@@ -282,7 +320,26 @@ export const fetchMessagesCached = async (
 
 	const response = await withRetry(
 		(session) =>
-			ensuredMezon.client.listChannelMessages(session, isRealClan ? clanId : '0', channelId, messageId, direction, LIMIT_MESSAGE, topicId),
+			lastSeenMessageId
+				? ensuredMezon.client.listChannelMessages(
+						session,
+						isRealClan ? clanId : '0',
+						channelId,
+						messageId,
+						direction,
+						LIMIT_MESSAGE,
+						topicId,
+						lastSeenMessageId
+					)
+				: ensuredMezon.client.listChannelMessages(
+						session,
+						isRealClan ? clanId : '0',
+						channelId,
+						messageId,
+						direction,
+						LIMIT_MESSAGE,
+						topicId
+					),
 		{
 			scope: 'channel-messages',
 			mezon: ensuredMezon
@@ -428,6 +485,9 @@ export const fetchMessages = createAsyncThunk(
 			}
 			const lastMessageId = selectLastMessageIdByChannelId(state, chlId);
 			const requestMessageId = toPresent ? '0' : messageId || '0';
+			const canUseLastSeen =
+				requestMessageId === '0' && !toPresent && !isClearMessage && !foundE2ee && !state.messages.isViewingOlderMessagesByChannelId[chlId];
+			const lastSeenMessageId = canUseLastSeen ? getLatestCachedServerMessageId(state.messages.channelMessages[chlId]) : undefined;
 
 			let response = await fetchMessagesCached(
 				thunkAPI.getState as () => RootState,
@@ -438,8 +498,21 @@ export const fetchMessages = createAsyncThunk(
 				direction,
 				topicId,
 				noCache,
-				thunkAPI.dispatch as AppDispatch
+				thunkAPI.dispatch as AppDispatch,
+				lastSeenMessageId
 			);
+
+			if (lastSeenMessageId && !response.fromCache && (!response.messages || response.messages.length === 0)) {
+				return {
+					messages: [],
+					isFetchingLatestMessages,
+					isClearMessage: false,
+					viewingOlder,
+					foundE2ee,
+					fromCache: false,
+					notModified: true
+				};
+			}
 
 			// Fallback
 			if (!topicId && messageId && (!response.messages || response.messages.length === 0)) {
@@ -1331,17 +1404,6 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			})
 		: attachmentsMessage;
 
-	const payloadSizeInBytes = Buffer.byteLength(
-		JSON.stringify({
-			...payload,
-			attachments: attachmentsMessage
-		}),
-		'utf8'
-	);
-	if (payloadSizeInBytes > 4 * 1024) {
-		toast.error(t(`message:tooLongMessage`));
-		return;
-	}
 	let content = payload.content;
 	const clientSendTime = Date.now();
 	const tempId = `${storeChannelId}-${Snowflake.generate()}`;
@@ -1352,6 +1414,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 	};
 
 	const checkEnableE2EE = checkE2EE(clanId, channelId, thunkAPI, mode);
+	let sentOverHttp = false;
 
 	async function doSend() {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
@@ -1377,53 +1440,75 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 
 			const pubKeys = await getPublicKeys(keys.filter((item) => item?.PK).map((item) => item.PK));
 			const otherUserPublicKeys: PublicKeyMaterial[] = pubKeys;
-			if (content?.t) {
+			if (content?.t && !content.e2ee) {
 				const encryptedMessage = await MessageCrypt.encryptMessage(content.t, otherUserPublicKeys, senderId);
 				content = { ...content, t: encryptedMessage, e2ee: 1 };
 			}
 		}
 
+		const frameBytes = Buffer.byteLength(JSON.stringify({ ...payload, content, attachments: attachmentsMessage }), 'utf8');
+
 		let res;
 
-		try {
-			if (client) {
-				res = await client.writeChatMessage(
-					mezon.session,
-					clanId,
-					channelId,
-					mode,
-					isPublic,
-					content,
-					anonymous && !topicId ? undefined : mentions,
-					attachmentsMessage,
-					references,
-					anonymous,
-					mentionEveryone,
-					'',
-					code,
-					topicId
-				);
-			} else {
-				throw new Error('Socket not connected');
-			}
-		} catch (err) {
-			if (isMessagePermissionDenied(err)) throw err;
-			res = await client.sendChannelMessage(
+		if (frameBytes > SOCKET_MESSAGE_MAX_BYTES) {
+			sentOverHttp = true;
+			res = await client.sendChannelMessageApi(
 				session,
 				clanId,
 				channelId,
 				mode,
 				isPublic,
-				typeof content === 'object' ? JSON.stringify(content) : content,
+				content,
 				anonymous && !topicId ? undefined : mentions,
 				attachmentsMessage,
 				references,
 				anonymous,
 				mentionEveryone,
-				avatar,
+				'',
 				code,
 				topicId
 			);
+		} else {
+			try {
+				if (client) {
+					res = await client.writeChatMessage(
+						mezon.session,
+						clanId,
+						channelId,
+						mode,
+						isPublic,
+						content,
+						anonymous && !topicId ? undefined : mentions,
+						attachmentsMessage,
+						references,
+						anonymous,
+						mentionEveryone,
+						'',
+						code,
+						topicId
+					);
+				} else {
+					throw new Error('Socket not connected');
+				}
+			} catch (err) {
+				if (isMessagePermissionDenied(err)) throw err;
+				res = await client.sendChannelMessage(
+					session,
+					clanId,
+					channelId,
+					mode,
+					isPublic,
+					typeof content === 'object' ? JSON.stringify(content) : content,
+					anonymous && !topicId ? undefined : mentions,
+					attachmentsMessage,
+					references,
+					anonymous,
+					mentionEveryone,
+					avatar,
+					code,
+					topicId
+				);
+			}
 		}
 		thunkAPI.dispatch(referencesActions.clearOgpData());
 
@@ -1436,6 +1521,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			return res;
 		} catch (error) {
 			if (isMessagePermissionDenied(error)) throw error;
+			if (sentOverHttp) throw error;
 			if (error === 'The socket timed out while waiting for a response.') {
 				const timeoutError = new Error('SOCKET_TIMEOUT');
 				timeoutError.name = 'SocketTimeoutError';
@@ -1557,11 +1643,6 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 					height,
 					width
 				}));
-				const preparedPayloadSize = Buffer.byteLength(JSON.stringify({ ...payload, attachments: attachmentsMessage }), 'utf8');
-				if (preparedPayloadSize > 4 * 1024) {
-					toast.error(t('message:tooLongMessage'));
-					throw new Error('Message attachments exceed the payload limit');
-				}
 				thunkAPI.dispatch(
 					messagesActions.updateSendingMessageAttachments({
 						channelId: storeChannelId,
@@ -1577,6 +1658,22 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			if (usePresignFirst) {
 				content = { ...content, presign_finish: [] };
 				fakeMess = { ...fakeMess, content: content as MessagesEntity['content'] };
+				const presignPatchContent = {
+					...content,
+					presign_finish: (attachments ?? []).map((attachment) => getPresignUploadKey(attachment.uploadName) ?? ''),
+					presign_ingest: getPresignIngestKeys(attachments)
+				};
+				const e2eeTextBytes = checkEnableE2EE && content.t ? Buffer.byteLength(content.t, 'utf8') + 1024 : 0;
+				const presignPatchBytes =
+					Buffer.byteLength(JSON.stringify({ content: presignPatchContent, mentions, channelId, clanId, messageId: id }), 'utf8') +
+					e2eeTextBytes +
+					128;
+				if (presignPatchBytes > SOCKET_MESSAGE_MAX_BYTES) {
+					toast.error(t('message:tooLongMessage'));
+					const invalidError = new Error('Message presign patch exceeds socket limit');
+					invalidError.name = 'MessageInvalid';
+					throw invalidError;
+				}
 			}
 			const presignIngest = getPresignIngestKeys(attachments);
 			if (presignIngest.length) {
@@ -1685,6 +1782,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 					console.error('error: ', error);
 				}
 			}
+			return true;
 		} catch (error) {
 			const payload = originalSendPayload;
 			thunkAPI.dispatch(messagesActions.deleteQueueSending(fakeMess.id));
@@ -1699,7 +1797,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 						channelId: fakeMessage.channel_id
 					})
 				);
-				return;
+				return false;
 			}
 
 			if (isMessagePermissionDenied(error)) {
@@ -2599,7 +2697,12 @@ export const messagesSlice = createSlice({
 					state.loadingStatus = 'loaded';
 					let direction = action.meta.arg.direction;
 
-					if (!action?.payload?.messages?.length) return;
+					if (!action?.payload?.messages?.length) {
+						if (action?.payload?.notModified && state.channelMessages[scopeId]) {
+							state.channelMessages[scopeId].cache = createCacheMetadata();
+						}
+						return;
+					}
 
 					const isNew =
 						channelId &&

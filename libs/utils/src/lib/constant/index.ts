@@ -227,7 +227,8 @@ export const STICKER_WAVE = {
 	]
 };
 
-export const MEZON_AVATAR_URL = 'https://cdn.komu.vn/0/1840653409082937344/1782991817428439000/1748500199026_0logo_new.png';
+// Message references and default avatars are persisted, so use a stable public URL.
+export const MEZON_AVATAR_URL = 'https://mezon.ai/chat/assets/brand/app-icon.png?v=20261112';
 export const WAVE_SENDER_NAME = 'Mezon';
 
 export const CURRENCY = {
@@ -235,9 +236,14 @@ export const CURRENCY = {
 	SYMBOL: 'đồng'
 };
 
+export const EMOJI_ITEM_TYPE = 0;
+export const STICKER_ITEM_TYPE = 1;
+export const USER_PRO_PLAN_ITEM_TYPE = 2;
+export const CLAN_PRO_PLAN_ITEM_TYPE = 3;
+
 export const ITEM_TYPE = {
-	EMOJI: 0,
-	STICKER: 1
+	EMOJI: EMOJI_ITEM_TYPE,
+	STICKER: STICKER_ITEM_TYPE
 };
 
 export const MAX_CLAN_ITEM_SLOTS = 250;

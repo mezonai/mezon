@@ -99,7 +99,11 @@ export const processEntitiesDirectly = (entities: any[], content: string, rolesC
 				break;
 
 			case 'MessageEntityUnderline':
-				markdown.push({ s, e, type: EBacktickType.CODE });
+				markdown.push({ s, e, type: EBacktickType.UNDERLINE });
+				break;
+
+			case 'MessageEntitySpoiler':
+				markdown.push({ s, e, type: EBacktickType.SPOILER });
 				break;
 
 			case 'MessageEntityCode':

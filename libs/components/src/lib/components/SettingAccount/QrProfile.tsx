@@ -1,3 +1,4 @@
+import { mezonAppIcon } from '@mezon/assets';
 import { useAuth } from '@mezon/core';
 import { useTheme } from '@mezon/themes';
 import { MezonIcon, MzIcons16, MzIcons20, SpinningIcon } from '@mezon/ui';
@@ -9,7 +10,7 @@ import { toast } from 'react-toastify';
 import { ModalLayout } from '../../components';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
 
-const DEFAULT_LOGO = 'https://cdn.komu.vn/images/mezon_logo.png';
+const DEFAULT_LOGO = mezonAppIcon;
 const QR_SIZE = 175;
 const LOGO_SIZE = 36;
 

@@ -1,3 +1,4 @@
+import { mezonAppIcon } from '@mezon/assets';
 /* eslint-disable no-console */
 import { useInvite } from '@mezon/core';
 import {
@@ -206,9 +207,10 @@ const ModalInvite = (props: ModalParam) => {
 	);
 };
 
-const DEFAULT_LOGO = 'https://cdn.komu.vn/images/mezon_logo.png';
+const DEFAULT_LOGO = mezonAppIcon;
 const QR_SIZE = 175;
-const LOGO_SIZE = 36;
+const LOGO_SIZE = 28;
+const LOGO_PADDING = 4;
 
 const drawRoundedRect = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) => {
 	ctx.beginPath();
@@ -453,7 +455,7 @@ const ModalQR = ({ closeModalEdit, data }: { closeModalEdit: () => void; data: s
 		if (!qrImg) return null;
 
 		const cardWidth = 340;
-		const qrRenderSize = 175;
+		const qrRenderSize = QR_SIZE;
 		const qrPaddingX = 35;
 		const qrCardW = qrRenderSize + qrPaddingX * 2;
 		const qrCardX = (cardWidth - qrCardW) / 2;
@@ -598,16 +600,15 @@ const ModalQR = ({ closeModalEdit, data }: { closeModalEdit: () => void; data: s
 		const qrY = divider1Y + 8;
 		ctx.drawImage(qrImg, qrX, qrY, qrRenderSize, qrRenderSize);
 
-		const lSize = 36;
+		const logoX = qrX + (qrRenderSize - LOGO_SIZE) / 2;
+		const logoY = qrY + (qrRenderSize - LOGO_SIZE) / 2;
+		const lSize = LOGO_SIZE - LOGO_PADDING * 2;
 		const lx = (cardWidth - lSize) / 2;
 		const ly = qrY + (qrRenderSize - lSize) / 2;
 
-		drawRoundedRect(ctx, lx - 2, ly - 2, lSize + 4, lSize + 4, 9);
+		drawRoundedRect(ctx, logoX, logoY, LOGO_SIZE, LOGO_SIZE, 8);
 		ctx.fillStyle = '#ffffff';
 		ctx.fill();
-		ctx.strokeStyle = '#ffffff';
-		ctx.lineWidth = 2;
-		ctx.stroke();
 
 		if (customCenterLogo && customLogoImg) {
 			ctx.save();
@@ -878,16 +879,14 @@ const ModalQR = ({ closeModalEdit, data }: { closeModalEdit: () => void; data: s
 							/>
 
 							<div
-								className="absolute rounded-xl overflow-hidden flex items-center justify-center bg-white shadow-md"
+								className="absolute rounded-lg overflow-hidden flex items-center justify-center bg-white"
 								style={{
 									width: LOGO_SIZE,
 									height: LOGO_SIZE,
 									top: '50%',
 									left: '50%',
 									transform: 'translate(-50%, -50%)',
-									padding: 2,
-									border: '2px solid #ffffff',
-									boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+									padding: LOGO_PADDING
 								}}
 							>
 								{customCenterLogo ? (

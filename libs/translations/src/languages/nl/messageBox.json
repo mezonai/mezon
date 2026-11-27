@@ -16,5 +16,12 @@
 			"description": "Tijdelijk bericht versturen (alleen zichtbaar voor geselecteerde gebruiker)"
 		}
 	},
-	"convertLongToFile": "Lang bericht omzetten in een bestand"
+	"convertLongToFile": "Lang bericht omzetten in een bestand",
+	"longMessage": {
+		"title": "Bericht te lang",
+		"description": "Dit bericht heeft {{count}} tekens, meer dan {{multiplier}}× de limiet van {{limit}} tekens, en kan daarom niet als berichten worden verzonden. Omzetten naar een .txt-bestand? Je kunt het nog steeds bewerken als je annuleert.",
+		"convert": "Omzetten naar bestand",
+		"size": "{{size}}",
+		"chars": "{{count}} tekens"
+	}
 }

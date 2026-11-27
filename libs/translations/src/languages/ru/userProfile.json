@@ -225,6 +225,7 @@
 		"banListEmpty": "Заблокированных пользователей не найдено"
 	},
 	"badges": {
-		"mezonPro": "Mezon Pro"
+		"mezonPro": "Mezon Pro",
+		"clanPro": "Clan Pro"
 	}
 }

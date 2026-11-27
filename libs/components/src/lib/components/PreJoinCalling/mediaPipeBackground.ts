@@ -1,3 +1,5 @@
+import { getTrackGeneratorCtor, getTrackProcessorCtor } from '../MezonSfuVoiceChannel/Recording/capabilities';
+
 export type BackgroundMode = 'bg-1' | 'bg-2' | 'bg-3' | 'bg-4' | 'bg-5' | 'blur';
 
 export interface BackgroundOption {
@@ -30,6 +32,66 @@ export const VIRTUAL_BACKGROUNDS: BackgroundOption[] = [
 
 export const MODEL_WIDTH = 640;
 export const MODEL_HEIGHT = 360;
+export const FOREGROUND_FRAME_INTERVAL_MS = 33;
+export const BACKGROUND_FRAME_INTERVAL_MS = 66;
+
+type InputFrameFeed = {
+	track: MediaStreamTrack;
+	reader: ReadableStreamDefaultReader<VideoFrame>;
+	frame: VideoFrame | null;
+};
+
+const isDocumentHidden = (): boolean => typeof document !== 'undefined' && Boolean(document.hidden);
+
+export function getTargetFrameIntervalMs(hidden = isDocumentHidden()): number {
+	return hidden ? BACKGROUND_FRAME_INTERVAL_MS : FOREGROUND_FRAME_INTERVAL_MS;
+}
+
+function createBackgroundTickScheduler(onTick: () => void): () => void {
+	const currentInterval = () => getTargetFrameIntervalMs();
+
+	if (typeof Worker !== 'undefined' && typeof Blob !== 'undefined' && typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function') {
+		try {
+			const script = `
+				let timerId = null;
+				onmessage = (event) => {
+					if (timerId !== null) {
+						clearInterval(timerId);
+						timerId = null;
+					}
+					if (typeof event.data === 'number' && event.data > 0) {
+						timerId = setInterval(() => postMessage(0), event.data);
+					}
+				};
+			`;
+			const blob = new Blob([script], { type: 'application/javascript' });
+			const blobUrl = URL.createObjectURL(blob);
+			const worker = new Worker(blobUrl);
+			worker.onmessage = () => onTick();
+			const syncInterval = () => worker.postMessage(currentInterval());
+			syncInterval();
+			if (typeof document !== 'undefined') {
+				document.addEventListener('visibilitychange', syncInterval);
+			}
+			return () => {
+				if (typeof document !== 'undefined') {
+					document.removeEventListener('visibilitychange', syncInterval);
+				}
+				worker.onmessage = null;
+				try {
+					worker.postMessage(0);
+				} catch {} // eslint-disable-line no-empty
+				worker.terminate();
+				URL.revokeObjectURL(blobUrl);
+			};
+		} catch {
+			// Fall back to main-thread timer if inline Blob Workers are blocked by environment/CSP
+		}
+	}
+
+	const timer = setInterval(onTick, FOREGROUND_FRAME_INTERVAL_MS);
+	return () => clearInterval(timer);
+}
 
 interface SelfieSegmentationResults {
 	image: CanvasImageSource;
@@ -642,8 +704,14 @@ export class MediaPipeBackgroundProcessor {
 	private initPromise: Promise<void> | null = null;
 	private isRunning = false;
 	private isProcessing = false;
-	private animationFrameId: number | null = null;
+	private runGeneration = 0;
+	private activeInferenceGeneration = 0;
+	private inputFeed: InputFrameFeed | null = null;
+	private stopFallbackLoop: (() => void) | null = null;
 	private outputStream: MediaStream | null = null;
+	private outputTrack: MediaStreamTrack | null = null;
+	private outputWriter: WritableStreamDefaultWriter<VideoFrame> | null = null;
+	private lastOutputTimestamp = -1;
 
 	private loadedImages = new Map<BackgroundMode, HTMLImageElement>();
 
@@ -858,13 +926,163 @@ export class MediaPipeBackgroundProcessor {
 		}
 	}
 
+	public isActive(): boolean {
+		return this.isRunning;
+	}
+
+	private closeOutputWriter(): void {
+		const writer = this.outputWriter;
+		this.outputWriter = null;
+		if (writer) {
+			void writer.close().catch(() => undefined);
+		}
+	}
+
+	private ensureOutputStream(fps = 30): MediaStream {
+		if (this.outputStream && this.outputStream.getVideoTracks().some((t) => t.readyState === 'live')) {
+			return this.outputStream;
+		}
+		this.closeOutputWriter();
+		this.outputTrack = null;
+
+		const GeneratorCtor = getTrackGeneratorCtor();
+		if (GeneratorCtor && typeof VideoFrame !== 'undefined' && typeof MediaStream !== 'undefined') {
+			try {
+				const generator = new GeneratorCtor({ kind: 'video' });
+				this.outputWriter = generator.writable.getWriter();
+				this.outputTrack = generator;
+				this.outputStream = new MediaStream([generator]);
+				return this.outputStream;
+			} catch {
+				this.closeOutputWriter();
+			}
+		}
+
+		this.outputStream = this.outputCanvas.captureStream(fps);
+		this.outputTrack = this.outputStream.getVideoTracks()[0] || null;
+		return this.outputStream;
+	}
+
+	private startInputFeed(videoTrack: MediaStreamTrack | undefined): InputFrameFeed | null {
+		const ProcessorCtor = getTrackProcessorCtor();
+		if (!ProcessorCtor || !videoTrack || videoTrack.readyState !== 'live') return null;
+		let clonedTrack: MediaStreamTrack | null = null;
+		try {
+			clonedTrack = videoTrack.clone();
+			const reader = new ProcessorCtor({ track: clonedTrack, maxBufferSize: 1 }).readable.getReader();
+			return { track: clonedTrack, reader, frame: null };
+		} catch {
+			clonedTrack?.stop();
+			return null;
+		}
+	}
+
+	private stopInputFeed(): void {
+		const feed = this.inputFeed;
+		if (!feed) return;
+		this.inputFeed = null;
+		feed.frame?.close();
+		feed.frame = null;
+		void feed.reader.cancel().catch(() => undefined);
+		feed.track.stop();
+	}
+
+	private async pumpInputFrames(feed: InputFrameFeed, generation: number): Promise<void> {
+		for (;;) {
+			const result = await feed.reader.read().catch(() => null);
+			const frame = result && !result.done ? result.value : null;
+			if (!frame) {
+				if (this.inputFeed === feed) {
+					this.stopInputFeed();
+					if (
+						this.isRunning &&
+						generation === this.runGeneration &&
+						this.inputStream &&
+						this.inputStream.getVideoTracks().some((t) => t.readyState === 'live')
+					) {
+						await this.startVideoFallback(this.inputStream, generation);
+					}
+				}
+				return;
+			}
+			if (!this.isRunning || generation !== this.runGeneration || this.inputFeed !== feed) {
+				frame.close();
+				return;
+			}
+			feed.frame?.close();
+			feed.frame = frame;
+			const srcW = frame.displayWidth || frame.codedWidth;
+			const srcH = frame.displayHeight || frame.codedHeight;
+			void this.processSourceFrame(frame, srcW, srcH, generation);
+		}
+	}
+
+	private cleanupVideoElement(): void {
+		if (!this.videoElement) return;
+		this.videoElement.onpause = null;
+		this.videoElement.srcObject = null;
+		if (this.videoElement.parentNode) {
+			this.videoElement.parentNode.removeChild(this.videoElement);
+		}
+		this.videoElement = null;
+	}
+
+	private async startVideoFallback(inputStream: MediaStream, generation: number): Promise<void> {
+		this.cleanupVideoElement();
+		if (this.stopFallbackLoop) {
+			this.stopFallbackLoop();
+			this.stopFallbackLoop = null;
+		}
+
+		const video = document.createElement('video');
+		video.autoplay = true;
+		video.playsInline = true;
+		video.muted = true;
+		video.style.position = 'fixed';
+		video.style.top = '0';
+		video.style.left = '0';
+		video.style.width = `${this.width}px`;
+		video.style.height = `${this.height}px`;
+		video.style.opacity = '0.01';
+		video.style.pointerEvents = 'none';
+		video.style.zIndex = '-99999';
+		if (typeof document !== 'undefined' && document.body) {
+			document.body.appendChild(video);
+		}
+		video.srcObject = inputStream;
+		video.onpause = () => {
+			if (this.isRunning && generation === this.runGeneration && this.videoElement === video) {
+				void video.play().catch(() => undefined);
+			}
+		};
+		this.videoElement = video;
+
+		await video.play().catch(() => undefined);
+		if (!this.isRunning || generation !== this.runGeneration || this.videoElement !== video) {
+			if (this.videoElement === video) this.cleanupVideoElement();
+			return;
+		}
+
+		this.stopFallbackLoop = createBackgroundTickScheduler(() => {
+			if (!this.isRunning || generation !== this.runGeneration || !this.videoElement) return;
+			const currentVideo = this.videoElement;
+			if (currentVideo.paused) {
+				void currentVideo.play().catch(() => undefined);
+			}
+			if (!currentVideo.videoWidth || currentVideo.readyState < 2) return;
+			void this.processSourceFrame(currentVideo, currentVideo.videoWidth, currentVideo.videoHeight, generation);
+		});
+	}
+
 	public async start(inputStream: MediaStream, initialMode: BackgroundMode | null = null): Promise<MediaStream> {
 		this.stop();
+		const generation = this.runGeneration;
 		this.inputStream = inputStream;
 		this.mode = initialMode;
 		this.isRunning = true;
 		this.hasFirstResult = false;
 		this.bgDirty = true;
+		this.lastFrameTime = 0;
 		this.cpuEnhancer?.resetHistory();
 
 		// Apply hardware ISP low-light optimization if supported by the camera device
@@ -872,29 +1090,6 @@ export class MediaPipeBackgroundProcessor {
 		if (videoTrack) {
 			void this.applyHardwareConstraints(videoTrack);
 		}
-
-		this.videoElement = document.createElement('video');
-		this.videoElement.autoplay = true;
-		this.videoElement.playsInline = true;
-		this.videoElement.muted = true;
-		this.videoElement.style.position = 'fixed';
-		this.videoElement.style.top = '0';
-		this.videoElement.style.left = '0';
-		this.videoElement.style.width = `${this.width}px`;
-		this.videoElement.style.height = `${this.height}px`;
-		this.videoElement.style.opacity = '0.01';
-		this.videoElement.style.pointerEvents = 'none';
-		this.videoElement.style.zIndex = '-99999';
-		document.body.appendChild(this.videoElement);
-		this.videoElement.srcObject = inputStream;
-
-		this.videoElement.onpause = () => {
-			if (this.isRunning && this.videoElement) {
-				void this.videoElement.play().catch(() => undefined);
-			}
-		};
-
-		await this.videoElement.play().catch(() => undefined);
 
 		if (this.mode) {
 			void this.initMediaPipe().catch((err) => {
@@ -906,8 +1101,17 @@ export class MediaPipeBackgroundProcessor {
 			}
 		}
 
-		this.loop();
-		return this.getStream();
+		const outStream = this.ensureOutputStream();
+
+		const feed = this.startInputFeed(videoTrack);
+		if (feed) {
+			this.inputFeed = feed;
+			void this.pumpInputFrames(feed, generation);
+		} else {
+			await this.startVideoFallback(inputStream, generation);
+		}
+
+		return outStream;
 	}
 
 	public getCanvas(): HTMLCanvasElement {
@@ -952,23 +1156,33 @@ export class MediaPipeBackgroundProcessor {
 	}
 
 	public getStream(fps = 30): MediaStream {
-		if (!this.outputStream || this.outputStream.getVideoTracks().every((t) => t.readyState === 'ended')) {
-			this.outputStream = this.outputCanvas.captureStream(fps);
-		}
-		return this.outputStream;
+		return this.ensureOutputStream(fps);
 	}
 
 	public getVideoTrack(fps = 30): MediaStreamTrack | null {
-		const stream = this.getStream(fps);
-		const track = stream.getVideoTracks()[0];
-		if (track && track.readyState === 'live') {
-			return track;
-		}
-		this.outputStream = this.outputCanvas.captureStream(fps);
-		return this.outputStream.getVideoTracks()[0] || null;
+		const stream = this.ensureOutputStream(fps);
+		return stream.getVideoTracks().find((t) => t.readyState === 'live') || stream.getVideoTracks()[0] || null;
 	}
 
-	private requestOutputFrame(): void {
+	private emitOutputFrame(): void {
+		if (this.outputWriter) {
+			if (this.outputTrack?.readyState !== 'live') return;
+			const desiredSize = this.outputWriter.desiredSize;
+			if (desiredSize === null || desiredSize <= 0) return;
+			const timestamp = Math.max(Math.round(performance.now() * 1000), this.lastOutputTimestamp + 1);
+			let frame: VideoFrame;
+			try {
+				frame = new VideoFrame(this.outputCanvas, { timestamp, alpha: 'discard' });
+			} catch {
+				return;
+			}
+			this.lastOutputTimestamp = timestamp;
+			void this.outputWriter.write(frame).catch(() => {
+				frame.close();
+			});
+			return;
+		}
+
 		if (this.outputStream) {
 			const track = this.outputStream.getVideoTracks()[0] as (MediaStreamTrack & { requestFrame?: () => void }) | undefined;
 			if (track && typeof track.requestFrame === 'function') {
@@ -1041,32 +1255,23 @@ export class MediaPipeBackgroundProcessor {
 		}
 	}
 
-	private loop = async (): Promise<void> => {
-		if (!this.isRunning || !this.videoElement) return;
+	private async processSourceFrame(source: CanvasImageSource, srcW: number, srcH: number, generation: number): Promise<void> {
+		if (!this.isRunning || generation !== this.runGeneration || !srcW || !srcH) return;
 
-		const video = this.videoElement;
+		this.updateDimensions(srcW, srcH);
 
-		// Ensure video is continuously playing even if browser temporarily paused it
-		if (video.paused) {
-			void video.play().catch(() => undefined);
-		}
+		const needsPassthrough = !this.mode || !this.selfieSegmentation || !this.hasFirstResult;
+		const shouldInfer = Boolean(this.mode && !this.isProcessing && this.selfieSegmentation);
+		if (!needsPassthrough && !shouldInfer) return;
 
-		if (!video.videoWidth || video.readyState < 2) {
-			this.animationFrameId = requestAnimationFrame(this.loop);
-			return;
-		}
-
-		this.updateDimensions(video.videoWidth, video.videoHeight);
-
-		// Throttle to ~30 FPS to avoid overloading the WebGL command queue and GPU memory
+		// Throttle to ~30 FPS when visible and ~15 FPS when tab is hidden to limit background CPU/GPU load
 		const now = performance.now();
-		if (now - this.lastFrameTime < 33) {
-			this.animationFrameId = requestAnimationFrame(this.loop);
+		if (now - this.lastFrameTime < getTargetFrameIntervalMs()) {
 			return;
 		}
 		this.lastFrameTime = now;
 
-		if (!this.mode || !this.selfieSegmentation || !this.hasFirstResult) {
+		if (needsPassthrough) {
 			// Passthrough camera feed until first segmentation result arrives or when no background selected
 			if (this.outCtx) {
 				this.outCtx.save();
@@ -1075,24 +1280,26 @@ export class MediaPipeBackgroundProcessor {
 					this.outCtx.translate(this.width, 0);
 					this.outCtx.scale(-1, 1);
 				}
-				drawImageCover(this.outCtx, video, video.videoWidth, video.videoHeight, this.width, this.height);
+				drawImageCover(this.outCtx, source, srcW, srcH, this.width, this.height);
 				this.outCtx.restore();
-				this.requestOutputFrame();
+				this.emitOutputFrame();
 			}
 		}
 
-		if (this.mode && !this.isProcessing && this.selfieSegmentation) {
+		if (shouldInfer && this.selfieSegmentation) {
 			this.isProcessing = true;
+			this.activeInferenceGeneration = generation;
+			let timeoutId: ReturnType<typeof setTimeout> | undefined;
 			try {
 				// 1. Draw camera video frame to full-resolution inputCanvas with adaptive temporal denoising
 				if (this.inputCtx) {
 					// In low light, apply subtle temporal blend (alpha = 0.88) to suppress high-frequency CMOS sensor shot noise
 					if (this.exposureNormalizer.isLowLight && this.hasFirstResult) {
 						this.inputCtx.globalAlpha = 0.88;
-						drawImageCover(this.inputCtx, video, video.videoWidth, video.videoHeight, this.width, this.height);
+						drawImageCover(this.inputCtx, source, srcW, srcH, this.width, this.height);
 						this.inputCtx.globalAlpha = 1.0;
 					} else {
-						drawImageCover(this.inputCtx, video, video.videoWidth, video.videoHeight, this.width, this.height);
+						drawImageCover(this.inputCtx, source, srcW, srcH, this.width, this.height);
 					}
 				}
 
@@ -1122,18 +1329,20 @@ export class MediaPipeBackgroundProcessor {
 					this.roiCtx.filter = 'none';
 				}
 
-				const timeoutPromise = new Promise<void>((_, reject) => setTimeout(() => reject(new Error('MediaPipe inference timeout')), 5000));
+				const timeoutPromise = new Promise<void>((_, reject) => {
+					timeoutId = setTimeout(() => reject(new Error('MediaPipe inference timeout')), 5000);
+				});
 				await Promise.race([this.selfieSegmentation.send({ image: this.roiCanvas }), timeoutPromise]);
 			} catch (err) {
 				console.warn('MediaPipe send error or timeout:', err);
-				this.isProcessing = false;
+				if (generation === this.runGeneration) {
+					this.isProcessing = false;
+				}
+			} finally {
+				if (timeoutId !== undefined) clearTimeout(timeoutId);
 			}
 		}
-
-		if (this.isRunning) {
-			this.animationFrameId = requestAnimationFrame(this.loop);
-		}
-	};
+	}
 
 	private ensureBgImageData(): void {
 		if (!this.bgCtx) return;
@@ -1227,6 +1436,10 @@ export class MediaPipeBackgroundProcessor {
 	}
 
 	private onResults(results: SelfieSegmentationResults): void {
+		if (!this.isRunning || this.activeInferenceGeneration !== this.runGeneration) {
+			return;
+		}
+
 		if (!this.outCtx || !this.inputCtx || !this.maskCtx || !this.bgCtx) {
 			this.isProcessing = false;
 			return;
@@ -1310,33 +1523,32 @@ export class MediaPipeBackgroundProcessor {
 		const camMaxX = this.mirrorCamera ? W - 1 - minX : maxX;
 		this.updateRoiFromBoundingBox(camMinX, camMaxX, minY, maxY, fgSampleCount);
 
-		this.requestOutputFrame();
+		this.emitOutputFrame();
 		this.isProcessing = false;
 	}
 
 	public stop(): void {
+		this.runGeneration += 1;
 		this.isRunning = false;
-		if (this.animationFrameId !== null) {
-			cancelAnimationFrame(this.animationFrameId);
-			this.animationFrameId = null;
+		this.stopInputFeed();
+		if (this.stopFallbackLoop) {
+			this.stopFallbackLoop();
+			this.stopFallbackLoop = null;
 		}
-		if (this.videoElement) {
-			this.videoElement.srcObject = null;
-			if (this.videoElement.parentNode) {
-				this.videoElement.parentNode.removeChild(this.videoElement);
-			}
-			this.videoElement = null;
-		}
+		this.cleanupVideoElement();
+		this.inputStream = null;
 		this.isProcessing = false;
 	}
 
 	public destroy(): void {
 		this.stop();
 		this.initPromise = null;
+		this.closeOutputWriter();
 		if (this.outputStream) {
 			this.outputStream.getTracks().forEach((t) => t.stop());
 			this.outputStream = null;
 		}
+		this.outputTrack = null;
 		if (this.outputCanvas && this.outputCanvas.parentNode) {
 			this.outputCanvas.parentNode.removeChild(this.outputCanvas);
 		}

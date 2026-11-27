@@ -83,5 +83,14 @@
 		"online": "Inga online matchar din sökning. Prova annat namn.",
 		"pending": "Inga vänförfrågor matchar din sökning. Vänligen dubbelkolla namnet eller prova igen.",
 		"block": "Inga blockerade användare matchar din sökning. Prova annat namn."
+	},
+	"sort": {
+		"label": "Sortera",
+		"recent": "Senaste interaktion",
+		"name": "Namn (A–Z)"
+	},
+	"sections": {
+		"recent": "Senaste",
+		"others": "Andra vänner"
 	}
 }

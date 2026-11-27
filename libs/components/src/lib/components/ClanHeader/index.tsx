@@ -5,8 +5,10 @@ import {
 	defaultNotificationCategoryActions,
 	emojiSuggestionSlice,
 	hasGrandchildModal,
+	selectCurrentClan,
 	selectCurrentClanId,
 	selectCurrentClanName,
+	selectCurrentClanProPlan,
 	selectCurrentVoiceChannelId,
 	selectInvitePeopleStatus,
 	selectIsShowEmptyCategory,
@@ -14,9 +16,10 @@ import {
 	settingClanStickerActions,
 	settingClanStickerSlice,
 	soundEffectActions,
+	toastActions,
 	useAppDispatch
 } from '@mezon/store';
-import { EPermission, generateE2eId } from '@mezon/utils';
+import { CLAN_PRO_PLAN_MIN_PRICE, EPermission, generateE2eId } from '@mezon/utils';
 import type { ApiCreateCategoryDescRequest } from 'mezon-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -44,15 +47,26 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 	const dispatch = useAppDispatch();
 	const params = useParams();
 	const currentClanId = useSelector(selectCurrentClanId);
+	const currentClan = useSelector(selectCurrentClan);
 	const currentClanName = useSelector(selectCurrentClanName);
-	const { t } = useTranslation('clan');
+	const isClanPro = useSelector(selectCurrentClanProPlan);
+	const { t, i18n } = useTranslation(['clan', 'clanMenu']);
 	const [isClanOwner, canManageClan, adminClan] = usePermissionChecker([EPermission.clanOwner, EPermission.manageClan, EPermission.administrator]);
 	const { removeMemberClan } = useChannelMembersActions();
 	const { userProfile } = useAuth();
+	const proPlanRecipientUserId = process.env.NX_PRO_PLAN_RECIPIENT_ID?.trim() ?? '';
+	const parsedClanProPlanPrice = Number(process.env.NX_PRO_PLAN_CLAN_PRICE || 0);
+	const clanProPlanPrice =
+		Number.isSafeInteger(parsedClanProPlanPrice) && parsedClanProPlanPrice > 0
+			? Math.max(parsedClanProPlanPrice, CLAN_PRO_PLAN_MIN_PRICE)
+			: CLAN_PRO_PLAN_MIN_PRICE;
+	const isCurrentUserClanOwner = !!currentClan?.creator_id && currentClan.creator_id === userProfile?.user?.id;
 	const currentChannelId = useSelector(selectCurrentVoiceChannelId);
 	const navigate = useNavigate();
 	const toOnboard = useSelector(selectToOnboard);
 	const [openCreateCate, setOpenCreateCate] = useState(false);
+	const [isClanProConfirmOpen, setIsClanProConfirmOpen] = useState(false);
+	const [isBuyingClanPro, setIsBuyingClanPro] = useState(false);
 	const [isShowModalPanelClan, setIsShowModalPanelClan] = useState<boolean>(false);
 	const hasChildModal = useSelector(hasGrandchildModal);
 	const hasChildModalRef = useRef(false);
@@ -111,6 +125,42 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 	const handleShowServerSettings = () => {
 		openServerSettingsModal();
 		setIsShowModalPanelClan(false);
+	};
+
+	const handleShowClanBenefits = () => {
+		if (!isCurrentUserClanOwner || isClanPro) return;
+		setIsClanProConfirmOpen(true);
+		setIsShowModalPanelClan(false);
+	};
+
+	const isClanProPurchaseAvailable = Boolean(currentClanId && userProfile?.user?.id && isCurrentUserClanOwner && !isClanPro);
+	const handleBuyClanProPlan = async () => {
+		const senderUserId = userProfile?.user?.id;
+		if (!isClanProPurchaseAvailable || !currentClanId || !senderUserId || isBuyingClanPro) return;
+		if (!proPlanRecipientUserId || clanProPlanPrice <= 0) {
+			dispatch(toastActions.addToast({ message: t('clanMenu:proPlanConfirm.purchaseUnavailable'), type: 'error' }));
+			return;
+		}
+
+		setIsBuyingClanPro(true);
+		try {
+			const result = await dispatch(
+				clansActions.buyClanProPlan({
+					clanId: currentClanId,
+					clanPrice: clanProPlanPrice,
+					proPlanRecipientUserId,
+					senderUserId,
+					senderUsername: userProfile?.user?.username || ''
+				})
+			);
+			if (clansActions.buyClanProPlan.fulfilled.match(result)) {
+				dispatch(toastActions.addToast({ message: t('clanMenu:proPlanConfirm.purchaseSubmitted'), type: 'success' }));
+				setIsClanProConfirmOpen(false);
+			}
+		} finally {
+			setIsBuyingClanPro(false);
+			setIsClanProConfirmOpen(false);
+		}
 	};
 
 	const closeModalClan = useCallback(() => {
@@ -189,9 +239,18 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 					/>
 				</div>
 			) : (
-				<Header name={name} handleShowModalClan={handleShowModalClan} isShowModalPanelClan={isShowModalPanelClan} modalRef={modalRef}>
+				<Header
+					name={name}
+					isPro={isClanPro}
+					handleShowModalClan={handleShowModalClan}
+					isShowModalPanelClan={isShowModalPanelClan}
+					modalRef={modalRef}
+				>
 					<ModalPanel
 						handleShowCreateCategory={handleShowCreateCategory}
+						handleShowClanBenefits={handleShowClanBenefits}
+						showClanBenefits={isCurrentUserClanOwner}
+						isClanPro={isClanPro}
 						handleShowInviteClanModal={handleShowInviteClanModal}
 						handleShowServerSettings={handleShowServerSettings}
 						toggleShowEmptyCategory={toggleShowEmptyCategory}
@@ -215,6 +274,19 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 				/>
 			)}
 			{openCreateCate && <ModalCreateCategory onClose={onClose} onCreateCategory={handleCreateCate} />}
+			{isClanProConfirmOpen && (
+				<ModalConfirm
+					handleCancel={() => setIsClanProConfirmOpen(false)}
+					handleConfirm={handleBuyClanProPlan}
+					title={t('clanMenu:proPlanConfirm.title')}
+					buttonName={isBuyingClanPro ? t('clanMenu:proPlanConfirm.processing') : t('clanMenu:proPlanConfirm.confirmButton')}
+					buttonColor="bg-indigo-600 hover:bg-indigo-700"
+					customTitle={t('clanMenu:proPlanConfirm.message', {
+						clanName: currentClanName || t('clanMenu:proPlanConfirm.yourClan'),
+						price: new Intl.NumberFormat(i18n.language).format(clanProPlanPrice)
+					})}
+				/>
+			)}
 			<InviteClanModal />
 		</>
 	);

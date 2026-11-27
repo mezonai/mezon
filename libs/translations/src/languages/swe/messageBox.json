@@ -16,5 +16,12 @@
 			"description": "Skicka tillfälligt meddelande (bara vald användare ser)"
 		}
 	},
-	"convertLongToFile": "Konvertera långt meddelande till fil"
+	"convertLongToFile": "Konvertera långt meddelande till fil",
+	"longMessage": {
+		"title": "Meddelandet är för långt",
+		"description": "Det här meddelandet har {{count}} tecken, mer än {{multiplier}}× gränsen på {{limit}} tecken, så det kan inte skickas som meddelanden. Konvertera det till en .txt-fil? Du kan fortfarande redigera det om du avbryter.",
+		"convert": "Konvertera till fil",
+		"size": "{{size}}",
+		"chars": "{{count}} tecken"
+	}
 }

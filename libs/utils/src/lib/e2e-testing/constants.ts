@@ -1149,6 +1149,12 @@ export const DATA_E2E_IDENTIFIER = {
 				cancel: ''
 			}
 		},
+		long_message: {
+			button: {
+				cancel: '',
+				convert: ''
+			}
+		},
 		voice_management: {
 			button: {
 				control_item: ''
@@ -1217,7 +1223,8 @@ export const DATA_E2E_IDENTIFIER = {
 			send_friend_request: '',
 			accept_friend_request: '',
 			reject_friend_request: '',
-			cancel_friend_request: ''
+			cancel_friend_request: '',
+			sort: ''
 		},
 		input: {
 			search: '',

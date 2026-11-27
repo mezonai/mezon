@@ -1,6 +1,6 @@
 import { clansActions, getStore, inviteActions, selectCanvasIdsByChannelId, selectClanById, useAppDispatch } from '@mezon/store';
 import { MezonIcon, MzIcons16 } from '@mezon/ui';
-import type { IExtendedMessage, MarkdownBlockLine, NamedLink } from '@mezon/utils';
+import type { IExtendedMessage, InlineStyleFlags, MarkdownBlockLine, NamedLink } from '@mezon/utils';
 import {
 	EBacktickType,
 	ETokenMessage,
@@ -11,9 +11,11 @@ import {
 	checkInviteLinkValid,
 	convertMarkdown,
 	createImgproxyUrl,
+	findBlockEscapes,
 	findMarkdownBlockLines,
 	findNamedLinks,
 	generateE2eId,
+	isInlineStyleType,
 	styleAt,
 	styleSegments
 } from '@mezon/utils';
@@ -87,6 +89,8 @@ export function extractIdsFromUrl(url: string) {
 	return { clanId, channelId, canvasId };
 }
 
+const HEADING_SIZES = ['', 'text-4xl', 'text-3xl', 'text-2xl', 'text-xl', 'text-lg', 'text-base'];
+
 const formatMarkdownHeadings = (text: string, isReply: boolean): React.ReactNode[] => {
 	if (!text) return [text];
 
@@ -95,73 +99,21 @@ const formatMarkdownHeadings = (text: string, isReply: boolean): React.ReactNode
 	let hasHeadings = false;
 
 	lines.forEach((line: string, index: number) => {
+		const prefix = index ? '\n' : '';
 		const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
-		if (headingMatch) {
-			hasHeadings = true;
-			const headingLevel = headingMatch[1].length;
-			const headingText = headingMatch[2].trim();
-			const replyText = 'text-sm pb-1';
-			switch (headingLevel) {
-				case 1:
-					formattedLines.push(
-						<h1 key={`h1-${index}`} className={`${isReply ? replyText : 'text-4xl my-1'} font-bold`}>
-							{headingText}
-						</h1>
-					);
-					break;
-				case 2:
-					formattedLines.push(
-						<h2 key={`h2-${index}`} className={` ${isReply ? replyText : 'text-3xl my-1'} font-bold`}>
-							{headingText}
-						</h2>
-					);
-					break;
-				case 3:
-					formattedLines.push(
-						<h3 key={`h3-${index}`} className={` ${isReply ? replyText : 'text-2xl my-1'} font-bold`}>
-							{headingText}
-						</h3>
-					);
-					break;
-				case 4:
-					formattedLines.push(
-						<h4 key={`h4-${index}`} className={` ${isReply ? replyText : 'text-xl my-1'}  font-bold`}>
-							{headingText}
-						</h4>
-					);
-					break;
-				case 5:
-					formattedLines.push(
-						<h5 key={`h5-${index}`} className={`${isReply ? replyText : 'text-lg my-1'}  font-bold`}>
-							{headingText}
-						</h5>
-					);
-					break;
-				case 6:
-					formattedLines.push(
-						<h6 key={`h6-${index}`} className={`${isReply ? replyText : 'text-base my-1'}  font-bold`}>
-							{headingText}
-						</h6>
-					);
-					break;
-				default:
-					formattedLines.push(line);
-					break;
-			}
-		} else {
-			const lastElement = formattedLines[formattedLines.length - 1];
-			const isAfterHeading =
-				lastElement &&
-				typeof lastElement === 'object' &&
-				React.isValidElement(lastElement) &&
-				['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(lastElement.type as string);
-
-			if (isAfterHeading && line.trim()) {
-				formattedLines.push(<span key={`inline-${index}`}>{line}</span>);
-			} else {
-				formattedLines.push(`\n${line}`);
-			}
+		if (!headingMatch) {
+			formattedLines.push(prefix + line);
+			return;
 		}
+		hasHeadings = true;
+		const level = headingMatch[1].length;
+		const Heading = `h${level}` as 'h1';
+		formattedLines.push(
+			prefix,
+			<Heading key={`h${level}-${index}`} className={`inline font-bold ${isReply ? 'text-sm' : HEADING_SIZES[level]}`}>
+				{headingMatch[2].trim()}
+			</Heading>
+		);
 	});
 
 	if (!hasHeadings) {
@@ -370,8 +322,8 @@ export const MessageLine = ({
 	const { t: translate } = useTranslation('common');
 	mode = mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL;
 	const { t, mentions = [], hg = [], ej = [], mk = [], lk = [], vk = [], lky = [] } = content || {};
+	const [revealedSpoilers, setRevealedSpoilers] = useState<number[]>([]);
 
-	const isStyleToken = (type?: EBacktickType) => type === EBacktickType.BOLD || type === EBacktickType.ITALIC || type === EBacktickType.STRIKE;
 	const isNonStyleMarkdownToken = (type?: EBacktickType) =>
 		type === EBacktickType.TRIPLE ||
 		type === EBacktickType.SINGLE ||
@@ -383,7 +335,7 @@ export const MessageLine = ({
 		type === EBacktickType.LINKFACEBOOK ||
 		type === EBacktickType.LINKTIKTOK ||
 		type === EBacktickType.OGP_PREVIEW;
-	const styleTokens = Array.isArray(mk) ? mk.filter((item) => isStyleToken(item.type)) : [];
+	const styleTokens = Array.isArray(mk) ? mk.filter((item) => isInlineStyleType(item.type)) : [];
 	const hgm = Array.isArray(hg) ? hg.map((item) => ({ ...item, kindOf: ETokenMessage.HASHTAGS })) : [];
 	const ejm = Array.isArray(ej) ? ej.map((item) => ({ ...item, kindOf: ETokenMessage.EMOJIS })) : [];
 	const mkm = Array.isArray(mk)
@@ -418,6 +370,7 @@ export const MessageLine = ({
 	const isLinkMarkdownType = (type?: EBacktickType) =>
 		type === EBacktickType.LINK || type === EBacktickType.LINKYOUTUBE || type === EBacktickType.LINKFACEBOOK || type === EBacktickType.LINKTIKTOK;
 	const blockLines: MarkdownBlockLine[] = !isJumMessageEnabled && !isDeletedMessage && t ? findMarkdownBlockLines(t, elements) : [];
+	const blockEscapes = !isDeletedMessage && t ? findBlockEscapes(t, blockLines) : [];
 	const linkElements = elements.filter((el) => el.kindOf === ETokenMessage.MARKDOWNS && isLinkMarkdownType(el.type));
 	const namedLinks: Map<number, NamedLink> = t ? findNamedLinks(t, linkElements, elements) : new Map();
 	const isQuickReactionAtEnd = !!quickReaction && !isEditted;
@@ -437,11 +390,14 @@ export const MessageLine = ({
 				)?.s
 			: undefined;
 	const isQuickReactionInCard = trailingOgpStart !== undefined || trailingSocialStart !== undefined;
-	const cardQuickReaction = isQuickReactionInCard ? <span className="absolute right-4 bottom-2 w-0 h-0">{quickReaction}</span> : undefined;
-	const wrapWithStyle = (node: React.ReactNode, style: { bold: boolean; italic: boolean; strike: boolean }, key: string): React.ReactNode => {
+	const cardQuickReaction = isQuickReactionInCard ? <span className="absolute right-4 bottom-0 w-0 h-0">{quickReaction}</span> : undefined;
+	const wrapWithStyle = (node: React.ReactNode, style: InlineStyleFlags, key: string): React.ReactNode => {
 		let wrapped = node;
 		if (style.strike) {
 			wrapped = <s key={`${key}-st`}>{wrapped}</s>;
+		}
+		if (style.underline) {
+			wrapped = <u key={`${key}-u`}>{wrapped}</u>;
 		}
 		if (style.italic) {
 			wrapped = <em key={`${key}-i`}>{wrapped}</em>;
@@ -449,25 +405,63 @@ export const MessageLine = ({
 		if (style.bold) {
 			wrapped = <strong key={`${key}-b`}>{wrapped}</strong>;
 		}
+		if (style.spoiler >= 0) {
+			const isRevealed = revealedSpoilers.includes(style.spoiler);
+			wrapped = (
+				<span
+					key={`${key}-sp`}
+					className={`rounded px-0.5 ${isRevealed ? 'bg-item-theme' : 'bg-[var(--text-theme-primary)] text-transparent select-none cursor-pointer [&_*]:invisible'}`}
+					onClickCapture={
+						isRevealed || isJumMessageEnabled
+							? undefined
+							: (event) => {
+									event.preventDefault();
+									event.stopPropagation();
+									setRevealedSpoilers((prev) => [...prev, style.spoiler]);
+								}
+					}
+				>
+					{wrapped}
+				</span>
+			);
+		}
 		return wrapped;
 	};
 	const renderRange = (start: number, end: number, keyPrefix = '', includeTrailing = false): React.ReactNode[] => {
 		const rangeNodes: React.ReactNode[] = [];
 		let rangeLastIndex = start;
-		const pushPlainRange = (plainStart: number, plainEnd: number, keySuffix: string) => {
+		const pushPlainRange = (plainStart: number, plainEnd: number, keySuffix: string, isRaw = false) => {
 			if (!t || plainEnd <= plainStart) return;
+			const escape = blockEscapes.find((pos) => pos >= plainStart && pos < plainEnd);
+			if (escape !== undefined) {
+				const lineEnd = t.indexOf('\n', escape) === -1 ? plainEnd : Math.min(plainEnd, t.indexOf('\n', escape));
+				pushPlainRange(plainStart, escape, keySuffix, isRaw);
+				rangeNodes.push(
+					<span key={`${keyPrefix}esc-${escape}-${messageId}`} className="hidden">
+						\
+					</span>
+				);
+				pushPlainRange(escape + 1, lineEnd, keySuffix, true);
+				pushPlainRange(lineEnd, plainEnd, keySuffix, isRaw);
+				return;
+			}
 			styleSegments(styleTokens, plainStart, plainEnd).forEach((seg) => {
 				const segKey = `${keyPrefix}plain-${seg.s}-${seg.e}-${keySuffix}-${messageId}`;
+				const segText = t.slice(seg.s, seg.e);
 				rangeNodes.push(
 					wrapWithStyle(
-						<FormattedPlainText
-							key={segKey}
-							text={t.slice(seg.s, seg.e)}
-							isSearchMessage={isSearchMessage}
-							messageId={messageId}
-							keyPrefix="plain"
-							isReply={!!isReply}
-						/>,
+						isRaw ? (
+							<PlainText key={segKey} isSearchMessage={isSearchMessage} text={segText} />
+						) : (
+							<FormattedPlainText
+								key={segKey}
+								text={segText}
+								isSearchMessage={isSearchMessage}
+								messageId={messageId}
+								keyPrefix="plain"
+								isReply={!!isReply}
+							/>
+						),
 						seg,
 						segKey
 					)
@@ -546,25 +540,48 @@ export const MessageLine = ({
 					}
 					rangeNodes.push(
 						<span key={`${keyPrefix}nl-open-${s}-${messageId}`} className="hidden">
-							[
+							{t.slice(namedLink.open, namedLink.labelStart)}
 						</span>
 					);
-					const linkNode = (
-						<MarkdownContent
-							key={`${keyPrefix}link${s}-${messageId}`}
-							isLink={true}
-							isTokenClickAble={isTokenClickAble}
-							isJumMessageEnabled={isJumMessageEnabled}
-							content={contentInElement}
-							linkLabel={t.slice(namedLink.labelStart, namedLink.labelEnd)}
-							isReply={isReply}
-							isSearchMessage={isSearchMessage}
-							isInPinMsg={isInPinMsg}
-							typeOfBacktick={element.type}
-							messageId={messageId}
-							onContextMenu={onContextMenu}
-						/>
-					);
+					const label = t.slice(namedLink.labelStart, namedLink.labelEnd);
+					const linkNode =
+						namedLink.image && !isJumMessageEnabled && contentInElement ? (
+							<a
+								key={`${keyPrefix}image${s}-${messageId}`}
+								href={contentInElement}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="inline-block align-bottom my-0.5"
+							>
+								<span className="hidden">{label}</span>
+								<img
+									src={createImgproxyUrl(contentInElement, { width: 0, height: 0, resizeType: 'force' })}
+									alt={label}
+									title={label || undefined}
+									loading="lazy"
+									className="max-w-full max-h-[300px] rounded-lg"
+									onError={(event) => {
+										event.currentTarget.onerror = null;
+										event.currentTarget.src = '/assets/images/warning.svg';
+									}}
+								/>
+							</a>
+						) : (
+							<MarkdownContent
+								key={`${keyPrefix}link${s}-${messageId}`}
+								isLink={true}
+								isTokenClickAble={isTokenClickAble}
+								isJumMessageEnabled={isJumMessageEnabled}
+								content={contentInElement}
+								linkLabel={label || contentInElement}
+								isReply={isReply}
+								isSearchMessage={isSearchMessage}
+								isInPinMsg={isInPinMsg}
+								typeOfBacktick={element.type}
+								messageId={messageId}
+								onContextMenu={onContextMenu}
+							/>
+						);
 					rangeNodes.push(
 						wrapWithStyle(linkNode, styleAt(styleTokens, namedLink.labelStart, namedLink.labelEnd), `${keyPrefix}link-${s}-${messageId}`)
 					);
@@ -788,9 +805,14 @@ export const MessageLine = ({
 	};
 	const content2 = (() => {
 		const textLen = t?.length ?? 0;
+		const contentEnd = elements.reduce(
+			(end, element) => ((element.s ?? 0) < end && (element.e ?? 0) > end ? (element.e ?? 0) : end),
+			t?.trimEnd().length ?? 0
+		);
 		const formattedContent: React.ReactNode[] = [];
 		const lastBlockLine = blockLines[blockLines.length - 1];
-		const isEndOnBlockLine = isQuickReactionAtEnd && !isQuickReactionInCard && !!lastBlockLine && lastBlockLine.lineEnd >= textLen;
+		const isEndOnBlockLine = isQuickReactionAtEnd && !isQuickReactionInCard && !!lastBlockLine && lastBlockLine.lineEnd >= contentEnd;
+		const isAnchorBeforeTrailing = isQuickReactionAtEnd && !isQuickReactionInCard && !isEndOnBlockLine && contentEnd < textLen;
 		const isEndOnCodeBlock =
 			isQuickReactionAtEnd &&
 			!isQuickReactionInCard &&
@@ -799,14 +821,18 @@ export const MessageLine = ({
 		const quickReactionAnchor = quickReaction ? (
 			<span
 				key={`quick-reaction-${messageId}`}
-				className={`relative w-0 h-0 ${isEndOnCodeBlock ? 'block ml-auto -left-4 -top-3' : 'inline-block align-middle'}`}
+				className={`relative w-0 h-0 ${isEndOnCodeBlock ? 'block ml-auto -left-4 -top-1' : 'inline-block align-middle'}`}
 			>
 				{quickReaction}
 			</span>
 		) : null;
 
 		if (blockLines.length === 0) {
-			formattedContent.push(...renderRange(0, textLen, '', true));
+			if (isAnchorBeforeTrailing) {
+				formattedContent.push(...renderRange(0, contentEnd), quickReactionAnchor, ...renderRange(contentEnd, textLen, 'tail-', true));
+			} else {
+				formattedContent.push(...renderRange(0, textLen, '', true));
+			}
 		} else if (t) {
 			let cursor = 0;
 			blockLines.forEach((block, blockIdx) => {
@@ -831,12 +857,92 @@ export const MessageLine = ({
 							{blockQuickReaction}
 						</div>
 					);
+				} else if (block.kind === 'hr') {
+					formattedContent.push(
+						<div key={`hr-${block.lineStart}-${messageId}`} className="flex items-center py-1.5">
+							<span className="hidden">{t.slice(block.lineStart, block.lineEnd)}</span>
+							<hr className="flex-1 border-[var(--border-primary)]" />
+							{blockQuickReaction}
+						</div>
+					);
+				} else if (block.kind === 'table') {
+					const rows = block.rows ?? [];
+					const columns = Math.max(...rows.map((row) => row.length));
+					let hiddenFrom = block.lineStart;
+					const renderRow = (row: Array<{ s: number; e: number }>, rowIdx: number) => (
+						<tr key={`tr-${rowIdx}`}>
+							{Array.from({ length: Math.max(columns, row.length) }, (_, colIdx) => {
+								const cell = row[colIdx];
+								const CellTag = rowIdx === 0 ? 'th' : 'td';
+								const cellKey = `b${blockIdx}-${rowIdx}-${colIdx}-`;
+								const cellNodes: React.ReactNode[] = [];
+								if (cell) {
+									cellNodes.push(
+										<span key={`${cellKey}before`} className="hidden">
+											{t.slice(hiddenFrom, cell.s)}
+										</span>
+									);
+									let from = cell.s;
+									for (let i = cell.s; i < cell.e; i++) {
+										if (t[i] === '\\' && t[i + 1] === '|' && !elements.some((el) => (el.s ?? 0) <= i && i < (el.e ?? 0))) {
+											cellNodes.push(
+												...renderRange(from, i, `${cellKey}${from}-`),
+												<span key={`${cellKey}esc-${i}`} className="hidden">
+													\
+												</span>
+											);
+											from = i + 1;
+										}
+									}
+									cellNodes.push(...renderRange(from, cell.e, `${cellKey}${from}-`));
+									hiddenFrom = cell.e;
+									if (rowIdx === rows.length - 1 && colIdx === row.length - 1) {
+										cellNodes.push(
+											<span key={`${cellKey}after`} className="hidden">
+												{t.slice(cell.e, block.lineEnd)}
+											</span>
+										);
+									}
+								}
+								return (
+									<CellTag
+										key={cellKey}
+										className={`border-theme-primary px-2 py-1 align-top ${rowIdx === 0 ? 'font-semibold bg-item-theme' : ''}`}
+										style={{ textAlign: block.align?.[colIdx] ?? 'left' }}
+									>
+										{cellNodes}
+									</CellTag>
+								);
+							})}
+						</tr>
+					);
+					formattedContent.push(
+						<div key={`table-${block.lineStart}-${messageId}`} className="flex items-end py-1">
+							<div className="min-w-0 overflow-x-auto overflow-y-hidden">
+								<table className="border-collapse">
+									<thead>{rows.slice(0, 1).map(renderRow)}</thead>
+									<tbody>{rows.slice(1).map((row, idx) => renderRow(row, idx + 1))}</tbody>
+								</table>
+							</div>
+							{blockQuickReaction && <span className="pb-4">{blockQuickReaction}</span>}
+						</div>
+					);
 				} else {
 					const markerEnd = block.markerStart + block.marker.length;
 					formattedContent.push(
 						<div key={`list-${block.lineStart}-${messageId}`} className="flex" style={{ paddingLeft: block.depth * 20 }}>
 							<span className="hidden">{t.slice(block.lineStart, block.markerStart)}</span>
-							{block.kind === 'ul' ? (
+							{block.checked !== undefined ? (
+								<span className="select-none w-5 shrink-0 flex justify-center pt-[0.2em]">
+									<input
+										type="checkbox"
+										checked={block.checked}
+										readOnly
+										tabIndex={-1}
+										className="pointer-events-none w-3.5 h-3.5 accent-[#5865f2]"
+									/>
+								</span>
+							) : block.kind === 'ul' ? (
 								<span className="select-none w-5 shrink-0 text-center">{block.marker}</span>
 							) : (
 								<span className="min-w-[1.5rem] shrink-0 text-right pr-1">{block.marker}</span>
@@ -862,7 +968,9 @@ export const MessageLine = ({
 				}
 			});
 
-			if (cursor < textLen) {
+			if (isAnchorBeforeTrailing) {
+				formattedContent.push(...renderRange(cursor, contentEnd, 'post-'), quickReactionAnchor, ...renderRange(contentEnd, textLen, 'tail-'));
+			} else if (cursor < textLen) {
 				formattedContent.push(...renderRange(cursor, textLen, 'post-'));
 			}
 			formattedContent.push(...renderRange(textLen, textLen, 'trail-', true));
@@ -879,7 +987,7 @@ export const MessageLine = ({
 			);
 		}
 
-		if (quickReactionAnchor && !isEndOnBlockLine && !isQuickReactionInCard) {
+		if (quickReactionAnchor && !isEndOnBlockLine && !isQuickReactionInCard && !isAnchorBeforeTrailing) {
 			formattedContent.push(quickReactionAnchor);
 		}
 

@@ -1,3 +1,4 @@
+import { mezonAppIcon } from '@mezon/assets';
 import { useAccount, useAuth } from '@mezon/core';
 import {
 	accountActions,
@@ -14,7 +15,7 @@ import {
 import { handleUploadPublicFile, useMezon } from '@mezon/transport';
 import { DeleteAccountModal, InputField, MezonIcon, MzIcons32 } from '@mezon/ui';
 import type { ImageSourceObject } from '@mezon/utils';
-import { MAX_FILE_SIZE_10MB, MAX_FILE_SIZE_1MB, createImgproxyUrl, fileTypeImage, generateE2eId } from '@mezon/utils';
+import { MAX_FILE_SIZE_10MB, MAX_FILE_SIZE_1MB, MEZON_AVATAR_URL, createImgproxyUrl, fileTypeImage, generateE2eId } from '@mezon/utils';
 import type { ChangeEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -214,7 +215,7 @@ const SettingRightUser = ({
 	};
 	const editProfile: Profilesform = {
 		displayName: valueDisplayName || '',
-		urlImage: urlImage || '',
+		urlImage: urlImage === MEZON_AVATAR_URL ? mezonAppIcon : urlImage || '',
 		banner: cover.banner
 	};
 	const handleDisplayName = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -227,7 +228,7 @@ const SettingRightUser = ({
 	const handleRemoveButtonClick = () => {
 		setFlagsRemoveAvartar(true);
 		setFlags(true);
-		setUrlImage(process.env.NX_LOGO_MEZON || '');
+		setUrlImage(MEZON_AVATAR_URL);
 	};
 	const onchangeAboutUser = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setEditAboutUser(e.target.value);

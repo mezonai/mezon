@@ -124,6 +124,7 @@
 	"newMessages": "NUEVOS MENSAJES",
 	"noSendMessagePermission": "No tienes permiso para enviar mensajes",
 	"tooLongMessage": "Mensaje demasiado largo",
+	"longMessagePartFailed": "No se pudo enviar la parte {{failed}} de {{total}} de tu mensaje, por lo que el resto no se envió.",
 	"isBanned": "Estás baneado",
 	"blockedUserMessage": "No puedes responder a esta conversación",
 	"messageInputPlaceHolder": "Escribe mensaje...",

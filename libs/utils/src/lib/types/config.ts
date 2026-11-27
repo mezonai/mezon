@@ -7,6 +7,13 @@ export const INACTIVE_MARKER = '[Inactive]';
 
 export const DEBUG_PAYMENT_SMART_GLOCAL = false;
 
+// Whole token units; the MMN client scales prices by 10^6 before submission.
+export const USER_PRO_PLAN_MIN_PRICE = 50_000;
+export const CLAN_PRO_PLAN_MIN_PRICE = 2_000_000;
+const userProPlanPrice = Number(process.env.NX_PRO_PLAN_USER_PRICE || 0);
+export const USER_PRO_PLAN_PRICE =
+	Number.isSafeInteger(userProPlanPrice) && userProPlanPrice > 0 ? Math.max(userProPlanPrice, USER_PRO_PLAN_MIN_PRICE) : USER_PRO_PLAN_MIN_PRICE;
+
 export const SESSION_USER_KEY = 'user_auth';
 
 export const GLOBAL_STATE_CACHE_DISABLED = false;
@@ -457,4 +464,3 @@ export const PREMIUM_FEATURE_SECTIONS = [
 	'message_privacy',
 	'effects'
 ] as const;
-

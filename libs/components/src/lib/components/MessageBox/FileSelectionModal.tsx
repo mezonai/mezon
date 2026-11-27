@@ -16,7 +16,7 @@ function FileSelectionModal({ isOpen, onClose, onUploadFile, onCreatePoll, butto
 	const { t } = useTranslation('message');
 	const modalRef = useRef<HTMLDivElement>(null);
 	const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-	useEscapeKeyClose(modalRef, onClose);
+	useEscapeKeyClose(modalRef, onClose, isOpen);
 
 	if (!isOpen) return null;
 
@@ -50,7 +50,7 @@ function FileSelectionModal({ isOpen, onClose, onUploadFile, onCreatePoll, butto
 			<div
 				ref={modalRef}
 				tabIndex={-1}
-				className="absolute bottom-full mb-2 left-0 z-50 bg-theme-setting-primary rounded-lg shadow-xl min-w-[200px]"
+				className="absolute bottom-full mb-2 left-0 z-50 bg-theme-setting-primary rounded-lg shadow-xl min-w-[200px] outline-none focus:outline-none"
 				onClick={(e) => e.stopPropagation()}
 			>
 				<div className="p-2 bg-theme-primary rounded-lg">

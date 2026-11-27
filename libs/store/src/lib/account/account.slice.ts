@@ -3,13 +3,15 @@ import { notificationService, type IUserAccount, type LoadingStatus } from '@mez
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { t } from 'i18next';
-import type { ApiAccountEmail, ApiLinkAccountConfirmRequest, ApiLinkAccountMezon, ApiUserStatusUpdate } from 'mezon-js';
+import type { ApiAccountEmail, ApiLinkAccountConfirmRequest, ApiLinkAccountMezon, ApiUpdateUsernameRequest, ApiUserStatusUpdate } from 'mezon-js';
 import { toast } from 'react-toastify';
+import type { ISession } from '../auth/auth.slice';
 import { authActions } from '../auth/auth.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 // import { selectCurrentClanId } from '../clans/clans.slice';
 import { settingActions } from '../app/setting.slice';
+import type { ThunkConfigWithError } from '../errors';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { RootState } from '../store';
@@ -223,6 +225,34 @@ export const updateAccountStatus = createAsyncThunk('userstatusapi/updateUserSta
 	}
 });
 
+export const updateAccountUsername = createAsyncThunk<string, ApiUpdateUsernameRequest, ThunkConfigWithError>(
+	'userstatusapi/updateAccountUsername',
+	async (request: ApiUpdateUsernameRequest, thunkAPI) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+
+			const response = await mezon.client.updateUsername(mezon.session, request);
+			if (!response) {
+				return '';
+			}
+			const updatedSession = response as ISession;
+			const currentSession = (thunkAPI.getState() as RootState).auth.session ?? (mezon.session as ISession);
+			const nextSession = {
+				...currentSession,
+				token: updatedSession.token,
+				refresh_token: updatedSession.refresh_token,
+				created: false
+			};
+			mezon.sessionRef.current = nextSession;
+			thunkAPI.dispatch(authActions.updateSession(nextSession));
+			return updatedSession.username || (request.username || '').toLowerCase().replace(/\s/g, '');
+		} catch (error) {
+			captureSentryError(error, 'userstatusapi/updateAccountUsername');
+			return thunkAPI.rejectWithValue(error ?? null, { error: { toast: false } });
+		}
+	}
+);
+
 export const accountSlice = createSlice({
 	name: ACCOUNT_FEATURE_KEY,
 	initialState: initialAccountState,
@@ -263,6 +293,13 @@ export const accountSlice = createSlice({
 		setCustomStatus(state, action: PayloadAction<string>) {
 			if (state?.userProfile?.user) {
 				state.userProfile.user.user_status = action.payload;
+			}
+		},
+		setUserProPlan(state, action: PayloadAction<boolean>) {
+			if (!state.userProfile) return;
+			state.userProfile.pro_plan = action.payload;
+			if (state.userProfile.user) {
+				state.userProfile.user.pro_plan = action.payload;
 			}
 		},
 		setWalletMetadata(state, action: PayloadAction<any>) {
@@ -372,6 +409,11 @@ export const accountSlice = createSlice({
 			.addCase(getUserProfile.rejected, (state: AccountState, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
+			})
+			.addCase(updateAccountUsername.fulfilled, (state, action) => {
+				if (!state.userProfile?.user) return;
+
+				state.userProfile.user.username = action.payload;
 			});
 	}
 });
@@ -389,7 +431,8 @@ export const accountActions = {
 	verifyPhone,
 	updateAccountStatus,
 	linkEmail,
-	profileBannerUpdated
+	profileBannerUpdated,
+	updateAccountUsername
 };
 
 export const getAccountState = (rootState: { [ACCOUNT_FEATURE_KEY]: AccountState }): AccountState => rootState[ACCOUNT_FEATURE_KEY];

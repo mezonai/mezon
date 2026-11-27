@@ -124,6 +124,7 @@
 	"newMessages": "새 메시지",
 	"noSendMessagePermission": "메시지 보내기 권한 없음",
 	"tooLongMessage": "메시지가 너무 김",
+	"longMessagePartFailed": "메시지의 {{total}}개 중 {{failed}}번째 부분을 전송하지 못해 나머지 부분은 전송되지 않았습니다.",
 	"isBanned": "채팅이 제한됨",
 	"blockedUserMessage": "이 채팅에 답장할 수 없음",
 	"messageInputPlaceHolder": "메시지를 입력하세요...",

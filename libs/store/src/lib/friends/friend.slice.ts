@@ -255,6 +255,7 @@ export const upsertFriendRequest = createAsyncThunk(
 			state: user.accepted ? EStateFriend.FRIEND : EStateFriend.MY_PENDING,
 			id: user.user_id,
 			source_id: myId,
+			...(user.accepted ? { update_time: new Date().toISOString() } : {}),
 			user: {
 				id: user.user_id,
 				username: user.username,
@@ -285,11 +286,15 @@ export const applyFriendStateUpdated = createAsyncThunk(
 		if (user.state !== EStateFriend.FRIEND && user.state !== EStateFriend.OTHER_PENDING && user.state !== EStateFriend.MY_PENDING) {
 			return;
 		}
+		const state = thunkAPI.getState() as RootState;
+		const existing = state.friends?.entities?.[user.user_id];
+		const shouldStampTime = user.state === EStateFriend.FRIEND && existing?.state !== EStateFriend.FRIEND;
 		thunkAPI.dispatch(
 			friendsActions.upsertFriend({
 				state: user.state,
 				id: user.user_id,
 				source_id: myId,
+				...(shouldStampTime ? { update_time: new Date().toISOString() } : {}),
 				user: {
 					id: user.user_id,
 					username: user.username,
@@ -435,11 +440,25 @@ export const friendsSlice = createSlice({
 			const friendEntity = mapFriendToEntity(action.payload, action.payload.source_id || '');
 			friendsAdapter.upsertOne(state, friendEntity);
 		},
-		acceptFriend: (state, action: PayloadAction<string>) => {
-			friendsAdapter.updateOne(state, {
-				id: action.payload,
-				changes: { state: EStateFriend.FRIEND }
-			});
+		acceptFriend: {
+			reducer: (state, action: PayloadAction<{ id: string; acceptedAt: string }>) => {
+				const { id, acceptedAt } = action.payload;
+				const existing = state.entities[id];
+				if (existing && existing.state !== EStateFriend.FRIEND) {
+					friendsAdapter.updateOne(state, {
+						id,
+						changes: { state: EStateFriend.FRIEND, update_time: acceptedAt }
+					});
+					return;
+				}
+				friendsAdapter.updateOne(state, {
+					id,
+					changes: { state: EStateFriend.FRIEND }
+				});
+			},
+			prepare: (id: string) => ({
+				payload: { id, acceptedAt: new Date().toISOString() }
+			})
 		},
 		removeOne: (state, action: PayloadAction<string>) => {
 			friendsAdapter.removeOne(state, action.payload);

@@ -95,6 +95,15 @@
 		"manageAccounts": "Quản lý tài khoản",
 		"switchAccounts": "Chuyển đổi tài khoản",
 		"copyUserId": "Sao chép ID người dùng",
+		"userProPlan": {
+			"enable": "Bật User Pro Plan",
+			"confirmTitle": "Xác nhận mua User Pro Plan",
+			"confirmMessage": "Bật User Pro Plan với giá {{price}} token mỗi năm?",
+			"confirmButton": "Xác nhận mua",
+			"processing": "Đang xử lý giao dịch…",
+			"purchaseUnavailable": "Chưa thể mua vì chưa cấu hình ID người nhận hoặc giá.",
+			"purchaseSubmitted": "Đã gửi giao dịch thanh toán User Pro."
+		},
 		"statusOptions": {
 			"online": "Trực tuyến",
 			"idle": "Tạm vắng",
@@ -225,6 +234,7 @@
 		"banListEmpty": "Không tìm thấy người dùng bị cấm nào"
 	},
 	"badges": {
-		"mezonPro": "Mezon Pro"
+		"mezonPro": "Mezon Pro",
+		"clanPro": "Clan Pro"
 	}
 }

@@ -1,3 +1,4 @@
+import { mezonMarkOnDark } from '@mezon/assets';
 import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { IS_LINUX, IS_MAC_OS, IS_WINDOWS } from '@mezon/utils';
 import { useState } from 'react';
@@ -76,7 +77,7 @@ export const OpenInDesktopAppPage = ({ link, onContinueInBrowser }: { link: stri
 		<div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-theme-primary">
 			<div className="bg-theme-setting-primary border-theme-primary text-theme-primary rounded-md p-6 w-full max-w-[440px] flex flex-col items-center shadow-xl">
 				<div className="flex items-center justify-center mb-4 w-12 h-12 rounded-md bg-gray-700">
-					<img src="/assets/images/mezon-logo-white.svg" alt="Mezon" className="w-7 h-7" />
+					<img src={mezonMarkOnDark} alt="Mezon" className="w-7 h-7" />
 				</div>
 				<p className="text-center text-base mb-5">{t('openInDesktopApp.title')}</p>
 				<button

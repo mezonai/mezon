@@ -124,6 +124,7 @@
 	"newMessages": "NOWE WIADOMOŚCI",
 	"noSendMessagePermission": "Nie masz uprawnień do wysyłania wiadomości",
 	"tooLongMessage": "Wiadomość jest zbyt długa",
+	"longMessagePartFailed": "Nie udało się wysłać części {{failed}} z {{total}} Twojej wiadomości, więc reszta nie została wysłana.",
 	"isBanned": "Zostałeś zakazany na czat",
 	"blockedUserMessage": "Nie możesz odpowiedzieć na tę konwersację",
 	"messageInputPlaceHolder": "Wpisz wiadomość...",
