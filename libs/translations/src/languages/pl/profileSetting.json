@@ -80,6 +80,8 @@
 		"automatic": "Automatycznie",
 		"notPro": "Ulepsz do Mezon Pro, aby wybrać ramkę awatara.",
 		"saved": "Ramka awatara została zapisana.",
-		"saveFailed": "Nie udało się zapisać ramki awatara. Spróbuj ponownie."
+		"saveFailed": "Nie udało się zapisać ramki awatara. Spróbuj ponownie.",
+		"rateLimited": "Poczekaj kilka sekund przed ponowną zmianą ramki awatara.",
+		"unsupported": "Aktualizacje ramki awatara są tymczasowo niedostępne. Spróbuj ponownie później."
 	}
 }

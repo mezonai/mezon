@@ -5,6 +5,7 @@ import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } fr
 import type { ApiAllUsersAddChannelResponse, ApiSearchCtrlKRequest, ApiSearchCtrlKResponse, ApiSession, Client } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import { fetchUserDecorations } from '../decorations/decorations.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
@@ -145,6 +146,10 @@ export const fetchUserChannels = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 			const response = await fetchUserChannelsCached(thunkAPI.getState as () => RootState, mezon, channelId, 500, noCache);
+
+			if (isGroup && response?.user_ids?.length) {
+				thunkAPI.dispatch(fetchUserDecorations(response.user_ids));
+			}
 
 			if (response.fromCache || Date.now() - response.time > 1000) {
 				return {

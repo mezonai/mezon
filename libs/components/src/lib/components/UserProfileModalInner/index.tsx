@@ -1,6 +1,15 @@
 import { useEscapeKeyClose, useMemberStatus, useOnClickOutside, useSettingFooter, useUserById } from '@mezon/core';
 import type { ChannelMembersEntity, RootState } from '@mezon/store';
-import { selectCurrentClanId, selectCurrentUserId, selectFriendById, selectIsProUser, selectModeResponsive, useAppSelector } from '@mezon/store';
+import {
+	decorationsActions,
+	selectCurrentClanId,
+	selectCurrentUserId,
+	selectFriendById,
+	selectIsProUser,
+	selectModeResponsive,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store';
 import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { INotification } from '@mezon/utils';
 import { EUserSettings, ModeResponsive } from '@mezon/utils';
@@ -67,6 +76,12 @@ const UserProfileModalInner = ({
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const isSelf = currentUserId === userId;
 	const isPro = useAppSelector((state) => selectIsProUser(state, userId));
+	const dispatch = useAppDispatch();
+	useEffect(() => {
+		if (userId && isPro) {
+			dispatch(decorationsActions.fetchUserDecorations([userId]));
+		}
+	}, [dispatch, userId, isPro]);
 	const proPalette = useProPalette();
 	const cardStyle = useMemo(() => (isPro ? proCardStyle(proPalette) : undefined), [isPro, proPalette]);
 	const [isOPenEditOption, setIsOPenEditOption] = useState(false);

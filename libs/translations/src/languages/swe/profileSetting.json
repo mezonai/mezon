@@ -80,6 +80,8 @@
 		"automatic": "Automatisk",
 		"notPro": "Uppgradera till Mezon Pro för att välja en avatarram.",
 		"saved": "Avatarramen har sparats.",
-		"saveFailed": "Det gick inte att spara avatarramen. Försök igen."
+		"saveFailed": "Det gick inte att spara avatarramen. Försök igen.",
+		"rateLimited": "Vänta några sekunder innan du ändrar din avatarram igen.",
+		"unsupported": "Uppdateringar av avatarram är tillfälligt otillgängliga. Försök igen senare."
 	}
 }

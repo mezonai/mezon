@@ -1,20 +1,18 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { ensureSession } from '../helpers';
+import { ensureSession, withRetry } from '../helpers';
 import {
 	ACCOUNT_FEATURE_KEY,
 	accountActions,
 	accountReducer,
 	buildOwnProfileAccountPatch,
-	selectAccountFrame,
-	updateAccountUsername,
-	updateUserFrame
+	getUserProfile,
+	updateAccountUsername
 } from './account.slice';
 
 const mockUpdateUsername = jest.fn();
-const mockUpdateAccount = jest.fn();
 
 jest.mock('@mezon/logger', () => ({ captureSentryError: jest.fn() }));
-jest.mock('@mezon/utils', () => ({ notificationService: {} }));
+jest.mock('@mezon/utils', () => ({ notificationService: { setUserStatus: jest.fn() } }));
 jest.mock('i18next', () => ({ t: (key: string) => key }));
 jest.mock('react-toastify', () => ({ toast: { success: jest.fn(), error: jest.fn() } }));
 jest.mock('../auth/auth.slice', () => ({ authActions: { updateSession: (payload: unknown) => ({ type: 'auth/updateSession', payload }) } }));
@@ -23,11 +21,18 @@ jest.mock('../cache-metadata', () => ({
 	createApiKey: jest.fn(),
 	createCacheMetadata: jest.fn(),
 	markApiFirstCalled: jest.fn(),
-	shouldForceApiCall: jest.fn()
+	shouldForceApiCall: jest.fn(() => true)
 }));
-jest.mock('../app/setting.slice', () => ({ settingActions: {} }));
+jest.mock('../app/setting.slice', () => ({
+	settingActions: { setSettingLocal: jest.fn((id: string) => ({ type: 'setting/setSettingLocal', payload: id })) }
+}));
+jest.mock('../decorations/decorations.slice', () => ({
+	fetchUserDecorations: jest.fn((ids: string[]) => ({ type: 'decorations/fetchUserDecorations', payload: ids }))
+}));
 jest.mock('../helpers', () => ({ ensureSession: jest.fn(), getMezonCtx: jest.fn(), withRetry: jest.fn() }));
-jest.mock('../wallet/wallet.slice', () => ({ walletActions: {} }));
+jest.mock('../wallet/wallet.slice', () => ({
+	walletActions: { fetchWalletDetail: jest.fn((arg: unknown) => ({ type: 'wallet/fetchWalletDetail', payload: arg })) }
+}));
 
 const createStore = () => configureStore({ reducer: { [ACCOUNT_FEATURE_KEY]: accountReducer, auth: () => ({ session: null }) } });
 
@@ -62,132 +67,30 @@ describe('updateAccountUsername', () => {
 	});
 });
 
-describe('user frame state and updateUserFrame', () => {
+describe('buildOwnProfileAccountPatch and getUserProfile decoration fetch', () => {
 	beforeEach(() => {
-		mockUpdateAccount.mockReset();
+		jest.clearAllMocks();
 		jest.mocked(ensureSession).mockResolvedValue({
-			client: { updateAccount: mockUpdateAccount },
+			client: { getAccount: jest.fn() },
 			session: { token: 't' },
 			sessionRef: { current: null }
 		} as never);
 	});
 
-	it.each([-1, 0, 5])('preserves user.frame (%i) across partial setUpdateAccount payloads', (frame) => {
-		let state = accountReducer(undefined, { type: 'init' });
-		state = {
-			...state,
-			userProfile: {
-				pro_plan: true,
-				encrypt_private_key: 'enc-1',
-				user: { id: 'u-1', display_name: 'Me', frame }
-			} as never
-		};
-
-		state = accountReducer(state, accountActions.setUpdateAccount({ encrypt_private_key: 'enc-2' } as never));
-		state = accountReducer(
-			state,
-			accountActions.setUpdateAccount({
-				user: { display_name: 'Me Updated', frame: undefined }
-			} as never)
-		);
-
-		const root = { [ACCOUNT_FEATURE_KEY]: state };
-		expect(selectAccountFrame(root)).toBe(frame);
-		expect(state.userProfile?.user?.display_name).toBe('Me Updated');
+	it('preserves stored encrypt_private_key when event encrypt_private_key is empty or unchanged', () => {
+		expect(buildOwnProfileAccountPatch({ encrypt_private_key: '' }, 'enc-stored-key')).toBeNull();
+		expect(buildOwnProfileAccountPatch({ encrypt_private_key: undefined }, 'enc-stored-key')).toBeNull();
+		expect(buildOwnProfileAccountPatch({ encrypt_private_key: 'enc-stored-key' }, 'enc-stored-key')).toBeNull();
 	});
 
-	it('updates user.frame explicitly to -1, 0, and a positive frame id', () => {
-		let state = accountReducer(undefined, { type: 'init' });
-		state = {
-			...state,
-			userProfile: {
-				pro_plan: true,
-				user: { id: 'u-1', frame: 3 }
-			} as never
-		};
-
-		state = accountReducer(state, accountActions.setUpdateAccount({ user: { frame: -1 } } as never));
-		expect(selectAccountFrame({ [ACCOUNT_FEATURE_KEY]: state })).toBe(-1);
-
-		state = accountReducer(state, accountActions.setUpdateAccount({ user: { frame: 0 } } as never));
-		expect(selectAccountFrame({ [ACCOUNT_FEATURE_KEY]: state })).toBe(0);
-
-		state = accountReducer(state, accountActions.setUpdateAccount({ user: { frame: 7 } } as never));
-		expect(selectAccountFrame({ [ACCOUNT_FEATURE_KEY]: state })).toBe(7);
-	});
-
-	it('dispatches updateAccount and patches account frame on success', async () => {
-		mockUpdateAccount.mockResolvedValueOnce(true);
-		const store = configureStore({
-			reducer: { [ACCOUNT_FEATURE_KEY]: accountReducer, auth: () => ({ session: null }) },
-			preloadedState: {
-				[ACCOUNT_FEATURE_KEY]: {
-					...accountReducer(undefined, { type: 'init' }),
-					userProfile: {
-						pro_plan: true,
-						encrypt_private_key: 'enc-keep',
-						user: { id: 'u-1', pro_plan: true, frame: 0 }
-					} as never
-				}
-			}
-		});
-
-		const action = await store.dispatch(updateUserFrame(-1));
-
-		expect(updateUserFrame.fulfilled.match(action)).toBe(true);
-		expect(mockUpdateAccount).toHaveBeenCalledWith({ token: 't' }, { frame: -1 });
-		expect(action.payload).toEqual({ userId: 'u-1', frame: -1 });
-		expect(selectAccountFrame(store.getState())).toBe(-1);
-		expect(store.getState()[ACCOUNT_FEATURE_KEY].userProfile?.pro_plan).toBe(true);
-		expect(store.getState()[ACCOUNT_FEATURE_KEY].userProfile?.encrypt_private_key).toBe('enc-keep');
-	});
-
-	it('rejects when updateAccount returns false or throws', async () => {
-		mockUpdateAccount.mockResolvedValueOnce(false);
-		const store = createStore();
-
-		const falseAction = await store.dispatch(updateUserFrame(4));
-		expect(updateUserFrame.rejected.match(falseAction)).toBe(true);
-		expect((falseAction.meta as { error?: { toast?: boolean } }).error).toEqual({ toast: false });
-
-		mockUpdateAccount.mockRejectedValueOnce({ code: 3 });
-		const errAction = await store.dispatch(updateUserFrame(4));
-		expect(updateUserFrame.rejected.match(errAction)).toBe(true);
-		expect((errAction.meta as { error?: { toast?: boolean } }).error).toEqual({ toast: false });
-	});
-
-	it.each([-1, 0, 5])('keeps stored encrypt_private_key and applies frame (%i) for an own frame-only profile event', (frame) => {
-		let state = accountReducer(undefined, { type: 'init' });
-		state = {
-			...state,
-			userProfile: {
-				pro_plan: true,
-				encrypt_private_key: 'enc-stored-key',
-				user: { id: 'u-1', pro_plan: true, frame: 3 }
-			} as never
-		};
-
-		const patch = buildOwnProfileAccountPatch({ encrypt_private_key: '', frame }, state.userProfile?.encrypt_private_key);
-		expect(patch).not.toBeNull();
-		state = accountReducer(state, accountActions.setUpdateAccount(patch as never));
-
-		expect(state.userProfile?.encrypt_private_key).toBe('enc-stored-key');
-		expect(state.userProfile?.pro_plan).toBe(true);
-		expect(selectAccountFrame({ [ACCOUNT_FEATURE_KEY]: state })).toBe(frame);
-	});
-
-	it('returns null when an own profile event carries neither encrypt_private_key nor frame', () => {
-		expect(buildOwnProfileAccountPatch({ encrypt_private_key: '', frame: undefined }, 'enc-stored-key')).toBeNull();
-	});
-
-	it('applies non-empty encrypt_private_key from own profile event while preserving user.frame', () => {
+	it('applies non-empty encrypt_private_key from own profile event while preserving pro_plan', () => {
 		let state = accountReducer(undefined, { type: 'init' });
 		state = {
 			...state,
 			userProfile: {
 				pro_plan: true,
 				encrypt_private_key: 'enc-old',
-				user: { id: 'u-1', pro_plan: true, frame: 8 }
+				user: { id: 'u-1', pro_plan: true }
 			} as never
 		};
 
@@ -196,28 +99,24 @@ describe('user frame state and updateUserFrame', () => {
 		state = accountReducer(state, accountActions.setUpdateAccount(patch as never));
 
 		expect(state.userProfile?.encrypt_private_key).toBe('enc-new');
-		expect(selectAccountFrame({ [ACCOUNT_FEATURE_KEY]: state })).toBe(8);
+		expect(state.userProfile?.pro_plan).toBe(true);
 	});
 
-	it.each([-1, 0, 5])('returns null for an own frame-only echo (%i) matching the stored account frame and preserves state identity', (frame) => {
-		const initial = {
-			...accountReducer(undefined, { type: 'init' }),
-			userProfile: {
-				pro_plan: true,
-				encrypt_private_key: 'enc-stored-key',
-				user: { id: 'u-1', pro_plan: true, frame }
-			} as never
-		};
+	it('dispatches fetchUserDecorations for own Pro account after getUserProfile loads and skips non-Pro', async () => {
+		const dispatched: unknown[] = [];
+		const dispatch = jest.fn((action: unknown) => {
+			dispatched.push(action);
+			return action;
+		});
+		const getState = () => ({ [ACCOUNT_FEATURE_KEY]: accountReducer(undefined, { type: 'init' }), auth: { session: { token: 't' } } });
 
-		expect(buildOwnProfileAccountPatch({ encrypt_private_key: '', frame }, 'enc-stored-key', frame)).toBeNull();
-		expect(buildOwnProfileAccountPatch({ encrypt_private_key: '', frame: frame === 5 ? 3 : 5 }, 'enc-stored-key', frame)).not.toBeNull();
-		expect(buildOwnProfileAccountPatch({ encrypt_private_key: '', frame: 0 }, 'enc-stored-key', undefined)).not.toBeNull();
+		jest.mocked(withRetry).mockResolvedValueOnce({ pro_plan: true, user: { id: 'u-pro', pro_plan: true } } as never);
+		await getUserProfile()(dispatch as never, getState, undefined);
+		expect(dispatched).toContainEqual({ type: 'decorations/fetchUserDecorations', payload: ['u-pro'] });
 
-		const keyPatch = buildOwnProfileAccountPatch({ encrypt_private_key: 'enc-rotated', frame }, 'enc-stored-key', frame);
-		expect(keyPatch).not.toBeNull();
-		const updated = accountReducer(initial, accountActions.setUpdateAccount(keyPatch as never));
-		expect(updated.userProfile?.encrypt_private_key).toBe('enc-rotated');
-		expect(selectAccountFrame({ [ACCOUNT_FEATURE_KEY]: updated })).toBe(frame);
-		expect(initial.userProfile).toBe(initial.userProfile);
+		dispatched.length = 0;
+		jest.mocked(withRetry).mockResolvedValueOnce({ pro_plan: false, user: { id: 'u-free', pro_plan: false } } as never);
+		await getUserProfile()(dispatch as never, getState, undefined);
+		expect(dispatched.some((a) => (a as { type?: string }).type === 'decorations/fetchUserDecorations')).toBe(false);
 	});
 });

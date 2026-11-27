@@ -23,6 +23,8 @@ import {
 	channelsSlice,
 	clansActions,
 	clansSlice,
+	collectShownDecorationUserIds,
+	decorationsActions,
 	defaultNotificationCategoryActions,
 	directActions,
 	directMetaActions,
@@ -37,7 +39,6 @@ import {
 	getStoreAsync,
 	giveCoffeeActions,
 	inviteActions,
-	isFrameOnlyProfileEvent,
 	listChannelsByUserActions,
 	liveStreamActions,
 	mapMessageChannelToEntityAction,
@@ -52,7 +53,6 @@ import {
 	referencesActions,
 	resetRefreshState,
 	rolesClanActions,
-	selectAccountFrame,
 	selectAllAccount,
 	selectAllChannels,
 	selectCategoryById,
@@ -216,6 +216,7 @@ import type {
 	UserChannelAddedEvent,
 	UserChannelRemovedEvent,
 	UserClanRemovedEvent,
+	UserDecorationUpdatedEvent,
 	UserProfileUpdatedEvent,
 	UserStatusEvent,
 	VoiceEndedEvent,
@@ -2084,25 +2085,12 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			if (userUpdated.user_id === userId) {
 				const rootState = getStore().getState() as unknown as RootState;
 				const currentEncryptKey = selectAllAccount(rootState)?.encrypt_private_key;
-				const currentFrame = selectAccountFrame(rootState);
-				if (!userUpdated.encrypt_private_key && userUpdated.frame === currentFrame) {
-					return;
-				}
-				const accountPatch = buildOwnProfileAccountPatch(userUpdated, currentEncryptKey, currentFrame);
+				const accountPatch = buildOwnProfileAccountPatch(userUpdated, currentEncryptKey);
 				if (accountPatch) {
 					dispatch(accountActions.setUpdateAccount(accountPatch));
 				}
-				if (userUpdated.frame !== undefined && userUpdated.frame !== currentFrame) {
-					dispatch(
-						usersClanActions.updateUserProfileAcrossClans({
-							userId: userUpdated.user_id,
-							frame: userUpdated.frame
-						})
-					);
-				}
 			} else {
-				const isFrameOnly = isFrameOnlyProfileEvent(userUpdated);
-				if (!isFrameOnly && userUpdated.channel_id) {
+				if (userUpdated.channel_id) {
 					dispatch(
 						directActions.updateMemberDMGroup({
 							dmId: userUpdated.channel_id,
@@ -2114,20 +2102,33 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					);
 				}
 				dispatch(usersClanActions.updateUserProfileAcrossClans(buildPeerClanProfileUpdate(userUpdated)));
-				if (!isFrameOnly) {
-					dispatch(
-						directActions.updateMemberDMGroup({
-							dmId: userUpdated.channel_id,
-							user_id: userUpdated.user_id,
-							avatar: userUpdated.avatar,
-							display_name: userUpdated.display_name,
-							about_me: userUpdated.about_me
-						})
-					);
-				}
+				dispatch(
+					directActions.updateMemberDMGroup({
+						dmId: userUpdated.channel_id,
+						user_id: userUpdated.user_id,
+						avatar: userUpdated.avatar,
+						display_name: userUpdated.display_name,
+						about_me: userUpdated.about_me
+					})
+				);
 			}
 		},
 		[dispatch, userId]
+	);
+
+	const onuserdecorationupdated = useCallback(
+		(event: UserDecorationUpdatedEvent) => {
+			if (!event?.user_id || typeof event.frame !== 'number') {
+				return;
+			}
+			dispatch(
+				decorationsActions.receiveDecorationUpdated({
+					userId: event.user_id,
+					frame: event.frame
+				})
+			);
+		},
+		[dispatch]
 	);
 
 	const ondeleteaccount = useCallback(
@@ -2959,6 +2960,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		dispatch(toastActions.removeToast('SOCKET_RECONNECTING'));
 		dispatch(toastActions.removeToast('SOCKET_RECONNECTING_ERROR'));
 		dispatch(toastActions.removeToast('SOCKET_CONNECTION_ERROR'));
+		dispatch(decorationsActions.markAllStale());
+		const shownDecorationIds = collectShownDecorationUserIds(getStore().getState() as unknown as RootState);
+		if (shownDecorationIds.length > 0) {
+			dispatch(decorationsActions.fetchUserDecorations(shownDecorationIds));
+		}
 		if (typeof window !== 'undefined') {
 			window.dispatchEvent(new CustomEvent('mezon:socket-reconnect', { detail: { success: true } }));
 		}
@@ -3082,6 +3088,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 			socket.onuserprofileupdate = onuserprofileupdate;
 
+			socket.onuserdecorationupdated = onuserdecorationupdated;
+
 			socket.ondeleteaccount = ondeleteaccount;
 
 			socket.onpermissionset = onpermissionset;
@@ -3143,6 +3151,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			onchannelpresence,
 			onchannelupdated,
 			onuserprofileupdate,
+			onuserdecorationupdated,
 			ondeleteaccount,
 			onpermissionset,
 			onpermissionchanged,
@@ -3532,6 +3541,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			socket.onchannelarchive = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.onscreenshare = () => {};
+			socket.onuserdecorationupdated = () => undefined;
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			(socket as PatchedMezonClient).onsfubreakoutroomevent = () => {};
 		};
@@ -3575,6 +3585,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		onchannelupdated,
 		onchannelarchive,
 		onuserprofileupdate,
+		onuserdecorationupdated,
 		ondeleteaccount,
 		onpermissionset,
 		onpermissionchanged,

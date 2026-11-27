@@ -5,9 +5,10 @@ import type { EntityState, PayloadAction, Update } from '@reduxjs/toolkit';
 import { createAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiMentionUser, ChannelUserListChannelUser, ClanUserListClanUser } from 'mezon-js';
 import { batch } from 'react-redux';
-import { ACCOUNT_FEATURE_KEY, selectAllAccount, selectCurrentUserId, updateUserFrame, type AccountState } from '../account/account.slice';
+import { ACCOUNT_FEATURE_KEY, selectAllAccount, selectCurrentUserId, type AccountState } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import { fetchUserDecorations } from '../decorations/decorations.slice';
 import { convertStatusClan, selectStatusEntities, statusActions } from '../direct/status.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
@@ -17,38 +18,39 @@ export const USERS_CLANS_FEATURE_KEY = 'usersClan';
 // ListClanUsers stops at this many members, newest joiners first: a clan that fills it has members the store never sees.
 type WithProPlan = { pro_plan?: boolean };
 const readProPlan = (value: unknown): boolean | undefined => (value as WithProPlan | null | undefined)?.pro_plan;
-type WithFrame = { frame?: number };
-const readFrame = (value: unknown): number | undefined => (value as WithFrame | null | undefined)?.frame;
 
 export type PeerProfileUpdatePayload = {
 	userId: string;
 	avatar?: string;
 	display_name?: string;
 	about_me?: string;
-	frame?: number;
 };
-
-export const isFrameOnlyProfileEvent = (event: {
-	avatar?: string;
-	display_name?: string;
-	about_me?: string;
-	banner?: string;
-	frame?: number;
-}): boolean => event.frame !== undefined && !event.avatar && !event.display_name && !event.about_me && !event.banner;
 
 export const buildPeerClanProfileUpdate = (event: {
 	user_id: string;
 	avatar?: string;
 	display_name?: string;
 	about_me?: string;
-	frame?: number;
 }): PeerProfileUpdatePayload => ({
 	userId: event.user_id,
 	...(event.avatar ? { avatar: event.avatar } : {}),
 	...(event.display_name ? { display_name: event.display_name } : {}),
-	...(event.about_me ? { about_me: event.about_me } : {}),
-	...(event.frame !== undefined ? { frame: event.frame } : {})
+	...(event.about_me ? { about_me: event.about_me } : {})
 });
+
+const collectProClanMemberIds = (users?: UsersClanEntity[]): string[] => {
+	if (!users?.length) return [];
+	const proIds: string[] = [];
+	for (const member of users) {
+		if (readProPlan(member.user)) {
+			const memberId = member.user?.id || member.id;
+			if (memberId) {
+				proIds.push(memberId);
+			}
+		}
+	}
+	return proIds;
+};
 
 export const CLAN_USERS_LIST_LIMIT = 1000;
 
@@ -135,6 +137,10 @@ export const fetchUsersClan = createAsyncThunk('UsersClan/fetchUsersClan', async
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await fetchUsersClanCached(thunkAPI.getState as () => RootState, mezon, clanId, noCache);
+		const proUserIds = collectProClanMemberIds(response?.users);
+		if (proUserIds.length > 0) {
+			thunkAPI.dispatch(fetchUserDecorations(proUserIds));
+		}
 		return { users: response?.users, fromCache: response.fromCache, clanId };
 	} catch (error) {
 		captureSentryError(error, 'UsersClan/fetchUsersClan');
@@ -264,6 +270,10 @@ export const fetchClanMembersWithStatus = createAsyncThunk(
 					thunkAPI.dispatch(statusActions.updateBulkStatus(statusData));
 				}
 			});
+			const proUserIds = collectProClanMemberIds(membersResponse?.users);
+			if (proUserIds.length > 0) {
+				thunkAPI.dispatch(fetchUserDecorations(proUserIds));
+			}
 		} catch (error) {
 			captureSentryError(error, 'UsersClan/fetchClanMembersWithStatus');
 			return thunkAPI.rejectWithValue(error);
@@ -358,20 +368,14 @@ export const UsersClanSlice = createSlice({
 			}
 			const existingEntities = state.byClans[clanId].entities.entities;
 			const mergedUsers = users.map((incoming) => {
-				const existingUser = existingEntities[incoming.id]?.user;
-				const existingProPlan = readProPlan(existingUser);
+				const existingProPlan = readProPlan(existingEntities[incoming.id]?.user);
 				const incomingProPlan = readProPlan(incoming.user);
-				const existingFrame = readFrame(existingUser);
-				const incomingFrame = readFrame(incoming.user);
-				const preserveProPlan = incomingProPlan === undefined && existingProPlan !== undefined;
-				const preserveFrame = incomingFrame === undefined && existingFrame !== undefined;
-				if ((preserveProPlan || preserveFrame) && incoming.user) {
+				if (incomingProPlan === undefined && existingProPlan !== undefined && incoming.user) {
 					return {
 						...incoming,
 						user: {
 							...incoming.user,
-							...(preserveProPlan ? { pro_plan: existingProPlan } : {}),
-							...(preserveFrame ? { frame: existingFrame } : {})
+							pro_plan: existingProPlan
 						}
 					};
 				}
@@ -520,16 +524,15 @@ export const UsersClanSlice = createSlice({
 			});
 		},
 		updateUserProfileAcrossClans: (state, action: PayloadAction<PeerProfileUpdatePayload>) => {
-			const { userId, avatar, display_name, about_me, frame } = action.payload;
+			const { userId, avatar, display_name, about_me } = action.payload;
 			Object.keys(state.byClans).forEach((clanId) => {
 				const existingMember = state.byClans[clanId].entities.entities[userId];
 				if (existingMember) {
 					const hasAvatarChange = avatar !== undefined && existingMember.user?.avatar_url !== avatar;
 					const hasDisplayNameChange = display_name !== undefined && existingMember.user?.display_name !== display_name;
 					const hasAboutMeChange = about_me !== undefined && existingMember.user?.about_me !== about_me;
-					const hasFrameChange = frame !== undefined && readFrame(existingMember.user) !== frame;
 
-					if (!hasAvatarChange && !hasDisplayNameChange && !hasAboutMeChange && !hasFrameChange) {
+					if (!hasAvatarChange && !hasDisplayNameChange && !hasAboutMeChange) {
 						return;
 					}
 
@@ -537,8 +540,7 @@ export const UsersClanSlice = createSlice({
 						...existingMember.user,
 						...(hasAvatarChange ? { avatar_url: avatar } : {}),
 						...(hasDisplayNameChange ? { display_name } : {}),
-						...(hasAboutMeChange ? { about_me } : {}),
-						...(hasFrameChange ? { frame } : {})
+						...(hasAboutMeChange ? { about_me } : {})
 					};
 
 					UsersClanAdapter.updateOne(state.byClans[clanId].entities, {
@@ -715,24 +717,6 @@ export const UsersClanSlice = createSlice({
 						state.byClans[clanId].cache = createCacheMetadata();
 					}
 				}
-			})
-			.addCase(updateUserFrame.fulfilled, (state, action) => {
-				const { userId, frame } = action.payload;
-				if (!userId) return;
-				Object.keys(state.byClans).forEach((clanId) => {
-					const existingMember = state.byClans[clanId].entities.entities[userId];
-					if (existingMember) {
-						UsersClanAdapter.updateOne(state.byClans[clanId].entities, {
-							id: userId,
-							changes: {
-								user: {
-									...existingMember.user,
-									frame
-								}
-							}
-						});
-					}
-				});
 			});
 	}
 });
@@ -928,37 +912,5 @@ export const selectIsProUser = createSelector(
 			}
 		}
 		return false;
-	}
-);
-
-export const selectUserFrame = createSelector(
-	[
-		(state: ProUserRootState) => state[ACCOUNT_FEATURE_KEY]?.userProfile,
-		(state: ProUserRootState) => state[USERS_CLANS_FEATURE_KEY]?.byClans,
-		(state: ProUserRootState) => state.clans?.currentClanId,
-		(_state: ProUserRootState, userId?: string) => userId
-	],
-	(accountProfile, byClans, currentClanId, userId): number | undefined => {
-		if (!userId) return undefined;
-		if (accountProfile?.user?.id === userId) {
-			return readFrame(accountProfile?.user);
-		}
-		if (!byClans) return undefined;
-		if (currentClanId) {
-			const currentMember = byClans[currentClanId]?.entities?.entities?.[userId];
-			const currentFrame = readFrame(currentMember?.user);
-			if (currentFrame !== undefined) {
-				return currentFrame;
-			}
-		}
-		for (const clanId of Object.keys(byClans)) {
-			if (clanId === currentClanId) continue;
-			const member = byClans[clanId]?.entities?.entities?.[userId];
-			const memberFrame = readFrame(member?.user);
-			if (memberFrame !== undefined) {
-				return memberFrame;
-			}
-		}
-		return undefined;
 	}
 );

@@ -3,14 +3,17 @@ import { useAccount, useAuth } from '@mezon/core';
 import {
 	accountActions,
 	clansActions,
+	classifyDecorationSaveError,
+	decorationsActions,
 	directActions,
-	selectAccountFrame,
 	selectAccountProPlan,
 	selectCurrentClanId,
 	selectLogoCustom,
 	selectTheme,
+	selectUserDecorationFrame,
 	toastActions,
 	useAppDispatch,
+	useAppSelector,
 	userChannelsActions,
 	usersClanActions
 } from '@mezon/store';
@@ -278,10 +281,17 @@ const SettingRightUser = ({
 	};
 	const appearanceTheme = useSelector(selectTheme);
 	const isPro = useSelector(selectAccountProPlan);
-	const savedFrameRaw = useSelector(selectAccountFrame);
+	const currentUserId = userProfile?.user?.id || '';
+	const savedFrameRaw = useAppSelector((state) => selectUserDecorationFrame(state, currentUserId));
 	const savedFrame = savedFrameRaw ?? USER_FRAME_AUTO;
 	const [draftFrame, setDraftFrame] = useState<number>(savedFrame);
 	const [isSavingFrame, setIsSavingFrame] = useState<boolean>(false);
+
+	useEffect(() => {
+		if (currentUserId) {
+			dispatch(decorationsActions.fetchUserDecorations([currentUserId]));
+		}
+	}, [dispatch, currentUserId]);
 
 	useEffect(() => {
 		setDraftFrame(savedFrame);
@@ -289,7 +299,6 @@ const SettingRightUser = ({
 
 	const hasFrameChanges = draftFrame !== savedFrame;
 	const canSelectFallback = isPro || savedFrame > 0;
-	const currentUserId = userProfile?.user?.id || '';
 	const autoFrameId = useMemo(() => (currentUserId ? defaultAvatarFrameForUser(currentUserId) : undefined), [currentUserId]);
 	const sectionPreviewFrameId = useMemo(() => userFrameId(isPro, draftFrame, currentUserId), [isPro, draftFrame, currentUserId]);
 	const previewUsername = userProfile?.user?.username || valueDisplayName || name;
@@ -309,10 +318,19 @@ const SettingRightUser = ({
 		}
 		setIsSavingFrame(true);
 		try {
-			await dispatch(accountActions.updateUserFrame(draftFrame)).unwrap();
+			await dispatch(decorationsActions.updateUserDecoration(draftFrame)).unwrap();
 			dispatch(toastActions.addToast({ message: t('proAvatarFrame.saved'), type: 'success' }));
-		} catch {
-			dispatch(toastActions.addToast({ message: t('proAvatarFrame.saveFailed'), type: 'error' }));
+		} catch (error) {
+			const reason = classifyDecorationSaveError(error);
+			const messageKey =
+				reason === 'notPro'
+					? 'proAvatarFrame.notPro'
+					: reason === 'rateLimited'
+						? 'proAvatarFrame.rateLimited'
+						: reason === 'unsupported'
+							? 'proAvatarFrame.unsupported'
+							: 'proAvatarFrame.saveFailed';
+			dispatch(toastActions.addToast({ message: t(messageKey), type: 'error' }));
 		} finally {
 			setIsSavingFrame(false);
 		}

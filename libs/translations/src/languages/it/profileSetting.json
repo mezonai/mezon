@@ -80,6 +80,8 @@
 		"automatic": "Automatico",
 		"notPro": "Passa a Mezon Pro per scegliere una cornice avatar.",
 		"saved": "Cornice avatar salvata.",
-		"saveFailed": "Impossibile salvare la cornice avatar. Riprova."
+		"saveFailed": "Impossibile salvare la cornice avatar. Riprova.",
+		"rateLimited": "Attendi qualche secondo prima di cambiare di nuovo la cornice del tuo avatar.",
+		"unsupported": "Gli aggiornamenti della cornice avatar non sono temporaneamente disponibili. Riprova più tardi."
 	}
 }

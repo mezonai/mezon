@@ -80,6 +80,8 @@
 		"automatic": "Automático",
 		"notPro": "Atualize para o Mezon Pro para escolher uma moldura de avatar.",
 		"saved": "Moldura de avatar salva.",
-		"saveFailed": "Falha ao salvar a moldura de avatar. Tente novamente."
+		"saveFailed": "Falha ao salvar a moldura de avatar. Tente novamente.",
+		"rateLimited": "Aguarde alguns segundos antes de alterar sua moldura de avatar novamente.",
+		"unsupported": "As atualizações de moldura de avatar estão temporariamente indisponíveis. Tente novamente mais tarde."
 	}
 }

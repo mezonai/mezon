@@ -21,7 +21,6 @@ type MockMemberRow = {
 		display_name: string;
 		avatar_url: string;
 		pro_plan?: boolean;
-		frame?: number;
 	};
 };
 
@@ -29,7 +28,7 @@ type MockStoreState = {
 	account: {
 		userProfile?: {
 			pro_plan?: boolean;
-			user?: { id?: string; pro_plan?: boolean; frame?: number };
+			user?: { id?: string; pro_plan?: boolean };
 		};
 	};
 	usersClan: {
@@ -37,10 +36,13 @@ type MockStoreState = {
 			string,
 			{
 				entities?: {
-					entities?: Record<string, { user?: { pro_plan?: boolean; frame?: number } }>;
+					entities?: Record<string, { user?: { pro_plan?: boolean } }>;
 				};
 			}
 		>;
+	};
+	decorations: {
+		frames: Record<string, number | undefined>;
 	};
 	clans: { currentClanId: string };
 	groupMembers: MockMemberRow[];
@@ -49,6 +51,7 @@ type MockStoreState = {
 let mockStoreState: MockStoreState = {
 	account: {},
 	usersClan: { byClans: {} },
+	decorations: { frames: {} },
 	clans: { currentClanId: 'clan-1' },
 	groupMembers: []
 };
@@ -90,25 +93,7 @@ jest.mock(
 		},
 		selectMemberByGroupId: (state: MockStoreState) => state.groupMembers,
 		selectTheme: () => 'dark',
-		selectUserFrame: (state: MockStoreState, userId?: string) => {
-			if (!userId) return undefined;
-			const accountProfile = state.account?.userProfile;
-			if (accountProfile?.user?.id === userId) {
-				return accountProfile.user?.frame;
-			}
-			const byClans = state.usersClan?.byClans;
-			if (!byClans) return undefined;
-			const currentClanId = state.clans?.currentClanId;
-			if (currentClanId) {
-				const currentFrame = byClans[currentClanId]?.entities?.entities?.[userId]?.user?.frame;
-				if (currentFrame !== undefined) return currentFrame;
-			}
-			for (const clanId of Object.keys(byClans)) {
-				const frame = byClans[clanId]?.entities?.entities?.[userId]?.user?.frame;
-				if (frame !== undefined) return frame;
-			}
-			return undefined;
-		},
+		selectUserDecorationFrame: (state: MockStoreState, userId?: string) => (userId ? state.decorations?.frames?.[userId] : undefined),
 		useAppSelector: (selector: (state: MockStoreState) => unknown) => selector(mockStoreState)
 	}),
 	{ virtual: true }
@@ -160,22 +145,22 @@ jest.mock('../../MemberProfile/IconStatus', () => ({
 }));
 
 const PEER_ID = '1775731111020111872';
-const SELF_ID = 'self-user-1';
 
 const getFrameImages = (rendered: RenderResult) =>
 	rendered.root.findAllByType('img').filter((img) => img.props.src?.includes('/assets/images/avatar-frames/'));
 
-describe('MemberListGroupChat user frame resolution', () => {
+describe('MemberListGroupChat user decoration resolution', () => {
 	beforeEach(() => {
 		mockStoreState = {
 			account: {},
 			usersClan: { byClans: {} },
+			decorations: { frames: {} },
 			clans: { currentClanId: 'clan-1' },
 			groupMembers: []
 		};
 	});
 
-	it('renders no frame image for a Pro group member whose stored frame is -1 even though the DM row lacks frame/pro_plan', () => {
+	it('renders no frame image for a Pro group member whose decoration frame is -1 even though the DM row lacks pro_plan', () => {
 		mockStoreState = {
 			account: {},
 			usersClan: {
@@ -183,12 +168,13 @@ describe('MemberListGroupChat user frame resolution', () => {
 					'clan-1': {
 						entities: {
 							entities: {
-								[PEER_ID]: { user: { pro_plan: true, frame: -1 } }
+								[PEER_ID]: { user: { pro_plan: true } }
 							}
 						}
 					}
 				}
 			},
+			decorations: { frames: { [PEER_ID]: -1 } },
 			clans: { currentClanId: 'clan-1' },
 			groupMembers: [
 				{
@@ -208,7 +194,7 @@ describe('MemberListGroupChat user frame resolution', () => {
 		r.unmount();
 	});
 
-	it('renders the chosen frame for a Pro group member whose stored frame is 5 even though the DM row lacks frame/pro_plan', () => {
+	it('renders the chosen frame for a Pro group member whose decoration frame is 5 even though the DM row lacks pro_plan', () => {
 		mockStoreState = {
 			account: {},
 			usersClan: {
@@ -216,12 +202,13 @@ describe('MemberListGroupChat user frame resolution', () => {
 					'clan-1': {
 						entities: {
 							entities: {
-								[PEER_ID]: { user: { pro_plan: true, frame: 5 } }
+								[PEER_ID]: { user: { pro_plan: true } }
 							}
 						}
 					}
 				}
 			},
+			decorations: { frames: { [PEER_ID]: 5 } },
 			clans: { currentClanId: 'clan-1' },
 			groupMembers: [
 				{
@@ -243,14 +230,38 @@ describe('MemberListGroupChat user frame resolution', () => {
 		r.unmount();
 	});
 
-	it('gives BaseMemberProfile explicit frame prop precedence over entity frame and falls back from undefined ownFrame to member frame', () => {
+	it('reads BaseMemberProfile frame from decorations slice and lets explicit frame prop override it', () => {
+		mockStoreState.decorations.frames[PEER_ID] = 5;
+
+		const storeReadRender = create(
+			<BaseMemberProfile
+				id={PEER_ID}
+				user={
+					{
+						id: PEER_ID,
+						user: { id: PEER_ID, username: 'alice', pro_plan: true }
+					} as never
+				}
+				avatar="https://cdn/avt.png"
+				username="Alice"
+				userMeta={{ online: true }}
+				isPro
+				onContextMenu={jest.fn()}
+				onClick={jest.fn()}
+			/>
+		);
+		const imgs = getFrameImages(storeReadRender);
+		expect(imgs).toHaveLength(1);
+		expect(imgs[0].props.src).toBe('/assets/images/avatar-frames/tech_1.png');
+		storeReadRender.unmount();
+
 		const hiddenPropRender = create(
 			<BaseMemberProfile
 				id={PEER_ID}
 				user={
 					{
 						id: PEER_ID,
-						user: { id: PEER_ID, username: 'alice', pro_plan: true, frame: 5 }
+						user: { id: PEER_ID, username: 'alice', pro_plan: true }
 					} as never
 				}
 				avatar="https://cdn/avt.png"
@@ -264,49 +275,5 @@ describe('MemberListGroupChat user frame resolution', () => {
 		);
 		expect(getFrameImages(hiddenPropRender)).toHaveLength(0);
 		hiddenPropRender.unmount();
-
-		const fallbackRender = create(
-			<BaseMemberProfile
-				id={SELF_ID}
-				user={
-					{
-						id: SELF_ID,
-						user: { id: SELF_ID, username: 'me', pro_plan: true, frame: -1 }
-					} as never
-				}
-				avatar="https://cdn/avt.png"
-				username="Me"
-				userMeta={{ online: true }}
-				ownProUserId={SELF_ID}
-				ownFrame={undefined}
-				onContextMenu={jest.fn()}
-				onClick={jest.fn()}
-			/>
-		);
-		expect(getFrameImages(fallbackRender)).toHaveLength(0);
-		fallbackRender.unmount();
-
-		const ownOverrideRender = create(
-			<BaseMemberProfile
-				id={SELF_ID}
-				user={
-					{
-						id: SELF_ID,
-						user: { id: SELF_ID, username: 'me', pro_plan: true, frame: -1 }
-					} as never
-				}
-				avatar="https://cdn/avt.png"
-				username="Me"
-				userMeta={{ online: true }}
-				ownProUserId={SELF_ID}
-				ownFrame={5}
-				onContextMenu={jest.fn()}
-				onClick={jest.fn()}
-			/>
-		);
-		const imgs = getFrameImages(ownOverrideRender);
-		expect(imgs).toHaveLength(1);
-		expect(imgs[0].props.src).toBe('/assets/images/avatar-frames/tech_1.png');
-		ownOverrideRender.unmount();
 	});
 });

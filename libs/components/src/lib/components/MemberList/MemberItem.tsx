@@ -13,10 +13,9 @@ export type MemberItemProps = {
 	isMe?: boolean;
 	createId?: string;
 	isPro?: boolean;
-	frame?: number;
 };
 
-function MemberItem({ user, directMessageId, isDM = true, isMe, createId, isPro, frame }: MemberItemProps) {
+function MemberItem({ user, directMessageId, isDM = true, isMe, createId, isPro }: MemberItemProps) {
 	const userMetaById = useMemberStatus(user.id);
 	const currentUserCustomStatus = useSelector(selectAccountCustomStatus);
 	const status = useMemberStatus(user?.id);
@@ -40,7 +39,6 @@ function MemberItem({ user, directMessageId, isDM = true, isMe, createId, isPro,
 				isOwner={createId === user?.user?.id}
 				userStatus={isMe ? currentUserCustomStatus : status.user_status}
 				isPro={isPro}
-				frame={frame}
 				onContextMenu={showContextMenu}
 				onClick={handleClick}
 			/>

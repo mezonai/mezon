@@ -1,4 +1,11 @@
-import { channelMembersActions, selectCurrentClanId, selectUserFrame, useAppDispatch, useAppSelector, userClanProfileActions } from '@mezon/store';
+import {
+	channelMembersActions,
+	selectCurrentClanId,
+	selectUserDecorationFrame,
+	useAppDispatch,
+	useAppSelector,
+	userClanProfileActions
+} from '@mezon/store';
 import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { ChannelMembersEntity, EUserStatus, IUserAccount } from '@mezon/utils';
 import { ActivitiesType, createImgproxyUrl, generateE2eId, userFrameId } from '@mezon/utils';
@@ -62,7 +69,7 @@ const AvatarProfile = ({
 	const isUserLeft = !avatar && !username;
 	const showProFrame = Boolean(isPro && !isUserLeft && !isAnonymous);
 	const resolvedFrameUserId = frameUserId || userID || '';
-	const storedFrame = useAppSelector((state) => selectUserFrame(state, resolvedFrameUserId));
+	const storedFrame = useAppSelector((state) => (frame === undefined ? selectUserDecorationFrame(state, resolvedFrameUserId) : undefined));
 	const effectiveFrame = frame !== undefined ? frame : storedFrame;
 	const resolvedFrameId = userFrameId(showProFrame, effectiveFrame, resolvedFrameUserId);
 	const activityStatus = useMemo(() => {

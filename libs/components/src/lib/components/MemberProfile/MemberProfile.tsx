@@ -1,6 +1,6 @@
 import { useColorsRoleById } from '@mezon/core';
 import type { ChannelMembersEntity } from '@mezon/store';
-import { selectCurrentChannelId, selectCurrentDmChannelId, useAppSelector } from '@mezon/store';
+import { selectCurrentChannelId, selectCurrentDmChannelId, selectUserDecorationFrame, useAppSelector } from '@mezon/store';
 import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { UsersClanEntity } from '@mezon/utils';
 import { EUserStatus, createImgproxyUrl, generateE2eId, userFrameId } from '@mezon/utils';
@@ -10,7 +10,7 @@ import { AvatarImage } from '../../components';
 import { ProAvatarFrame } from '../ProfileBadges';
 import { UserStatusIconClan } from './IconStatus';
 
-type WithProPlan = { pro_plan?: boolean; frame?: number };
+type WithProPlan = { pro_plan?: boolean };
 
 type BaseMemberProfileProps = {
 	id: string;
@@ -23,7 +23,6 @@ type BaseMemberProfileProps = {
 	isPro?: boolean;
 	frame?: number;
 	ownProUserId?: string;
-	ownFrame?: number;
 	onContextMenu: (event: React.MouseEvent<Element, MouseEvent>, channelId: string, user: UsersClanEntity) => void;
 	onClick: (event: React.MouseEvent) => void;
 };
@@ -39,7 +38,6 @@ export const BaseMemberProfile = ({
 	isPro: isProProp,
 	frame: frameProp,
 	ownProUserId,
-	ownFrame,
 	onContextMenu,
 	onClick
 }: BaseMemberProfileProps) => {
@@ -65,9 +63,9 @@ export const BaseMemberProfile = ({
 	const memberUser = user?.user as WithProPlan | undefined;
 	const isOwnPro = Boolean(ownProUserId && id === ownProUserId);
 	const isPro = isProProp ?? (Boolean(memberUser?.pro_plan) || isOwnPro);
-	const ownOrMemberFrame = isOwnPro ? (ownFrame ?? memberUser?.frame) : memberUser?.frame;
-	const frame = frameProp !== undefined ? frameProp : ownOrMemberFrame;
 	const frameUserId = user?.user?.id || user?.id || id;
+	const storedFrame = useAppSelector((state) => (frameProp === undefined ? selectUserDecorationFrame(state, frameUserId) : undefined));
+	const frame = frameProp !== undefined ? frameProp : storedFrame;
 	const resolvedFrameId = userFrameId(isPro, frame, frameUserId);
 
 	return (

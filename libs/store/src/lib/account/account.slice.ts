@@ -11,6 +11,7 @@ import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 // import { selectCurrentClanId } from '../clans/clans.slice';
 import { settingActions } from '../app/setting.slice';
+import { fetchUserDecorations } from '../decorations/decorations.slice';
 import type { ThunkConfigWithError } from '../errors';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, getMezonCtx, withRetry } from '../helpers';
@@ -22,7 +23,6 @@ export interface IAccount {
 	password: string;
 }
 type WithProPlan = { pro_plan?: boolean };
-type WithFrame = { frame?: number };
 
 export interface AccountState {
 	loadingStatus: LoadingStatus;
@@ -91,6 +91,14 @@ export const getUserProfile = createAsyncThunk<IUserAccount & { fromCache?: bool
 		}
 		if (response?.user?.id) {
 			thunkAPI.dispatch(settingActions.setSettingLocal(response?.user?.id));
+		}
+		const ownUserId = response?.user?.id;
+		const isOwnPro = Boolean(
+			(response as IUserAccount & WithProPlan)?.pro_plan ||
+				(response?.user as (NonNullable<IUserAccount['user']> & WithProPlan) | undefined)?.pro_plan
+		);
+		if (ownUserId && isOwnPro) {
+			thunkAPI.dispatch(fetchUserDecorations([ownUserId]));
 		}
 
 		if (response.fromCache) {
@@ -243,44 +251,12 @@ export const updateAccountUsername = createAsyncThunk<string, ApiUpdateUsernameR
 	}
 );
 
-export const updateUserFrame = createAsyncThunk<{ userId: string; frame: number }, number, ThunkConfigWithError>(
-	'account/updateUserFrame',
-	async (frame: number, thunkAPI) => {
-		try {
-			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.updateAccount(mezon.session, { frame });
-			if (!response) {
-				return thunkAPI.rejectWithValue(null, { error: { toast: false } });
-			}
-			const currentProfile = (thunkAPI.getState() as RootState)[ACCOUNT_FEATURE_KEY]?.userProfile;
-			const userId = currentProfile?.user?.id || '';
-			thunkAPI.dispatch(
-				accountActions.setUpdateAccount({
-					encrypt_private_key: currentProfile?.encrypt_private_key,
-					user: { frame }
-				})
-			);
-			return { userId, frame };
-		} catch (error) {
-			captureSentryError(error, 'account/updateUserFrame');
-			return thunkAPI.rejectWithValue(error ?? null, { error: { toast: false } });
-		}
-	}
-);
-
-export const buildOwnProfileAccountPatch = (
-	event: { encrypt_private_key?: string; frame?: number },
-	currentEncryptPrivateKey?: string,
-	currentFrame?: number
-): IUserAccount | null => {
-	const hasEncryptKey = Boolean(event.encrypt_private_key);
-	const hasFrame = event.frame !== undefined;
-	if (!hasEncryptKey && (!hasFrame || event.frame === currentFrame)) {
+export const buildOwnProfileAccountPatch = (event: { encrypt_private_key?: string }, currentEncryptPrivateKey?: string): IUserAccount | null => {
+	if (!event.encrypt_private_key || event.encrypt_private_key === currentEncryptPrivateKey) {
 		return null;
 	}
 	return {
-		encrypt_private_key: hasEncryptKey ? event.encrypt_private_key : currentEncryptPrivateKey,
-		...(hasFrame ? { user: { frame: event.frame } } : {})
+		encrypt_private_key: event.encrypt_private_key
 	};
 };
 
@@ -373,18 +349,16 @@ export const accountSlice = createSlice({
 		setUpdateAccount(state, action: PayloadAction<IUserAccount>) {
 			const prevProfile = state.userProfile as (IUserAccount & WithProPlan) | null | undefined;
 			const nextProfile = action.payload as IUserAccount & WithProPlan;
-			const prevUser = state.userProfile?.user as (NonNullable<IUserAccount['user']> & WithProPlan & WithFrame) | undefined;
-			const nextUser = action.payload.user as (NonNullable<IUserAccount['user']> & WithProPlan & WithFrame) | undefined;
+			const prevUser = state.userProfile?.user as (NonNullable<IUserAccount['user']> & WithProPlan) | undefined;
+			const nextUser = action.payload.user as (NonNullable<IUserAccount['user']> & WithProPlan) | undefined;
 			const preservedProPlan = nextProfile.pro_plan !== undefined ? nextProfile.pro_plan : prevProfile?.pro_plan;
 			const preservedUserProPlan = nextUser?.pro_plan !== undefined ? nextUser.pro_plan : prevUser?.pro_plan;
-			const preservedUserFrame = nextUser?.frame !== undefined ? nextUser.frame : prevUser?.frame;
-			const mergedUser: (NonNullable<IUserAccount['user']> & WithProPlan & WithFrame) | undefined =
+			const mergedUser: (NonNullable<IUserAccount['user']> & WithProPlan) | undefined =
 				state.userProfile?.user || action.payload.user
 					? {
 							...state.userProfile?.user,
 							...action.payload.user,
-							...(preservedUserProPlan !== undefined ? { pro_plan: preservedUserProPlan } : {}),
-							...(preservedUserFrame !== undefined ? { frame: preservedUserFrame } : {})
+							...(preservedUserProPlan !== undefined ? { pro_plan: preservedUserProPlan } : {})
 						}
 					: undefined;
 			const mergedProfile: IUserAccount & WithProPlan = {
@@ -457,8 +431,7 @@ export const accountActions = {
 	verifyPhone,
 	updateAccountStatus,
 	linkEmail,
-	updateAccountUsername,
-	updateUserFrame
+	updateAccountUsername
 };
 
 export const getAccountState = (rootState: { [ACCOUNT_FEATURE_KEY]: AccountState }): AccountState => rootState[ACCOUNT_FEATURE_KEY];
@@ -486,9 +459,4 @@ export const selectAccountProPlan = createSelector(getAccountState, (state: Acco
 		(state.userProfile as (IUserAccount & WithProPlan) | null | undefined)?.pro_plan ||
 			(state.userProfile?.user as (NonNullable<IUserAccount['user']> & WithProPlan) | undefined)?.pro_plan
 	)
-);
-
-export const selectAccountFrame = createSelector(
-	getAccountState,
-	(state: AccountState) => (state.userProfile?.user as (NonNullable<IUserAccount['user']> & WithFrame) | undefined)?.frame
 );

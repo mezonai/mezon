@@ -80,6 +80,8 @@
 		"automatic": "Automatic",
 		"notPro": "Upgrade to Mezon Pro to choose an avatar frame.",
 		"saved": "Avatar frame saved.",
-		"saveFailed": "Failed to save avatar frame. Please try again."
+		"saveFailed": "Failed to save avatar frame. Please try again.",
+		"rateLimited": "Please wait a few seconds before changing your avatar frame again.",
+		"unsupported": "Avatar frame updates are temporarily unavailable. Please try again later."
 	}
 }

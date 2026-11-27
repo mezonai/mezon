@@ -80,6 +80,8 @@
 		"automatic": "Automatique",
 		"notPro": "Passez à Mezon Pro pour choisir un cadre d'avatar.",
 		"saved": "Cadre d'avatar enregistré.",
-		"saveFailed": "Échec de l'enregistrement du cadre d'avatar. Veuillez réessayer."
+		"saveFailed": "Échec de l'enregistrement du cadre d'avatar. Veuillez réessayer.",
+		"rateLimited": "Veuillez patienter quelques secondes avant de modifier à nouveau votre cadre d'avatar.",
+		"unsupported": "Les mises à jour du cadre d'avatar sont temporairement indisponibles. Veuillez réessayer plus tard."
 	}
 }

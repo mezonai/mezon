@@ -1,7 +1,9 @@
-import { ensureSession } from '../helpers';
+import { ensureSession, fetchDataWithSocketFallback } from '../helpers';
 import {
 	ALL_USERS_BY_ADD_CHANNEL,
 	fetchSearchCtrlK,
+	fetchUserChannels,
+	initialUserChannelState,
 	selectChannelAccessVersion,
 	userChannelsActions,
 	userChannelsReducer
@@ -11,6 +13,9 @@ jest.mock('@mezon/logger', () => ({ captureSentryError: jest.fn() }));
 jest.mock('@mezon/utils', () => ({
 	TypeSearch: { Dm_Type: 1, Channel_Type: 2 },
 	isCtrlkSearchTooShort: (text: string) => [...text.trim()].length < 2
+}));
+jest.mock('../decorations/decorations.slice', () => ({
+	fetchUserDecorations: jest.fn((ids: string[]) => ({ type: 'decorations/fetchUserDecorations', payload: ids }))
 }));
 jest.mock('../helpers', () => ({ ensureSession: jest.fn(), fetchDataWithSocketFallback: jest.fn(), getMezonCtx: jest.fn() }));
 
@@ -188,5 +193,22 @@ describe('Ctrl+K server search', () => {
 
 		expect(fetchSearchCtrlK.fulfilled.match(action)).toBe(true);
 		expect(action.payload).toBe(true);
+	});
+});
+
+describe('fetchUserChannels group decoration fetch', () => {
+	it('dispatches fetchUserDecorations with group member ids when isGroup is true', async () => {
+		(ensureSession as jest.Mock).mockResolvedValue({ client: { listChannelUsersUC: jest.fn() }, session: { token: 't' } });
+		(fetchDataWithSocketFallback as jest.Mock).mockResolvedValueOnce({ user_ids: ['u-1', 'u-2'] });
+
+		const dispatched: unknown[] = [];
+		const dispatch = jest.fn((action: unknown) => {
+			dispatched.push(action);
+			return action;
+		});
+		const getState = () => ({ [ALL_USERS_BY_ADD_CHANNEL]: initialUserChannelState, auth: { session: { token: 't' } } });
+
+		await fetchUserChannels({ channelId: 'grp-1', isGroup: true, noCache: true })(dispatch as never, getState, undefined);
+		expect(dispatched).toContainEqual({ type: 'decorations/fetchUserDecorations', payload: ['u-1', 'u-2'] });
 	});
 });

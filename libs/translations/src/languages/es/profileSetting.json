@@ -80,6 +80,8 @@
 		"automatic": "Automático",
 		"notPro": "Mejora a Mezon Pro para elegir un marco de avatar.",
 		"saved": "Marco de avatar guardado.",
-		"saveFailed": "No se pudo guardar el marco de avatar. Inténtalo de nuevo."
+		"saveFailed": "No se pudo guardar el marco de avatar. Inténtalo de nuevo.",
+		"rateLimited": "Espera unos segundos antes de volver a cambiar tu marco de avatar.",
+		"unsupported": "Las actualizaciones de marcos de avatar no están disponibles temporalmente. Inténtalo más tarde."
 	}
 }

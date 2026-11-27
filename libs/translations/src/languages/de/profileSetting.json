@@ -80,6 +80,8 @@
 		"automatic": "Automatisch",
 		"notPro": "Upgrade auf Mezon Pro, um einen Avatar-Rahmen auszuwählen.",
 		"saved": "Avatar-Rahmen gespeichert.",
-		"saveFailed": "Avatar-Rahmen konnte nicht gespeichert werden. Bitte versuche es erneut."
+		"saveFailed": "Avatar-Rahmen konnte nicht gespeichert werden. Bitte versuche es erneut.",
+		"rateLimited": "Bitte warte ein paar Sekunden, bevor du deinen Avatar-Rahmen erneut änderst.",
+		"unsupported": "Avatar-Rahmen-Updates sind vorübergehend nicht verfügbar. Bitte versuche es später erneut."
 	}
 }
