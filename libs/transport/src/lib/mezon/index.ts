@@ -8,41 +8,6 @@ export interface SfuBreakoutRoomEventPayload {
 	self_select_ids?: string[];
 }
 
-export interface VoiceJoinWaitingUserPayload {
-	user_id: string;
-	username?: string;
-	display_name?: string;
-	avatar?: string;
-	create_time_seconds?: string;
-}
-
-export interface VoiceJoinWaitingEventPayload {
-	clan_id?: string;
-	channel_id?: string;
-	user_id?: string;
-	username?: string;
-	display_name?: string;
-	avatar?: string;
-	create_time_seconds?: string;
-	action?: number;
-}
-
-export interface VoiceJoinReviewedEventPayload {
-	clan_id?: string;
-	channel_id?: string;
-	user_id?: string;
-	reviewer_id?: string;
-	approved?: boolean;
-	token?: string;
-	url?: string;
-}
-
-export interface ReviewVoiceJoinResponsePayload {
-	channel_id?: string;
-	user_id?: string;
-	approved?: boolean;
-}
-
 export class SfuBreakoutApiError extends Error {
 	readonly code?: number;
 
@@ -55,34 +20,18 @@ export class SfuBreakoutApiError extends Error {
 
 export type PatchedMezonClient = Client & {
 	onsfubreakoutroomevent?: (event: SfuBreakoutRoomEventPayload) => void;
-	onvoicejoinwaiting?: (event: VoiceJoinWaitingEventPayload) => void;
-	onvoicejoinreviewed?: (event: VoiceJoinReviewedEventPayload) => void;
-	reviewVoiceJoin?: (
-		session: unknown,
-		request: { channel_id: string; user_id: string; approve: boolean }
-	) => Promise<ReviewVoiceJoinResponsePayload>;
 };
 
 type BreakoutApiName = 'SfuBreakoutRoom' | 'SfuBreakoutMerge';
 
 const SFU_BREAKOUT_API_INDEX = new Map<string, number>([
 	['SfuBreakoutRoom', 215],
-	['SfuBreakoutMerge', 216],
-	['ReviewVoiceJoin', 225]
+	['SfuBreakoutMerge', 216]
 ]);
 const DEFAULT_BREAKOUT_TIMEOUT_MS = 30000;
 
 type TransportHandlers = {
-	onMessage: (
-		cid: number,
-		code: number,
-		envelope: {
-			cid?: string;
-			sfu_breakout_room_event?: SfuBreakoutRoomEventPayload;
-			voice_join_waiting_event?: VoiceJoinWaitingEventPayload;
-			voice_join_reviewed_event?: VoiceJoinReviewedEventPayload;
-		}
-	) => Promise<void>;
+	onMessage: (cid: number, code: number, envelope: { cid?: string; sfu_breakout_room_event?: SfuBreakoutRoomEventPayload }) => Promise<void>;
 };
 
 type PatchedTransport = {
@@ -164,14 +113,6 @@ function patchClientBreakoutSupport(client: Client): PatchedMezonClient {
 							patched.onsfubreakoutroomevent?.(envelope.sfu_breakout_room_event);
 							return;
 						}
-						if (!envelope?.cid && envelope?.voice_join_waiting_event) {
-							patched.onvoicejoinwaiting?.(envelope.voice_join_waiting_event);
-							return;
-						}
-						if (!envelope?.cid && envelope?.voice_join_reviewed_event) {
-							patched.onvoicejoinreviewed?.(envelope.voice_join_reviewed_event);
-							return;
-						}
 						await handlers.onMessage(cid, code, envelope);
 					}
 				},
@@ -216,18 +157,6 @@ export async function callSfuBreakoutRoom(client: Client, body: SfuBreakoutRoomR
 export async function callSfuBreakoutMerge(client: Client, body: SfuBreakoutMergeRequest): Promise<void> {
 	const encoded = SfuBreakoutMergeRequest.encode(SfuBreakoutMergeRequest.fromPartial(body)).finish();
 	await sendSfuBreakoutApi(client, 'SfuBreakoutMerge', encoded);
-}
-
-export async function callReviewVoiceJoin(
-	client: Client,
-	session: unknown,
-	request: { channel_id: string; user_id: string; approve: boolean }
-): Promise<ReviewVoiceJoinResponsePayload> {
-	const patched = client as PatchedMezonClient;
-	if (typeof patched.reviewVoiceJoin === 'function') {
-		return await patched.reviewVoiceJoin(session, request);
-	}
-	throw new Error('reviewVoiceJoin is not supported by the current mezon-js client');
 }
 
 export type CreateMezonClientOptions = {

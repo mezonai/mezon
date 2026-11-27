@@ -1,15 +1,10 @@
 import { captureSentryError } from '@mezon/logger';
-import type {
-	SfuBreakoutRoomEventPayload,
-	VoiceJoinReviewedEventPayload,
-	VoiceJoinWaitingEventPayload,
-	VoiceJoinWaitingUserPayload
-} from '@mezon/transport';
-import { SfuBreakoutApiError, callReviewVoiceJoin, callSfuBreakoutMerge, callSfuBreakoutRoom } from '@mezon/transport';
+import type { SfuBreakoutRoomEventPayload } from '@mezon/transport';
+import { SfuBreakoutApiError, callSfuBreakoutMerge, callSfuBreakoutRoom } from '@mezon/transport';
 import { LENGHT_USER_ID, isRealClanId, type IvoiceInfo, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiGenerateMeetTokenResponse, ApiVoiceChannelUser, VoiceLeavedEvent } from 'mezon-js';
+import type { ApiGenerateMeetTokenResponse, ApiVoiceChannelUser, VoiceJoinReviewedEvent, VoiceJoinWaitingEvent, VoiceLeavedEvent } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import type { SfuBreakoutParticipant } from 'mezon-js-protobuf';
 import type { ScreenShareEvent } from 'node_modules/mezon-js-protobuf/dist/rtapi/realtime';
@@ -118,6 +113,14 @@ export interface VoiceRecordingState {
 	error: string | null;
 }
 
+export interface VoiceWaitingUser {
+	user_id: string;
+	username?: string;
+	display_name?: string;
+	avatar?: string;
+	create_time_seconds?: string;
+}
+
 export interface VoiceJoinWaitingState {
 	channelId: string;
 	clanId: string;
@@ -174,7 +177,7 @@ export interface VoiceState {
 	closingBreakoutIds: string[];
 	voiceJoinWaiting: VoiceJoinWaitingState | null;
 	voiceJoinRejected: boolean;
-	waitingUsersByChannel: Record<string, VoiceJoinWaitingUserPayload[]>;
+	waitingUsersByChannel: Record<string, VoiceWaitingUser[]>;
 }
 
 type fetchVoiceChannelMembersPayload = {
@@ -692,7 +695,7 @@ export const reviewVoiceJoin = createAsyncThunk(
 	async ({ channelId, userId, approve }: { channelId: string; userId: string; approve: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const res = await callReviewVoiceJoin(mezon.client, mezon.session, {
+			const res = await mezon.client.reviewVoiceJoin(mezon.session, {
 				channel_id: channelId,
 				user_id: userId,
 				approve
@@ -937,13 +940,13 @@ export const voiceSlice = createSlice({
 		clearVoiceJoinRejected: (state) => {
 			state.voiceJoinRejected = false;
 		},
-		receiveVoiceJoinWaitingEvent: (state, action: PayloadAction<VoiceJoinWaitingEventPayload>) => {
+		receiveVoiceJoinWaitingEvent: (state, action: PayloadAction<VoiceJoinWaitingEvent>) => {
 			const evt = action.payload;
 			const channelId = evt.channel_id ? String(evt.channel_id) : '';
 			const userId = evt.user_id ? String(evt.user_id) : '';
 			if (!channelId || !userId) return;
 			const existing = state.waitingUsersByChannel[channelId] ?? [];
-			const nextUser: VoiceJoinWaitingUserPayload = {
+			const nextUser: VoiceWaitingUser = {
 				user_id: userId,
 				username: evt.username ?? '',
 				display_name: evt.display_name ?? '',
@@ -952,7 +955,7 @@ export const voiceSlice = createSlice({
 			};
 			state.waitingUsersByChannel[channelId] = [...existing.filter((u) => String(u.user_id) !== userId), nextUser];
 		},
-		receiveVoiceJoinReviewedEvent: (state, action: PayloadAction<{ event: VoiceJoinReviewedEventPayload; selfUserId?: string }>) => {
+		receiveVoiceJoinReviewedEvent: (state, action: PayloadAction<{ event: VoiceJoinReviewedEvent; selfUserId?: string }>) => {
 			const { event, selfUserId } = action.payload;
 			const channelId = event.channel_id ? String(event.channel_id) : '';
 			const userId = event.user_id ? String(event.user_id) : '';
@@ -1417,7 +1420,7 @@ export const selectHostedBreakoutByChannelId = createSelector(
 	(hostedBreakouts, channelId) => (channelId ? (hostedBreakouts[channelId] ?? null) : null)
 );
 
-const EMPTY_VOICE_WAITING_USERS: VoiceJoinWaitingUserPayload[] = [];
+const EMPTY_VOICE_WAITING_USERS: VoiceWaitingUser[] = [];
 export const selectVoiceJoinWaiting = createSelector(getVoiceState, (state) => state.voiceJoinWaiting);
 export const selectVoiceJoinRejected = createSelector(getVoiceState, (state) => state.voiceJoinRejected);
 export const selectVoiceWaitingUsersByChannelId = createSelector(

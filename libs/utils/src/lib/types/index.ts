@@ -69,7 +69,6 @@ export type IClan = ApiClanDesc & {
 	id: string;
 	hashtags?: string;
 	pro_plan?: boolean;
-	direct_voice_access?: boolean;
 };
 
 export type IChannelAttachment = ApiChannelAttachment & {

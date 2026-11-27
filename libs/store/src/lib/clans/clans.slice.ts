@@ -496,9 +496,7 @@ export const removeClanUsers = createAsyncThunk('clans/removeClanUsers', async (
 export const CLAN_JOIN_MODE_INSTANT = 0;
 export const CLAN_JOIN_MODE_REQUEST_APPROVAL = 1;
 
-export type ClanUpdateDescRequest = MezonUpdateClanDescBody & {
-	direct_voice_access?: boolean;
-};
+export type ClanUpdateDescRequest = MezonUpdateClanDescBody;
 export type JoinPendingItem = ApiJoinPendingItem;
 export type ListJoinPendingRequest = ApiListJoinPendingRequest;
 export type ListJoinPendingResponse = ApiListJoinPendingResponse;
@@ -890,7 +888,6 @@ export const clansSlice = createSlice({
 				community_banner?: string;
 				short_url?: string;
 				hashtags?: string;
-				direct_voice_access?: boolean;
 			};
 
 			clansAdapter.updateOne(state, {
@@ -912,7 +909,7 @@ export const clansSlice = createSlice({
 					short_url: rawData.short_url ?? currentClanData?.short_url,
 					hashtags: rawData.hashtags ?? currentClanData?.hashtags,
 					join_mode: dataUpdate.join_mode ?? currentClanData?.join_mode,
-					direct_voice_access: rawData.direct_voice_access ?? currentClanData?.direct_voice_access
+					direct_voice_access: dataUpdate.direct_voice_access ?? currentClanData?.direct_voice_access
 				}
 			});
 		},

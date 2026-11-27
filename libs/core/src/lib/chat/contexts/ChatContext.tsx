@@ -109,7 +109,7 @@ import {
 	walletActions,
 	webhookActions
 } from '@mezon/store';
-import type { PatchedMezonClient, SfuBreakoutRoomEventPayload, VoiceJoinReviewedEventPayload, VoiceJoinWaitingEventPayload } from '@mezon/transport';
+import type { PatchedMezonClient, SfuBreakoutRoomEventPayload } from '@mezon/transport';
 import {
 	CHECK_HEALTHY_EVENT,
 	REALTIME_SERVER_CHANGED_EVENT,
@@ -214,6 +214,8 @@ import type {
 	UserProfileUpdatedEvent,
 	UserStatusEvent,
 	VoiceEndedEvent,
+	VoiceJoinReviewedEvent,
+	VoiceJoinWaitingEvent,
 	VoiceJoinedEvent,
 	VoiceLeavedEvent,
 	WebrtcSignalingFwd
@@ -2984,7 +2986,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	);
 
 	const onvoicejoinwaiting = useCallback(
-		(event: VoiceJoinWaitingEventPayload) => {
+		(event: VoiceJoinWaitingEvent) => {
 			if (event) {
 				dispatch(voiceActions.receiveVoiceJoinWaitingEvent(event));
 			}
@@ -2993,7 +2995,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	);
 
 	const onvoicejoinreviewed = useCallback(
-		(event: VoiceJoinReviewedEventPayload) => {
+		(event: VoiceJoinReviewedEvent) => {
 			if (event) {
 				dispatch(voiceActions.receiveVoiceJoinReviewedEvent({ event, selfUserId: userId }));
 			}
@@ -3133,8 +3135,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			socket.onscreenshare = onscreenshare;
 
 			(socket as PatchedMezonClient).onsfubreakoutroomevent = onsfubreakoutroomevent;
-			(socket as PatchedMezonClient).onvoicejoinwaiting = onvoicejoinwaiting;
-			(socket as PatchedMezonClient).onvoicejoinreviewed = onvoicejoinreviewed;
+			socket.onvoicejoinwaiting = onvoicejoinwaiting;
+			socket.onvoicejoinreviewed = onvoicejoinreviewed;
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[
@@ -3539,9 +3541,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			(socket as PatchedMezonClient).onsfubreakoutroomevent = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
-			(socket as PatchedMezonClient).onvoicejoinwaiting = () => {};
+			socket.onvoicejoinwaiting = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
-			(socket as PatchedMezonClient).onvoicejoinreviewed = () => {};
+			socket.onvoicejoinreviewed = () => {};
 		};
 	}, [
 		onchannelmessage,
