@@ -2,7 +2,7 @@ import { useCdnUrlSigner } from '@mezon/core';
 import type { AttachmentEntity } from '@mezon/store';
 import { attachmentActions, selectMessageByMessageId, useAppDispatch, useAppSelector } from '@mezon/store';
 import { MezonIcon, MzIcons24 } from '@mezon/ui';
-import { EMimeTypes, ETypeLinkMedia, createImgproxyUrl, isAttachmentPresignPendingForMessage } from '@mezon/utils';
+import { EMimeTypes, ETypeLinkMedia, createImgproxyUrl, isAttachmentPresignPendingForMessage, isTranscodedVideoContainer } from '@mezon/utils';
 
 type ItemAttachmentProps = {
 	attachment: AttachmentEntity;
@@ -34,9 +34,10 @@ const ItemAttachment = (props: ItemAttachmentProps) => {
 
 	const isVideo =
 		(attachment as any).isVideo ||
-		attachment.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) ||
+		(attachment.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) && !attachment.filetype?.endsWith(ETypeLinkMedia.VIDEO_TS_FILE)) ||
 		attachment.filetype?.includes(EMimeTypes.mp4) ||
-		attachment.filetype?.includes(EMimeTypes.mov);
+		attachment.filetype?.includes(EMimeTypes.mov) ||
+		isTranscodedVideoContainer(attachment.url);
 
 	const thumbnailClassName = `block w-[120px] h-[90px] max-sbm:w-16 max-sbm:h-12 object-cover rounded ${
 		isPresignPending ? 'cursor-default' : 'cursor-pointer'

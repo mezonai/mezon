@@ -41,6 +41,7 @@ import {
 	isAttachmentPresignPendingForMessage,
 	isMediaTypeNotSupported,
 	isRealClanId,
+	isTranscodedVideoContainer,
 	shouldHidePresignAttachment
 } from '@mezon/utils';
 import { clamp, endOfDay, format, getUnixTime, isSameDay, startOfDay } from 'date-fns';
@@ -58,6 +59,11 @@ const DatePickerPlaceholder = () => <div className="w-full h-[32px] bg-theme-sur
 
 const GALLERY_MIN_DATE = new Date(2020, 0, 1);
 const GALLERY_PAGE_LIMIT = 50;
+
+const isVideoAttachment = (filetype?: string, url?: string) =>
+	Boolean(
+		(filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) && !filetype?.endsWith(ETypeLinkMedia.VIDEO_TS_FILE)) || isTranscodedVideoContainer(url)
+	);
 
 const getRangeBounds = (startDate: Date | null, endDate: Date | null) => {
 	const interval = { start: GALLERY_MIN_DATE, end: new Date() };
@@ -125,7 +131,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 		if (mediaFilter === 'image') {
 			listAttach = listAttach.filter((att) => att.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) || att.filetype === EMimeTypes.sticker);
 		} else if (mediaFilter === 'video') {
-			listAttach = listAttach.filter((att) => att.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX));
+			listAttach = listAttach.filter((att) => isVideoAttachment(att.filetype, att.url));
 		}
 
 		if (startDate) {
@@ -700,7 +706,7 @@ const GalleryAttachmentTile = React.memo(({ attachment, channelId, dateKey, atta
 	const { signCdnUrl } = useCdnUrlSigner([attachment.url], channelId);
 
 	const cacheKey = attachment.id || attachment.message_id || `${dateKey}-${attachment.url}-${attachmentIndex}`;
-	const isVideo = attachment.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX);
+	const isVideo = isVideoAttachment(attachment.filetype, attachment.url);
 
 	if (isPresignPending) {
 		return <div key={cacheKey} className="aspect-square rounded-lg bg-bgLightSecondary dark:bg-bgSecondary" />;

@@ -1,4 +1,5 @@
 import { selectAppsFetchingLoading, selectIsLogin } from '@mezon/store';
+import { savePostLoginRedirect } from '@mezon/utils';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -35,6 +36,7 @@ const RootLayout: React.FC = () => {
 		return randomState;
 	}, []);
 	if (!isLogin) {
+		savePostLoginRedirect(`${window.location.pathname}${window.location.search}${window.location.hash}`);
 		const OAUTH2_AUTHORIZE_URL = process.env.NX_CHAT_APP_OAUTH2_AUTHORIZE_URL;
 		const CLIENT_ID = process.env.NX_CHAT_APP_OAUTH2_CLIENT_ID;
 		const REDIRECT_URI = encodeURIComponent(process.env.NX_CHAT_APP_OAUTH2_REDIRECT_URI as string);
@@ -42,6 +44,7 @@ const RootLayout: React.FC = () => {
 		const SCOPE = process.env.NX_CHAT_APP_OAUTH2_SCOPE;
 		const authUrl = `${OAUTH2_AUTHORIZE_URL}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}&state=${STATE}`;
 		window.location.replace(authUrl);
+		return null;
 	}
 
 	return (

@@ -838,7 +838,7 @@ const ModalQR = ({ closeModalEdit, data }: { closeModalEdit: () => void; data: s
 					<div className="mt-1.5 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-theme-setting-nav border-theme-primary">
 						<span className="text-indigo-400 text-xs font-semibold">
 							{membersClanCount > 0
-								? t('invitation:acceptModal.memberCount_plural', {
+								? t('invitation:acceptModal.memberCount', {
 										count: membersClanCount,
 										defaultValue: `${membersClanCount} members`
 									})

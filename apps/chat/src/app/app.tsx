@@ -4,6 +4,7 @@ import { getMezonConfig, MezonContextProvider, useMezon } from '@mezon/transport
 
 import { MediaPermissionPrompt, PopupManagerProvider } from '@mezon/components';
 import { PermissionProvider } from '@mezon/core';
+import { getDeveloperPortalRedirect } from '@mezon/utils';
 import { createContext, lazy, Suspense, useContext, useEffect, useMemo, useState } from 'react';
 import 'react-contexify/ReactContexify.css';
 import { I18nextProvider, useTranslation } from 'react-i18next';
@@ -31,6 +32,14 @@ const EMBED_PATH_PREFIX = '/embed/';
 const YoutubeEmbed = lazy(() => import(/* webpackChunkName: "embed-pages" */ './pages/embed/YoutubeEmbed'));
 
 const isEmbedPath = () => typeof window !== 'undefined' && window.location.pathname.startsWith(EMBED_PATH_PREFIX);
+
+const DeveloperPortalRedirect = ({ target }: { target: string }) => {
+	useEffect(() => {
+		window.location.replace(target);
+	}, [target]);
+
+	return null;
+};
 
 export const LoadingFallbackWrapper = () => <LoadingFallback />;
 
@@ -127,6 +136,13 @@ function AppWrapper() {
 			splashScreen.style.display = 'none';
 		}
 	}, []);
+
+	const developerRedirect =
+		typeof window !== 'undefined' ? getDeveloperPortalRedirect(window.location.pathname, window.location.search, window.location.hash) : null;
+
+	if (developerRedirect) {
+		return <DeveloperPortalRedirect target={developerRedirect} />;
+	}
 
 	if (isEmbedPath()) {
 		return (
