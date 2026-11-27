@@ -3,6 +3,7 @@ import {
 	PRESIGN_PENDING_MAX_AGE_SEC,
 	filterExpiredPresignAttachments,
 	getPresignExpiryDelayMs,
+	hasActivePresignPendingAttachments,
 	isPresignIngestAttachment,
 	mergePresignFinishContent,
 	parsePresignIngestKeys,
@@ -70,6 +71,23 @@ it('keeps the 10 minute rule for a message without the marker', () => {
 	expect(shouldHidePresignAttachment(VIDEO, { content, create_time_seconds: CREATED }, CREATED + PRESIGN_PENDING_MAX_AGE_SEC)).toBe(true);
 });
 
+it('fails an attachment named in presign_failed at once, even a video the ingest would keep for a day', () => {
+	const content = {
+		presign_finish: [],
+		presign_ingest: ['1846031000000002001_clip'],
+		presign_failed: ['0000000000031031/1846031000000002001_clip.mp4']
+	};
+	const attachments = [{ url: VIDEO }, { url: PHOTO }];
+
+	expect(filterExpiredPresignAttachments(attachments, content, CREATED, CREATED + 1)).toEqual([{ url: PHOTO }]);
+	expect(shouldHidePresignAttachment(VIDEO, { content, create_time_seconds: CREATED }, CREATED + 1)).toBe(true);
+	expect(hasActivePresignPendingAttachments([{ url: VIDEO }], content)).toBe(false);
+	expect(hasActivePresignPendingAttachments(attachments, content)).toBe(true);
+
+	const finished = { ...content, presign_finish: ['1846031000000002001_clip'] };
+	expect(filterExpiredPresignAttachments(attachments, finished, CREATED, CREATED + 1)).toEqual(attachments);
+});
+
 it('counts the expiry delay from the given age', () => {
 	expect(getPresignExpiryDelayMs(CREATED, CREATED * 1000)).toBe(PRESIGN_PENDING_MAX_AGE_SEC * 1000);
 	expect(getPresignExpiryDelayMs(CREATED, CREATED * 1000, PRESIGN_INGEST_PENDING_MAX_AGE_SEC)).toBe(PRESIGN_INGEST_PENDING_MAX_AGE_SEC * 1000);
@@ -91,6 +109,11 @@ describe('merging an edit', () => {
 			presign_finish: [],
 			presign_ingest: ['1846031000000002001_clip']
 		});
+	});
+
+	it('carries the failed keys over a later edit', () => {
+		const failed = { ...existing, presign_failed: ['1846031000000002001_clip'] };
+		expect(mergePresignFinishContent(failed, { t: 'look again' })).toEqual({ ...failed, t: 'look again' });
 	});
 
 	it('merges the keys of the presign_finish edit with the marker it carries', () => {
@@ -118,8 +141,14 @@ describe('merging an edit', () => {
 	});
 });
 
-it('drops both markers from forwarded content and keeps the rest', () => {
-	const content = { t: 'look', mk: [{ s: 0, e: 4 }], presign_finish: ['1846031000000002001_clip'], presign_ingest: ['1846031000000002001_clip'] };
+it('drops the markers from forwarded content and keeps the rest', () => {
+	const content = {
+		t: 'look',
+		mk: [{ s: 0, e: 4 }],
+		presign_finish: ['1846031000000002001_clip'],
+		presign_ingest: ['1846031000000002001_clip'],
+		presign_failed: ['1846031000000003001_photo']
+	};
 	expect(withoutPresignMarkers(content)).toEqual({ t: 'look', mk: [{ s: 0, e: 4 }] });
 	expect(content.presign_ingest).toEqual(['1846031000000002001_clip']);
 });

@@ -1,5 +1,6 @@
 import { getFileIngestUrl, isFileIngestCandidate, uploadFileToPath, uploadToFileIngest } from '@mezon/transport';
-import type { ApiMessageAttachment, ApiSession, Client } from 'mezon-js';
+import type { ApiMessageAttachment, ApiMessageMention, ApiSession, Client } from 'mezon-js';
+import type { IMessageSendPayload } from '../types';
 import { AttachmentTypeUpload, ETypesCDN } from '../types';
 import { isMezonMediaUrl, isTenorUrl } from './urlSanitization';
 import { wantsHlsTranscode } from './videoSource';
@@ -115,4 +116,98 @@ export async function generatePathAttachments(
 		uploadName?: string;
 		ingestUrl?: string;
 	})[];
+}
+
+export type PendingUpload = {
+	messageId: string;
+	userId: string;
+	clanId: string;
+	channelId: string;
+	mode: number;
+	isPublic: boolean;
+	content: IMessageSendPayload;
+	mentions?: ApiMessageMention[];
+	attachments: PreparedAttachment[];
+	createTimeSeconds: number;
+	aliveAt: number;
+	presignFinish?: string[];
+	files?: (Blob | undefined)[];
+};
+
+let pendingUploadDb: Promise<IDBDatabase> | undefined;
+
+function pendingUploadRequest<T>(storeNames: string[], mode: IDBTransactionMode, run: (...stores: IDBObjectStore[]) => IDBRequest<T>): Promise<T> {
+	pendingUploadDb ??= new Promise((resolve, reject) => {
+		const request = indexedDB.open('mezon_pending_uploads', 1);
+		request.onupgradeneeded = () => {
+			request.result.createObjectStore('meta', { keyPath: 'messageId' });
+			request.result.createObjectStore('files');
+		};
+		request.onsuccess = () => resolve(request.result);
+		request.onerror = () => reject(request.error);
+	});
+	return pendingUploadDb.then(
+		(db) =>
+			new Promise<T>((resolve, reject) => {
+				const transaction = db.transaction(storeNames, mode);
+				const request = run(...storeNames.map((name) => transaction.objectStore(name)));
+				transaction.oncomplete = () => resolve(request.result);
+				transaction.onabort = () => reject(transaction.error);
+			})
+	);
+}
+
+export function savePendingUpload(upload: PendingUpload, files: (Blob | undefined)[]) {
+	return Promise.all([
+		pendingUploadRequest(['meta'], 'readwrite', (meta) => meta.put(upload)),
+		pendingUploadRequest(['files'], 'readwrite', (store) => store.put(files, upload.messageId))
+	]);
+}
+
+export function updatePendingUpload(messageId: string, changes: Partial<PendingUpload> = {}) {
+	return pendingUploadRequest(changes.presignFinish ? ['meta', 'files'] : ['meta'], 'readwrite', (meta, files) => {
+		files?.delete(messageId);
+		const request = meta.get(messageId);
+		request.onsuccess = () => request.result && meta.put({ ...request.result, ...changes, aliveAt: Date.now() });
+		return request;
+	});
+}
+
+export function deletePendingUpload(messageId: string) {
+	return pendingUploadRequest(['meta', 'files'], 'readwrite', (meta, files) => {
+		files.delete(messageId);
+		return meta.delete(messageId);
+	});
+}
+
+export function clearPendingUploads() {
+	return pendingUploadRequest(['meta', 'files'], 'readwrite', (meta, files) => {
+		files.clear();
+		return meta.clear();
+	});
+}
+
+export function getPendingUploads(): Promise<PendingUpload[]> {
+	return pendingUploadRequest<PendingUpload[]>(['meta'], 'readonly', (meta) => meta.getAll());
+}
+
+export async function getPendingUpload(messageId: string): Promise<PendingUpload | undefined> {
+	const upload = await pendingUploadRequest<PendingUpload | undefined>(['meta'], 'readonly', (meta) => meta.get(messageId));
+	return (
+		upload && {
+			...upload,
+			files: await pendingUploadRequest<(Blob | undefined)[] | undefined>(['files'], 'readonly', (files) => files.get(messageId))
+		}
+	);
+}
+
+export function holdPendingUploadLock(messageId: string): Promise<(() => void) | undefined> {
+	if (typeof navigator === 'undefined' || !navigator.locks) return Promise.resolve(() => undefined);
+	return new Promise((resolve) => {
+		navigator.locks
+			.request(`mezon_pending_upload_${messageId}`, { ifAvailable: true }, (lock) =>
+				lock ? new Promise<void>((release) => resolve(release)) : resolve(undefined)
+			)
+			.catch(() => resolve(() => undefined));
+	});
 }

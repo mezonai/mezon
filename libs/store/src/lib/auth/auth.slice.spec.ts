@@ -37,6 +37,7 @@ jest.mock(
 	}),
 	{ virtual: true }
 );
+jest.mock('@mezon/utils', () => ({ clearPendingUploads: jest.fn(async () => undefined) }));
 jest.mock('i18next', () => ({ t: (key: string) => key }));
 jest.mock('react-toastify', () => ({ toast: { success: jest.fn(), error: jest.fn() } }));
 jest.mock('../cache-metadata', () => ({ clearApiCallTracker: jest.fn() }));
