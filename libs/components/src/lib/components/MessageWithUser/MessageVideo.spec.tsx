@@ -5,6 +5,7 @@ import MessageVideo from './MessageVideo';
 type TestInstance = { props: { src?: string; onPlay: () => void; onError: () => void; disablePlay?: boolean; children?: unknown } };
 type Query = {
 	find: (predicate: (node: TestInstance) => boolean) => TestInstance;
+	findAll: (predicate: (node: TestInstance) => boolean) => TestInstance[];
 	findByType: (type: string) => TestInstance;
 	findAllByType: (type: string) => TestInstance[];
 	findAllByProps: (props: Record<string, unknown>) => TestInstance[];
@@ -31,6 +32,7 @@ jest.mock(
 	'@mezon/utils',
 	() => ({
 		...jest.requireActual<object>('../../../../../utils/src/lib/utils/videoSource'),
+		...jest.requireActual<object>('../../../../../utils/src/lib/utils/hlsDownload'),
 		IS_SAFARI: true,
 		calculateMediaDimensions: () => ({ width: 320, height: 180 }),
 		createImgproxyUrl: (url: string) => `proxy:${url}`,
@@ -317,6 +319,26 @@ describe('a video sent through the file ingest', () => {
 		await act(async () => finish(new Response('video', { status: 200 })));
 		await advance(0);
 		expect(spinning()).toBe(false);
+	});
+
+	it('offers the download on the poster only once the file is stored and its url is signed', async () => {
+		const downloadButtons = () =>
+			renderer.root.findAll((node) => String((node.props as { className?: string }).className).includes('top-2 right-1'));
+		stored = true;
+		render(<MessageVideo attachmentData={remote} isSending />);
+		expect(downloadButtons()).toHaveLength(0);
+
+		act(() => renderer.update(<MessageVideo attachmentData={remote} isPresignPending isIngest />));
+		await advance(0);
+		expect(poster().props.disablePlay).toBe(false);
+		expect(downloadButtons()).toHaveLength(0);
+
+		act(() => renderer.update(<MessageVideo attachmentData={remote} isIngest isCdnSignaturePending />));
+		expect(downloadButtons()).toHaveLength(0);
+
+		act(() => renderer.update(<MessageVideo attachmentData={remote} isIngest />));
+		expect(downloadButtons()).toHaveLength(1);
+		expect(renderer.root.findAllByType('video')).toHaveLength(0);
 	});
 
 	it('asks nothing while the video is off screen', async () => {
