@@ -1,11 +1,9 @@
 import { mezonLogoOnDark, mezonLogoOnLight } from '@mezon/assets';
 import { AppDirectoryList } from '@mezon/components';
-import { selectTheme } from '@mezon/store';
 import { ThemeManager } from '@mezon/themes';
 import { Button, Icons, Image, MezonIcon, MzIcons16, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 interface ICategoryArr {
@@ -41,8 +39,7 @@ const AppDirectory = () => {
 			title: t('appDirectory.categories.utilities')
 		}
 	];
-	const appearanceTheme = useSelector(selectTheme);
-	const isLightTheme = ThemeManager.isLightTheme(appearanceTheme);
+	const isLightTheme = ThemeManager.isLightTheme(ThemeManager.getCurrentTheme());
 	useEffect(() => {
 		document.documentElement.classList.toggle('dark', !isLightTheme);
 	}, [isLightTheme]);

@@ -190,6 +190,10 @@
 		}
 	},
 	"backToApps": "애플리케이션으로 돌아가기",
+	"appNotFound": {
+		"title": "애플리케이션을 찾을 수 없습니다",
+		"description": "이 애플리케이션이 존재하지 않거나 접근 권한이 없습니다."
+	},
 	"selectLabel": "{{type}} 선택",
 	"settings": "설정",
 	"flows": {

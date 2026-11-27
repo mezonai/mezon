@@ -50,7 +50,9 @@
 	"state": {
 		"loadingData": "Laddar data...",
 		"noDataFound": "Ingen data hittad",
-		"noDataDescription": "Ingen användningsdata för valt tidsperiod."
+		"noDataDescription": "Ingen användningsdata för valt tidsperiod.",
+		"loadFailed": "Det gick inte att läsa in data",
+		"loadFailedDescription": "Ett fel uppstod när rapporten lästes in. Försök igen."
 	},
 	"reportControls": {
 		"timePeriod": "Tidsperiod",

@@ -190,6 +190,10 @@
 		}
 	},
 	"backToApps": "Terug naar Apps",
+	"appNotFound": {
+		"title": "App niet gevonden",
+		"description": "Deze app bestaat niet of je hebt er geen toegang toe."
+	},
 	"selectLabel": "KIES {{type}}",
 	"settings": "INSTELLINGEN",
 	"flows": {

@@ -50,7 +50,9 @@
 	"state": {
 		"loadingData": "Ładowanie danych...",
 		"noDataFound": "Nie znaleziono danych",
-		"noDataDescription": "Brak danych użytkowania dla wybranego okresu."
+		"noDataDescription": "Brak danych użytkowania dla wybranego okresu.",
+		"loadFailed": "Nie udało się wczytać danych",
+		"loadFailedDescription": "Podczas wczytywania raportu wystąpił błąd. Spróbuj ponownie."
 	},
 	"reportControls": {
 		"timePeriod": "Okres czasu",

@@ -15,12 +15,14 @@ export const usePagination = (
 	const [limit, setLimit] = useState(10);
 	const [total, setTotal] = useState(0);
 	const [totalPages, setTotalPages] = useState(0);
+	const [failed, setFailed] = useState(false);
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
 		const fetchTable = async () => {
 			const { startStr, endStr } = getDateRangeFromPreset(dateRange, customStartDate, customEndDate);
 			const action = await dispatch(fetchClansList({ start: startStr, end: endStr, page, limit, rangeType: periodFilter, sortBy, sort }));
+			setFailed(fetchClansList.rejected.match(action));
 			if (fetchClansList.fulfilled.match(action)) {
 				const payload = action.payload as {
 					success?: boolean;
@@ -39,7 +41,7 @@ export const usePagination = (
 		fetchTable();
 	}, [refreshTrigger, page, limit, sortBy, sort, dispatch]);
 
-	return { page, setPage, limit, setLimit, total, totalPages };
+	return { page, setPage, limit, setLimit, total, totalPages, failed };
 };
 
 export const useTableSkeleton = (isLoading: boolean) => {

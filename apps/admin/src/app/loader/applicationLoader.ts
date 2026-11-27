@@ -6,6 +6,7 @@ import {
 	selectApplicationById,
 	setCurrentAppId
 } from '@mezon/store';
+import type { ShouldRevalidateFunction } from 'react-router-dom';
 import type { CustomLoaderFunction } from './appLoader';
 
 interface IBotLoaderData {
@@ -16,15 +17,18 @@ interface IBotLoaderData {
 export const applicationLoader: CustomLoaderFunction = async ({ params, dispatch }) => {
 	const { applicationId } = params;
 	if (!applicationId) {
-		throw new Error('Application ID null');
+		throw new Response('Application not found', { status: 404 });
 	}
 
 	const store = await getStoreAdminAsync();
 
-	await dispatch(fetchApplications({}));
+	const appsAction = await dispatch(fetchApplications({}));
+	if (fetchApplications.rejected.match(appsAction)) {
+		throw new Error('Failed to load applications');
+	}
 	const currentApp = selectApplicationById(store.getState(), applicationId);
 	if (!currentApp) {
-		throw new Error('Application not found');
+		throw new Response('Application not found', { status: 404 });
 	}
 
 	dispatch(setCurrentAppId(applicationId));
@@ -37,6 +41,6 @@ export const applicationLoader: CustomLoaderFunction = async ({ params, dispatch
 	} as IBotLoaderData;
 };
 
-export const shouldRevalidateApplication = () => {
-	return false;
+export const shouldRevalidateApplication: ShouldRevalidateFunction = ({ currentParams, nextParams }) => {
+	return currentParams.applicationId !== nextParams.applicationId;
 };

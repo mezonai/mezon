@@ -190,6 +190,10 @@
 		}
 	},
 	"backToApps": "Torna alle Applicazioni",
+	"appNotFound": {
+		"title": "Applicazione non trovata",
+		"description": "Questa applicazione non esiste oppure non hai accesso."
+	},
 	"selectLabel": "SELEZIONA {{type}}",
 	"settings": "IMPOSTAZIONI",
 	"flows": {

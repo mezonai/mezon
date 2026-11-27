@@ -190,6 +190,10 @@
 		}
 	},
 	"backToApps": "Back to Applications",
+	"appNotFound": {
+		"title": "Application not found",
+		"description": "This application doesn't exist, or you don't have access to it."
+	},
 	"selectLabel": "SELECT {{type}}",
 	"settings": "SETTINGS",
 	"flows": {

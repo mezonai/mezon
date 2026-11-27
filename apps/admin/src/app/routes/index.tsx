@@ -11,6 +11,7 @@ import type { CustomLoaderFunction } from '../loader/appLoader';
 // Pages
 import { applicationLoader, shouldRevalidateApplication } from '../loader/applicationLoader';
 import { authLoader, shouldRevalidateAuth } from '../loader/authLoader';
+import ErrorRoutes from './ErrorRoutes';
 import InitialRoutes from './InititalRoutes';
 
 const DashboardPage = lazy(() => import('../pages/dashboard'));
@@ -53,6 +54,11 @@ export const Routes = () => {
 				{
 					path: '/developers',
 					element: <AppLayout />,
+					errorElement: (
+						<div className="h-screen dark:bg-bgPrimary bg-bgLightPrimary">
+							<ErrorRoutes />
+						</div>
+					),
 					children: [
 						{
 							path: '',
@@ -89,6 +95,7 @@ export const Routes = () => {
 									),
 									loader: loaderWithStore(applicationLoader),
 									shouldRevalidate: shouldRevalidateApplication,
+									errorElement: <ErrorRoutes />,
 									children: [
 										{
 											path: '*',

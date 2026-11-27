@@ -50,7 +50,9 @@
 	"state": {
 		"loadingData": "데이터 로딩 중...",
 		"noDataFound": "데이터 찾지 못함",
-		"noDataDescription": "선택한 기간에 대한 사용 데이터가 없습니다."
+		"noDataDescription": "선택한 기간에 대한 사용 데이터가 없습니다.",
+		"loadFailed": "데이터를 불러오지 못했습니다",
+		"loadFailedDescription": "보고서를 불러오는 중 오류가 발생했습니다. 다시 시도해 주세요."
 	},
 	"reportControls": {
 		"timePeriod": "기간",

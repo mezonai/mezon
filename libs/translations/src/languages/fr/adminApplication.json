@@ -190,6 +190,10 @@
 		}
 	},
 	"backToApps": "Retour aux Applications",
+	"appNotFound": {
+		"title": "Application introuvable",
+		"description": "Cette application n'existe pas ou vous n'y avez pas accès."
+	},
 	"selectLabel": "SÉLECTIONNER {{type}}",
 	"settings": "PARAMÈTRES",
 	"flows": {

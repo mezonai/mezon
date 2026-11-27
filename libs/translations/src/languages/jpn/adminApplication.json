@@ -190,6 +190,10 @@
 		}
 	},
 	"backToApps": "アプリケーションに戻る",
+	"appNotFound": {
+		"title": "アプリケーションが見つかりません",
+		"description": "このアプリケーションは存在しないか、アクセス権がありません。"
+	},
 	"selectLabel": "{{type}}を選択",
 	"settings": "設定",
 	"flows": {

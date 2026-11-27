@@ -50,7 +50,9 @@
 	"state": {
 		"loadingData": "Carregando dados...",
 		"noDataFound": "Nenhum dado encontrado",
-		"noDataDescription": "Não há dados de uso para o período selecionado."
+		"noDataDescription": "Não há dados de uso para o período selecionado.",
+		"loadFailed": "Não foi possível carregar os dados",
+		"loadFailedDescription": "Ocorreu um erro ao carregar este relatório. Tente novamente."
 	},
 	"reportControls": {
 		"timePeriod": "Período",
