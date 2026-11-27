@@ -18,7 +18,6 @@ import { PushToTalkHint } from './PushToTalkHint';
 import { SfuRaisingHandControl } from './RaisingHandControl';
 import { ScreenDrawControl } from './ScreenDrawControl';
 import { ScreenShareControl } from './ScreenShareControl';
-import { SfuVoiceInteractiveControl } from './SfuVoiceInteractiveControl';
 import { SoundReactionControl } from './SoundReactionControl';
 
 interface SfuControlBarProps {
@@ -49,7 +48,6 @@ interface SfuControlBarProps {
 	isGridView: boolean;
 	showEmojiPanel: boolean;
 	showSoundPanel: boolean;
-	showVoiceInteractivePanel?: boolean;
 	microphones: MediaDeviceInfo[];
 	cameras: MediaDeviceInfo[];
 	speakers?: MediaDeviceInfo[];
@@ -62,7 +60,6 @@ interface SfuControlBarProps {
 	channelLabel: string;
 	onEmojiPanelChange: (visible: boolean) => void;
 	onSoundPanelChange: (visible: boolean) => void;
-	onVoiceInteractivePanelChange?: (visible: boolean) => void;
 	onEmojiSelect: (emojiId: string, emoji: string) => void;
 	onSoundSelect: (soundId: string, soundUrl: string) => void;
 	onPushToTalk: (active: boolean) => void;
@@ -112,7 +109,6 @@ export const SfuControlBar = ({
 	isGridView,
 	showEmojiPanel,
 	showSoundPanel,
-	showVoiceInteractivePanel,
 	microphones,
 	cameras,
 	speakers,
@@ -125,7 +121,6 @@ export const SfuControlBar = ({
 	channelLabel,
 	onEmojiPanelChange,
 	onSoundPanelChange,
-	onVoiceInteractivePanelChange,
 	onEmojiSelect,
 	onSoundSelect,
 	onPushToTalk,
@@ -146,9 +141,6 @@ export const SfuControlBar = ({
 	hasUnseenComments = false,
 	onToggleComment
 }: SfuControlBarProps) => {
-	const [localShowVoiceInteractive, setLocalShowVoiceInteractive] = useState(false);
-	const showVoiceInteractive = showVoiceInteractivePanel ?? localShowVoiceInteractive;
-	const handleVoiceInteractiveChange = onVoiceInteractivePanelChange ?? setLocalShowVoiceInteractive;
 	const [networkWarningDismissed, setNetworkWarningDismissed] = useState(false);
 	useEffect(() => {
 		if (!weakNetwork) setNetworkWarningDismissed(false);
@@ -178,10 +170,6 @@ export const SfuControlBar = ({
 								onVisibleChange={onSoundPanelChange}
 								onSoundSelect={onSoundSelect}
 							/>
-						</div>
-
-						<div className="max-md:hidden">
-							<SfuVoiceInteractiveControl showVoiceInteractive={showVoiceInteractive} onVisibleChange={handleVoiceInteractiveChange} />
 						</div>
 						{!isFullScreen && onToggleComment && (
 							<div className="max-md:hidden">

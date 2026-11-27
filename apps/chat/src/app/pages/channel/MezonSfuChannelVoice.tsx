@@ -11,7 +11,6 @@ import {
 import { EmojiSuggestionProvider } from '@mezon/core';
 import {
 	appActions,
-	channelAppActions,
 	generateMeetToken,
 	getStore,
 	selectBreakoutRoom,
@@ -392,7 +391,6 @@ const MezonSfuChannelVoiceInner = () => {
 		if (target) {
 			flushSync(() => {
 				dispatch(voiceActions.resetVoiceControl({ keepBreakout: true }));
-				dispatch(channelAppActions.clearAppInteractiveData());
 			});
 		} else if (token) {
 			dispatch(voiceActions.setJoined(false));
@@ -504,7 +502,6 @@ const MezonSfuChannelVoiceInner = () => {
 		setSelectedBg(null);
 		setSelectedCamera('default');
 		dispatch(voiceActions.resetVoiceControl());
-		dispatch(channelAppActions.clearAppInteractiveData());
 		dispatch(appActions.setIsShowChatVoice(false));
 	});
 
@@ -521,7 +518,6 @@ const MezonSfuChannelVoiceInner = () => {
 		setSelectedCamera('default');
 
 		dispatch(voiceActions.resetVoiceControl());
-		dispatch(channelAppActions.clearAppInteractiveData());
 		dispatch(appActions.setIsShowChatVoice(false));
 
 		isDisconnectingRef.current = false;

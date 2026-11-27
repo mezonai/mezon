@@ -747,7 +747,6 @@ export function MezonSfuVoiceRoom({
 	const [showFocusThumbnails, setShowFocusThumbnails] = useState(true);
 	const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 	const [showSoundPanel, setShowSoundPanel] = useState(false);
-	const [showVoiceInteractivePanel, setShowVoiceInteractivePanel] = useState(false);
 	const [showBreakoutModal, setShowBreakoutModal] = useState(false);
 	const [showCommentInput, setShowCommentInput] = useState(false);
 	const {
@@ -3732,7 +3731,6 @@ export function MezonSfuVoiceRoom({
 					isGridView={isGridView}
 					showEmojiPanel={showEmojiPanel}
 					showSoundPanel={showSoundPanel}
-					showVoiceInteractivePanel={showVoiceInteractivePanel}
 					microphones={microphones}
 					cameras={cameras}
 					speakers={speakers}
@@ -3744,7 +3742,6 @@ export function MezonSfuVoiceRoom({
 					isExternalCalling={isExternalCalling}
 					onEmojiPanelChange={setShowEmojiPanel}
 					onSoundPanelChange={setShowSoundPanel}
-					onVoiceInteractivePanelChange={setShowVoiceInteractivePanel}
 					onEmojiSelect={sendEmojiReaction}
 					onSoundSelect={sendSoundReaction}
 					onPushToTalk={(active) => void setPushToTalk(active)}

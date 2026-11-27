@@ -1,37 +1,18 @@
-import {
-	EVoiceInteractEvent,
-	RECORDING_INDICATOR_TTL_MS,
-	channelAppActions,
-	parseRecordingParams,
-	selectActiveApps,
-	useAppDispatch,
-	voiceActions
-} from '@mezon/store';
+import { EVoiceInteractEvent, RECORDING_INDICATOR_TTL_MS, parseRecordingParams, useAppDispatch, voiceActions } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { VoiceInteractiveEvent } from 'mezon-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import type { FlowerCelebrationHandle } from '../../MyVideoConference/Reaction/flowerCelebration';
-
-const BASE_Z = 9999;
 
 export function useSfuVoiceInteractiveListener(channelId?: string, sinkId?: string) {
 	const dispatch = useAppDispatch();
 	const { clientRef } = useMezon();
-	const activeApps = useSelector(selectActiveApps);
-	const zCounterRef = useRef(BASE_Z);
 	const senderQueueRef = useRef<VoiceInteractiveEvent[]>([]);
 	const playerRef = useRef<FlowerCelebrationHandle | null>(null);
 	const senderTimeoutRef = useRef<number | null>(null);
 	const isShowingSenderRef = useRef(false);
 	const [currentSender, setCurrentSender] = useState<VoiceInteractiveEvent | null>(null);
 	const recordingTimersRef = useRef(new Map<string, number>());
-
-	const closeApp = (id: string) => {
-		dispatch(channelAppActions.closeActiveApps(id));
-	};
-
-	const focusApp = useCallback((id: string) => {}, []);
 
 	const playFlowerCelebrationSound = useCallback(() => {
 		try {
@@ -142,7 +123,6 @@ export function useSfuVoiceInteractiveListener(channelId?: string, sinkId?: stri
 					showNextSender();
 					return;
 				}
-				dispatch(channelAppActions.setAppInteractiveData(event));
 			};
 
 			socket.onvoiceinteractiveevent = handler;
@@ -160,5 +140,5 @@ export function useSfuVoiceInteractiveListener(channelId?: string, sinkId?: stri
 		};
 	}, [clientRef, channelId, dispatch, handleRecordingSignal, playFlowerCelebrationSound, showNextSender]);
 
-	return { activeApps, closeApp, focusApp, currentSender, senderQueueRef, showNextSender, playerRef, senderTimeoutRef, isShowingSenderRef };
+	return { currentSender, senderQueueRef, showNextSender, playerRef, senderTimeoutRef, isShowingSenderRef };
 }
