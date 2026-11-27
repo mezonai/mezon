@@ -20,6 +20,36 @@ const readProPlan = (value: unknown): boolean | undefined => (value as WithProPl
 type WithFrame = { frame?: number };
 const readFrame = (value: unknown): number | undefined => (value as WithFrame | null | undefined)?.frame;
 
+export type PeerProfileUpdatePayload = {
+	userId: string;
+	avatar?: string;
+	display_name?: string;
+	about_me?: string;
+	frame?: number;
+};
+
+export const isFrameOnlyProfileEvent = (event: {
+	avatar?: string;
+	display_name?: string;
+	about_me?: string;
+	banner?: string;
+	frame?: number;
+}): boolean => event.frame !== undefined && !event.avatar && !event.display_name && !event.about_me && !event.banner;
+
+export const buildPeerClanProfileUpdate = (event: {
+	user_id: string;
+	avatar?: string;
+	display_name?: string;
+	about_me?: string;
+	frame?: number;
+}): PeerProfileUpdatePayload => ({
+	userId: event.user_id,
+	...(event.avatar ? { avatar: event.avatar } : {}),
+	...(event.display_name ? { display_name: event.display_name } : {}),
+	...(event.about_me ? { about_me: event.about_me } : {}),
+	...(event.frame !== undefined ? { frame: event.frame } : {})
+});
+
 export const CLAN_USERS_LIST_LIMIT = 1000;
 
 export const initClanMembersAction = createAction<{ users: UsersClanEntity[]; clanId: string }>('UsersClan/initClanMembers');
@@ -489,39 +519,33 @@ export const UsersClanSlice = createSlice({
 				}
 			});
 		},
-		updateUserProfileAcrossClans: (
-			state,
-			action: PayloadAction<{ userId: string; avatar?: string; display_name?: string; about_me?: string; frame?: number }>
-		) => {
+		updateUserProfileAcrossClans: (state, action: PayloadAction<PeerProfileUpdatePayload>) => {
 			const { userId, avatar, display_name, about_me, frame } = action.payload;
 			Object.keys(state.byClans).forEach((clanId) => {
 				const existingMember = state.byClans[clanId].entities.entities[userId];
 				if (existingMember) {
-					const updates: Partial<UsersClanEntity> = {
-						user: {
-							...existingMember.user
-						}
+					const hasAvatarChange = avatar !== undefined && existingMember.user?.avatar_url !== avatar;
+					const hasDisplayNameChange = display_name !== undefined && existingMember.user?.display_name !== display_name;
+					const hasAboutMeChange = about_me !== undefined && existingMember.user?.about_me !== about_me;
+					const hasFrameChange = frame !== undefined && readFrame(existingMember.user) !== frame;
+
+					if (!hasAvatarChange && !hasDisplayNameChange && !hasAboutMeChange && !hasFrameChange) {
+						return;
+					}
+
+					const nextUser = {
+						...existingMember.user,
+						...(hasAvatarChange ? { avatar_url: avatar } : {}),
+						...(hasDisplayNameChange ? { display_name } : {}),
+						...(hasAboutMeChange ? { about_me } : {}),
+						...(hasFrameChange ? { frame } : {})
 					};
-
-					if (avatar !== undefined) {
-						updates.user!.avatar_url = avatar;
-					}
-
-					if (display_name !== undefined) {
-						updates.user!.display_name = display_name;
-					}
-
-					if (about_me !== undefined) {
-						updates.user!.about_me = about_me;
-					}
-
-					if (frame !== undefined) {
-						(updates.user as WithFrame).frame = frame;
-					}
 
 					UsersClanAdapter.updateOne(state.byClans[clanId].entities, {
 						id: userId,
-						changes: updates
+						changes: {
+							user: nextUser
+						}
 					});
 				}
 			});

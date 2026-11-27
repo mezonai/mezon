@@ -270,11 +270,12 @@ export const updateUserFrame = createAsyncThunk<{ userId: string; frame: number 
 
 export const buildOwnProfileAccountPatch = (
 	event: { encrypt_private_key?: string; frame?: number },
-	currentEncryptPrivateKey?: string
+	currentEncryptPrivateKey?: string,
+	currentFrame?: number
 ): IUserAccount | null => {
 	const hasEncryptKey = Boolean(event.encrypt_private_key);
 	const hasFrame = event.frame !== undefined;
-	if (!hasEncryptKey && !hasFrame) {
+	if (!hasEncryptKey && (!hasFrame || event.frame === currentFrame)) {
 		return null;
 	}
 	return {

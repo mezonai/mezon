@@ -21,6 +21,7 @@ type BaseMemberProfileProps = {
 	isOwner?: boolean;
 	userStatus?: ReactNode;
 	isPro?: boolean;
+	frame?: number;
 	ownProUserId?: string;
 	ownFrame?: number;
 	onContextMenu: (event: React.MouseEvent<Element, MouseEvent>, channelId: string, user: UsersClanEntity) => void;
@@ -36,6 +37,7 @@ export const BaseMemberProfile = ({
 	isOwner,
 	userStatus,
 	isPro: isProProp,
+	frame: frameProp,
 	ownProUserId,
 	ownFrame,
 	onContextMenu,
@@ -63,7 +65,8 @@ export const BaseMemberProfile = ({
 	const memberUser = user?.user as WithProPlan | undefined;
 	const isOwnPro = Boolean(ownProUserId && id === ownProUserId);
 	const isPro = isProProp ?? (Boolean(memberUser?.pro_plan) || isOwnPro);
-	const frame = isOwnPro ? ownFrame : memberUser?.frame;
+	const ownOrMemberFrame = isOwnPro ? (ownFrame ?? memberUser?.frame) : memberUser?.frame;
+	const frame = frameProp !== undefined ? frameProp : ownOrMemberFrame;
 	const frameUserId = user?.user?.id || user?.id || id;
 	const resolvedFrameId = userFrameId(isPro, frame, frameUserId);
 

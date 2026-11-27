@@ -198,4 +198,26 @@ describe('user frame state and updateUserFrame', () => {
 		expect(state.userProfile?.encrypt_private_key).toBe('enc-new');
 		expect(selectAccountFrame({ [ACCOUNT_FEATURE_KEY]: state })).toBe(8);
 	});
+
+	it.each([-1, 0, 5])('returns null for an own frame-only echo (%i) matching the stored account frame and preserves state identity', (frame) => {
+		const initial = {
+			...accountReducer(undefined, { type: 'init' }),
+			userProfile: {
+				pro_plan: true,
+				encrypt_private_key: 'enc-stored-key',
+				user: { id: 'u-1', pro_plan: true, frame }
+			} as never
+		};
+
+		expect(buildOwnProfileAccountPatch({ encrypt_private_key: '', frame }, 'enc-stored-key', frame)).toBeNull();
+		expect(buildOwnProfileAccountPatch({ encrypt_private_key: '', frame: frame === 5 ? 3 : 5 }, 'enc-stored-key', frame)).not.toBeNull();
+		expect(buildOwnProfileAccountPatch({ encrypt_private_key: '', frame: 0 }, 'enc-stored-key', undefined)).not.toBeNull();
+
+		const keyPatch = buildOwnProfileAccountPatch({ encrypt_private_key: 'enc-rotated', frame }, 'enc-stored-key', frame);
+		expect(keyPatch).not.toBeNull();
+		const updated = accountReducer(initial, accountActions.setUpdateAccount(keyPatch as never));
+		expect(updated.userProfile?.encrypt_private_key).toBe('enc-rotated');
+		expect(selectAccountFrame({ [ACCOUNT_FEATURE_KEY]: updated })).toBe(frame);
+		expect(initial.userProfile).toBe(initial.userProfile);
+	});
 });

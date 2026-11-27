@@ -11,6 +11,7 @@ import {
 	authActions,
 	badgeService,
 	buildOwnProfileAccountPatch,
+	buildPeerClanProfileUpdate,
 	canvasAPIActions,
 	categoriesActions,
 	cdnSignatureActions,
@@ -36,6 +37,7 @@ import {
 	getStoreAsync,
 	giveCoffeeActions,
 	inviteActions,
+	isFrameOnlyProfileEvent,
 	listChannelsByUserActions,
 	liveStreamActions,
 	mapMessageChannelToEntityAction,
@@ -50,6 +52,7 @@ import {
 	referencesActions,
 	resetRefreshState,
 	rolesClanActions,
+	selectAccountFrame,
 	selectAllAccount,
 	selectAllChannels,
 	selectCategoryById,
@@ -2079,12 +2082,17 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	const onuserprofileupdate = useCallback(
 		(userUpdated: UserProfileUpdatedEvent) => {
 			if (userUpdated.user_id === userId) {
-				const currentEncryptKey = selectAllAccount(getStore().getState() as unknown as RootState)?.encrypt_private_key;
-				const accountPatch = buildOwnProfileAccountPatch(userUpdated, currentEncryptKey);
+				const rootState = getStore().getState() as unknown as RootState;
+				const currentEncryptKey = selectAllAccount(rootState)?.encrypt_private_key;
+				const currentFrame = selectAccountFrame(rootState);
+				if (!userUpdated.encrypt_private_key && userUpdated.frame === currentFrame) {
+					return;
+				}
+				const accountPatch = buildOwnProfileAccountPatch(userUpdated, currentEncryptKey, currentFrame);
 				if (accountPatch) {
 					dispatch(accountActions.setUpdateAccount(accountPatch));
 				}
-				if (userUpdated.frame !== undefined) {
+				if (userUpdated.frame !== undefined && userUpdated.frame !== currentFrame) {
 					dispatch(
 						usersClanActions.updateUserProfileAcrossClans({
 							userId: userUpdated.user_id,
@@ -2093,7 +2101,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					);
 				}
 			} else {
-				if (userUpdated.channel_id) {
+				const isFrameOnly = isFrameOnlyProfileEvent(userUpdated);
+				if (!isFrameOnly && userUpdated.channel_id) {
 					dispatch(
 						directActions.updateMemberDMGroup({
 							dmId: userUpdated.channel_id,
@@ -2104,24 +2113,18 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						})
 					);
 				}
-				dispatch(
-					usersClanActions.updateUserProfileAcrossClans({
-						userId: userUpdated.user_id,
-						...(userUpdated.avatar && { avatar: userUpdated.avatar }),
-						...(userUpdated.display_name && { display_name: userUpdated.display_name }),
-						about_me: userUpdated.about_me,
-						...(userUpdated.frame !== undefined ? { frame: userUpdated.frame } : {})
-					})
-				);
-				dispatch(
-					directActions.updateMemberDMGroup({
-						dmId: userUpdated.channel_id,
-						user_id: userUpdated.user_id,
-						avatar: userUpdated.avatar,
-						display_name: userUpdated.display_name,
-						about_me: userUpdated.about_me
-					})
-				);
+				dispatch(usersClanActions.updateUserProfileAcrossClans(buildPeerClanProfileUpdate(userUpdated)));
+				if (!isFrameOnly) {
+					dispatch(
+						directActions.updateMemberDMGroup({
+							dmId: userUpdated.channel_id,
+							user_id: userUpdated.user_id,
+							avatar: userUpdated.avatar,
+							display_name: userUpdated.display_name,
+							about_me: userUpdated.about_me
+						})
+					);
+				}
 			}
 		},
 		[dispatch, userId]

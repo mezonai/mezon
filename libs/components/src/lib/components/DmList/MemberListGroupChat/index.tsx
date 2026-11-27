@@ -1,6 +1,6 @@
 import { useAppParams, useAuth } from '@mezon/core';
 import type { ChannelMembersEntity, RootState } from '@mezon/store';
-import { selectIsProUser, selectMemberByGroupId, useAppSelector } from '@mezon/store';
+import { selectIsProUser, selectMemberByGroupId, selectUserFrame, useAppSelector } from '@mezon/store';
 import { generateE2eId } from '@mezon/utils';
 import { createSelector } from '@reduxjs/toolkit';
 import { memo } from 'react';
@@ -36,6 +36,35 @@ const selectGroupProUsers = createSelector(
 	}
 );
 
+const EMPTY_USER_FRAMES: Record<string, number> = {};
+
+const selectGroupUserFrames = createSelector(
+	[
+		(state: RootState) => state.account,
+		(state: RootState) => state.usersClan,
+		(state: RootState) => state.clans?.currentClanId,
+		(_state: RootState, members?: ChannelMembersEntity[]) => members
+	],
+	(account, usersClan, currentClanId, members): Record<string, number> => {
+		if (!members?.length) return EMPTY_USER_FRAMES;
+		const sliceState = {
+			account,
+			usersClan,
+			clans: { currentClanId }
+		};
+		const result: Record<string, number> = {};
+		for (const member of members) {
+			const memberId = member.user?.id || member.id;
+			if (!memberId) continue;
+			const frame = selectUserFrame(sliceState, memberId);
+			if (frame !== undefined) {
+				result[memberId] = frame;
+			}
+		}
+		return result;
+	}
+);
+
 export type MemberListProps = {
 	className?: string;
 	directMessageId: string | undefined;
@@ -51,6 +80,7 @@ function MemberListGroupChat({ directMessageId, createId }: MemberListProps) {
 	const { directId } = useAppParams();
 	const rawMembers = useAppSelector((state) => selectMemberByGroupId(state, directId as string));
 	const proUsers = useAppSelector((state) => selectGroupProUsers(state, rawMembers), shallowEqual);
+	const userFrames = useAppSelector((state) => selectGroupUserFrames(state, rawMembers), shallowEqual);
 	const { userId } = useAuth();
 
 	return (
@@ -74,6 +104,7 @@ function MemberListGroupChat({ directMessageId, createId }: MemberListProps) {
 										isMe={userId === user.id}
 										createId={createId}
 										isPro={Boolean(proUsers[user.user?.id || user.id])}
+										frame={userFrames[user.user?.id || user.id]}
 									/>
 								</div>
 							))}

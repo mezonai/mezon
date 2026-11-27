@@ -49,7 +49,7 @@ const TempMemberItem = memo(({ id, isOwner, ownProUserId, ownFrame }: TempMember
 	const memberUser = user?.user as WithProPlan | undefined;
 	const isOwnPro = Boolean(ownProUserId && id === ownProUserId);
 	const isPro = Boolean(memberUser?.pro_plan) || isOwnPro;
-	const frame = isOwnPro ? ownFrame : memberUser?.frame;
+	const frame = isOwnPro ? (ownFrame ?? memberUser?.frame) : memberUser?.frame;
 	const resolvedFrameId = userFrameId(isPro, frame, id);
 	const secondaryLine =
 		userVoiceStatus && userMeta?.online ? (

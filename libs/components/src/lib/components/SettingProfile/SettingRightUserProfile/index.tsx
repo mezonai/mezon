@@ -31,7 +31,7 @@ import {
 	userFrameId
 } from '@mezon/utils';
 import type { ChangeEvent } from 'react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -81,7 +81,7 @@ type UserFrameTileProps = {
 	onSelect: (frame: number) => void;
 };
 
-const UserFrameTile = ({ frameId, frameValue, label, selected, disabled, avatar, username, onSelect }: UserFrameTileProps) => {
+const UserFrameTile = memo(({ frameId, frameValue, label, selected, disabled, avatar, username, onSelect }: UserFrameTileProps) => {
 	const handleClick = useCallback(() => {
 		onSelect(frameValue);
 	}, [onSelect, frameValue]);
@@ -104,7 +104,7 @@ const UserFrameTile = ({ frameId, frameValue, label, selected, disabled, avatar,
 			{label && <span className="text-xs text-theme-primary truncate max-w-full">{label}</span>}
 		</button>
 	);
-};
+});
 
 const SettingRightUser = ({
 	onClanProfileClick,
@@ -291,7 +291,7 @@ const SettingRightUser = ({
 	const canSelectFallback = isPro || savedFrame > 0;
 	const currentUserId = userProfile?.user?.id || '';
 	const autoFrameId = useMemo(() => (currentUserId ? defaultAvatarFrameForUser(currentUserId) : undefined), [currentUserId]);
-	const sectionPreviewFrameId = useMemo(() => userFrameId(true, draftFrame, currentUserId), [draftFrame, currentUserId]);
+	const sectionPreviewFrameId = useMemo(() => userFrameId(isPro, draftFrame, currentUserId), [isPro, draftFrame, currentUserId]);
 	const previewUsername = userProfile?.user?.username || valueDisplayName || name;
 	const previewAvatar = editProfile.urlImage || avatar || '';
 
