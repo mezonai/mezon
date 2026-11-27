@@ -128,22 +128,6 @@ export interface VoiceJoinWaitingState {
 	url?: string;
 }
 
-export interface VoiceJoinAdmittedState {
-	channelId: string;
-	clanId: string;
-	clanName: string;
-	channelLabel: string;
-	channelPrivate: number;
-	joinRole: 'speaker' | 'audience';
-	token: string;
-	url: string;
-}
-
-export interface VoiceJoinRejectedState {
-	channelId: string;
-	timestamp: number;
-}
-
 export interface VoiceState {
 	voiceInfo: IvoiceInfo | null;
 	loadingStatus: LoadingStatus;
@@ -189,8 +173,7 @@ export interface VoiceState {
 	breakoutPending: boolean;
 	closingBreakoutIds: string[];
 	voiceJoinWaiting: VoiceJoinWaitingState | null;
-	voiceJoinAdmitted: VoiceJoinAdmittedState | null;
-	voiceJoinRejected: VoiceJoinRejectedState | null;
+	voiceJoinRejected: boolean;
 	waitingUsersByChannel: Record<string, VoiceJoinWaitingUserPayload[]>;
 }
 
@@ -771,8 +754,7 @@ export const initialVoiceState: VoiceState = {
 	breakoutPending: false,
 	closingBreakoutIds: [],
 	voiceJoinWaiting: null,
-	voiceJoinAdmitted: null,
-	voiceJoinRejected: null,
+	voiceJoinRejected: false,
 	waitingUsersByChannel: {}
 };
 
@@ -944,21 +926,16 @@ export const voiceSlice = createSlice({
 			state.breakoutParents = [];
 			state.breakoutPending = false;
 			state.voiceJoinWaiting = null;
-			state.voiceJoinAdmitted = null;
 		},
 		setVoiceJoinWaiting: (state, action: PayloadAction<VoiceJoinWaitingState | null>) => {
 			state.voiceJoinWaiting = action.payload;
-			state.voiceJoinAdmitted = null;
-			state.voiceJoinRejected = null;
+			state.voiceJoinRejected = false;
 		},
 		clearVoiceJoinWaiting: (state) => {
 			state.voiceJoinWaiting = null;
 		},
-		clearVoiceJoinAdmitted: (state) => {
-			state.voiceJoinAdmitted = null;
-		},
 		clearVoiceJoinRejected: (state) => {
-			state.voiceJoinRejected = null;
+			state.voiceJoinRejected = false;
 		},
 		receiveVoiceJoinWaitingEvent: (state, action: PayloadAction<VoiceJoinWaitingEventPayload>) => {
 			const evt = action.payload;
@@ -966,10 +943,6 @@ export const voiceSlice = createSlice({
 			const userId = evt.user_id ? String(evt.user_id) : '';
 			if (!channelId || !userId) return;
 			const existing = state.waitingUsersByChannel[channelId] ?? [];
-			if (evt.action === 1) {
-				state.waitingUsersByChannel[channelId] = existing.filter((u) => String(u.user_id) !== userId);
-				return;
-			}
 			const nextUser: VoiceJoinWaitingUserPayload = {
 				user_id: userId,
 				username: evt.username ?? '',
@@ -977,8 +950,7 @@ export const voiceSlice = createSlice({
 				avatar: evt.avatar ?? '',
 				create_time_seconds: evt.create_time_seconds ?? ''
 			};
-			const filtered = existing.filter((u) => String(u.user_id) !== userId);
-			state.waitingUsersByChannel[channelId] = [...filtered, nextUser];
+			state.waitingUsersByChannel[channelId] = [...existing.filter((u) => String(u.user_id) !== userId), nextUser];
 		},
 		receiveVoiceJoinReviewedEvent: (state, action: PayloadAction<{ event: VoiceJoinReviewedEventPayload; selfUserId?: string }>) => {
 			const { event, selfUserId } = action.payload;
@@ -991,21 +963,19 @@ export const voiceSlice = createSlice({
 				const waitingTarget = state.voiceJoinWaiting;
 				state.voiceJoinWaiting = null;
 				if (event.approved && event.token) {
-					state.voiceJoinAdmitted = {
-						channelId,
+					state.isJoined = true;
+					state.voiceInfo = {
 						clanId: (event.clan_id ? String(event.clan_id) : '') || waitingTarget.clanId,
 						clanName: waitingTarget.clanName,
+						channelId,
 						channelLabel: waitingTarget.channelLabel,
 						channelPrivate: waitingTarget.channelPrivate,
-						joinRole: waitingTarget.joinRole,
-						token: event.token,
-						url: event.url || waitingTarget.url || ''
+						joinRole: waitingTarget.joinRole
 					};
+					state.sfuUrl = event.url || waitingTarget.url || '';
+					state.token = event.token;
 				} else if (!event.approved) {
-					state.voiceJoinRejected = {
-						channelId,
-						timestamp: Date.now()
-					};
+					state.voiceJoinRejected = true;
 				}
 			}
 		},
@@ -1449,7 +1419,6 @@ export const selectHostedBreakoutByChannelId = createSelector(
 
 const EMPTY_VOICE_WAITING_USERS: VoiceJoinWaitingUserPayload[] = [];
 export const selectVoiceJoinWaiting = createSelector(getVoiceState, (state) => state.voiceJoinWaiting);
-export const selectVoiceJoinAdmitted = createSelector(getVoiceState, (state) => state.voiceJoinAdmitted);
 export const selectVoiceJoinRejected = createSelector(getVoiceState, (state) => state.voiceJoinRejected);
 export const selectVoiceWaitingUsersByChannelId = createSelector(
 	[getVoiceState, (_: RootState, channelId: string) => channelId],

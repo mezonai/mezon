@@ -33,7 +33,6 @@ import {
 	selectTokenJoinVoice,
 	selectVoiceFullScreen,
 	selectVoiceInfo,
-	selectVoiceJoinAdmitted,
 	selectVoiceJoinRejected,
 	selectVoiceJoinWaiting,
 	selectVoiceJoined,
@@ -354,11 +353,11 @@ const MezonSfuChannelVoiceInner = () => {
 	const sfuUrl = useSelector(selectSfuUrlJoinVoice);
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const voiceJoinWaiting = useSelector(selectVoiceJoinWaiting);
-	const voiceJoinAdmitted = useSelector(selectVoiceJoinAdmitted);
 	const voiceJoinRejected = useSelector(selectVoiceJoinRejected);
 	const { t } = useTranslation('common');
 	const [loading, setLoading] = useState<boolean>(false);
 	const [joinRole, setJoinRole] = useState<SfuJoinRole>('speaker');
+	const activeJoinRole = voiceInfo?.joinRole || joinRole;
 	const [selectedCamera, setSelectedCamera] = useState('default');
 	const [selectedBg, setSelectedBg] = useState<BackgroundMode | null>(null);
 	const [rejoinTarget, setRejoinTarget] = useState<VoiceJoinTarget | null>(null);
@@ -524,7 +523,7 @@ const MezonSfuChannelVoiceInner = () => {
 	const handleReconnectRequired = useLastCallback((networkLost: boolean) => {
 		if (!voiceInfo) return;
 		setRejoinNetworkLost(networkLost);
-		setRejoinTarget({ ...voiceInfo, joinRole });
+		setRejoinTarget({ ...voiceInfo, joinRole: activeJoinRole });
 		dispatch(voiceActions.setOpenPopOut(false));
 		dispatch(voiceActions.setVoiceConnectionState(false));
 	});
@@ -558,26 +557,6 @@ const MezonSfuChannelVoiceInner = () => {
 
 		isDisconnectingRef.current = false;
 	});
-
-	useEffect(() => {
-		if (!voiceJoinAdmitted?.token) return;
-		setJoinRole(voiceJoinAdmitted.joinRole);
-		dispatch(voiceActions.setJoined(true));
-		dispatch(
-			voiceActions.setVoiceInfo({
-				clanId: voiceJoinAdmitted.clanId,
-				clanName: voiceJoinAdmitted.clanName,
-				channelId: voiceJoinAdmitted.channelId,
-				channelLabel: voiceJoinAdmitted.channelLabel,
-				channelPrivate: voiceJoinAdmitted.channelPrivate,
-				joinRole: voiceJoinAdmitted.joinRole
-			})
-		);
-		dispatch(voiceActions.setSfuUrl(voiceJoinAdmitted.url));
-		dispatch(voiceActions.setToken(voiceJoinAdmitted.token));
-		setRejoinTarget(null);
-		dispatch(voiceActions.clearVoiceJoinAdmitted());
-	}, [dispatch, voiceJoinAdmitted]);
 
 	useEffect(() => {
 		if (!voiceJoinRejected) return;
@@ -621,7 +600,7 @@ const MezonSfuChannelVoiceInner = () => {
 							{token && serverUrl ? (
 								<VoiceConferenceContent
 									token={token}
-									joinRole={joinRole}
+									joinRole={activeJoinRole}
 									serverUrl={serverUrl}
 									voiceInfo={voiceInfo}
 									isPrivateVoice={isPrivateVoice}
