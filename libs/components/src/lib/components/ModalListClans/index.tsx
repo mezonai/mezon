@@ -11,7 +11,7 @@ import {
 } from '@mezon/store';
 import { Image } from '@mezon/ui';
 import type { IClan } from '@mezon/utils';
-import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
+import { clanFrameId, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { memo, useState, useTransition } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -19,6 +19,7 @@ import { useSelector } from 'react-redux';
 import type { Coords } from '../ChannelLink';
 import NavLinkComponent from '../NavLink';
 import PanelClan from '../PanelClan';
+import { ProAvatarFrame } from '../ProfileBadges';
 
 export type SidebarClanItemProps = {
 	option: IClan;
@@ -79,6 +80,30 @@ const SidebarClanItem = ({ option, active, onMouseDown, className = '', onClanCl
 		openRightClickModal();
 	};
 
+	const frameId = clanFrameId(option?.pro_plan, option?.frame);
+
+	const iconContent = (
+		<NavLinkComponent active={active}>
+			{option?.logo ? (
+				<Image
+					draggable="false"
+					src={createImgproxyUrl(option?.logo ?? '', { width: 100, height: 100, resizeType: 'fill-down' }) || ''}
+					placeholder="clan"
+					className={`w-[40px] h-[40px] object-cover ${frameId ? 'rounded-full' : 'rounded-lg'} clan`}
+				/>
+			) : (
+				option?.clan_name && (
+					<div
+						className={`w-[40px] h-[40px] ${frameId ? 'rounded-full' : 'rounded-xl'} flex justify-center items-center text-theme-primary text-[20px] clan bg-item-theme hover:[background:var(--bg-item-hover)]`}
+						data-e2e={generateE2eId('clan_page.side_bar.clan_item.name')}
+					>
+						{(option.clan_name || '').trim().charAt(0).toUpperCase()}
+					</div>
+				)
+			)}
+		</NavLinkComponent>
+	);
+
 	return (
 		<div
 			onMouseDown={onMouseDown}
@@ -89,25 +114,13 @@ const SidebarClanItem = ({ option, active, onMouseDown, className = '', onClanCl
 			data-e2e={generateE2eId('clan_page.side_bar.clan_item')}
 		>
 			<button onClick={handleClick} draggable="false">
-				<NavLinkComponent active={active}>
-					{option?.logo ? (
-						<Image
-							draggable="false"
-							src={createImgproxyUrl(option?.logo ?? '', { width: 100, height: 100, resizeType: 'fill-down' }) || ''}
-							placeholder="clan"
-							className="w-[40px] h-[40px] object-cover rounded-lg clan"
-						/>
-					) : (
-						option?.clan_name && (
-							<div
-								className="w-[40px] h-[40px] rounded-xl flex justify-center items-center text-theme-primary text-[20px] clan bg-item-theme hover:[background:var(--bg-item-hover)]"
-								data-e2e={generateE2eId('clan_page.side_bar.clan_item.name')}
-							>
-								{(option.clan_name || '').trim().charAt(0).toUpperCase()}
-							</div>
-						)
-					)}
-				</NavLinkComponent>
+				{frameId ? (
+					<ProAvatarFrame isPro userId="" frameId={frameId}>
+						{iconContent}
+					</ProAvatarFrame>
+				) : (
+					iconContent
+				)}
 			</button>
 			{badgeCountClan > 0 ? (
 				<div

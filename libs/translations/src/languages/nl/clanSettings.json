@@ -9,6 +9,7 @@
 		},
 		"items": {
 			"overview": "Overzicht",
+			"clanPro": "Clan Pro",
 			"roles": "Rollen",
 			"emoji": "Emoji's",
 			"imageStickers": "Stickerafbeeldingen",
@@ -103,5 +104,13 @@
 	"toast": {
 		"clanDeletedSuccess": "Clan is succesvol verwijderd",
 		"clanCreatedSuccess": "Clan is succesvol aangemaakt"
+	},
+	"clanPro": {
+		"title": "Clan-pictogramkader",
+		"description": "Kies een Pro-decoratiekader om rond je clan-pictogram weer te geven.",
+		"noFrame": "Geen kader",
+		"notPro": "Upgrade deze clan naar Clan Pro om een kader te kiezen.",
+		"saved": "Clan-kader opgeslagen.",
+		"saveFailed": "Opslaan van clan-kader mislukt. Probeer het opnieuw."
 	}
 }

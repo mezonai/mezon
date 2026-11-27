@@ -9,6 +9,7 @@
 		},
 		"items": {
 			"overview": "Tổng quan",
+			"clanPro": "Clan Pro",
 			"roles": "Vai trò",
 			"emoji": "Biểu cảm",
 			"imageStickers": "Nhãn dán hình ảnh",
@@ -103,5 +104,13 @@
 	"toast": {
 		"clanDeletedSuccess": "Xóa clan thành công",
 		"clanCreatedSuccess": "Tạo clan thành công"
+	},
+	"clanPro": {
+		"title": "Khung biểu tượng Clan",
+		"description": "Chọn khung trang trí Pro để hiển thị quanh biểu tượng clan của bạn.",
+		"noFrame": "Không có khung",
+		"notPro": "Nâng cấp clan này lên Clan Pro để chọn khung.",
+		"saved": "Đã lưu khung clan.",
+		"saveFailed": "Lưu khung clan thất bại. Vui lòng thử lại."
 	}
 }

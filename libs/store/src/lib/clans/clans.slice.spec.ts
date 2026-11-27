@@ -1,6 +1,6 @@
 import { describe, expect, it, jest } from '@jest/globals';
 import { configureStore } from '@reduxjs/toolkit';
-import { CLANS_FEATURE_KEY, clansActions, clansReducer, mapClanToEntity, selectCurrentClanProPlan } from './clans.slice';
+import { CLANS_FEATURE_KEY, clansActions, clansReducer, mapClanToEntity, selectCurrentClanProPlan, updateClan } from './clans.slice';
 
 jest.mock('@mezon/logger', () => ({ captureSentryError: jest.fn() }));
 jest.mock('@mezon/utils', () => ({
@@ -113,5 +113,93 @@ describe('selectCurrentClanProPlan', () => {
 		expect(updatedClan?.clan_name).toBe('Renamed Pro Clan');
 		expect(updatedClan?.pro_plan).toBe(true);
 		expect(selectCurrentClanProPlan(store.getState())).toBe(true);
+	});
+});
+
+describe('clansActions.update frame', () => {
+	it('applies frame from ClanUpdatedEvent, keeps it when omitted and never takes pro_plan from the event', () => {
+		const store = createClansStore();
+		store.dispatch(clansActions.add(mapClanToEntity({ clan_id: 'clan-1', clan_name: 'One', pro_plan: false, frame: 0 } as never)));
+
+		store.dispatch(
+			clansActions.update({
+				dataUpdate: {
+					clan_id: 'clan-1',
+					clan_name: 'One',
+					logo: '',
+					banner: '',
+					status: 1,
+					is_onboarding: false,
+					welcome_channel_id: '0',
+					onboarding_banner: '',
+					about: '',
+					prevent_anonymous: false,
+					pro_plan: true,
+					frame: 5
+				}
+			})
+		);
+
+		let clan = store.getState()[CLANS_FEATURE_KEY].entities['clan-1'];
+		expect(clan?.pro_plan).toBe(false);
+		expect(clan?.frame).toBe(5);
+
+		store.dispatch(
+			clansActions.update({
+				dataUpdate: {
+					clan_id: 'clan-1',
+					clan_name: 'One Renamed',
+					logo: '',
+					banner: '',
+					status: 1,
+					is_onboarding: false,
+					welcome_channel_id: '0',
+					onboarding_banner: '',
+					about: '',
+					prevent_anonymous: false
+				}
+			})
+		);
+
+		clan = store.getState()[CLANS_FEATURE_KEY].entities['clan-1'];
+		expect(clan?.pro_plan).toBe(false);
+		expect(clan?.frame).toBe(5);
+
+		store.dispatch(
+			clansActions.update({
+				dataUpdate: {
+					clan_id: 'clan-1',
+					clan_name: 'One',
+					logo: '',
+					banner: '',
+					status: 1,
+					is_onboarding: false,
+					welcome_channel_id: '0',
+					onboarding_banner: '',
+					about: '',
+					prevent_anonymous: false,
+					pro_plan: false,
+					frame: 0
+				}
+			})
+		);
+
+		clan = store.getState()[CLANS_FEATURE_KEY].entities['clan-1'];
+		expect(clan?.pro_plan).toBe(false);
+		expect(clan?.frame).toBe(0);
+	});
+
+	it('updates frame on updateClan.fulfilled when request.frame is defined', () => {
+		const store = createClansStore();
+		store.dispatch(clansActions.add(mapClanToEntity({ clan_id: 'clan-1', clan_name: 'One', pro_plan: true, frame: 2 } as never)));
+
+		store.dispatch(updateClan.fulfilled({}, 'req-1', { clan_id: 'clan-1', request: { clan_name: 'One', frame: 9 } }));
+		expect(store.getState()[CLANS_FEATURE_KEY].entities['clan-1']?.frame).toBe(9);
+
+		store.dispatch(updateClan.fulfilled({}, 'req-2', { clan_id: 'clan-1', request: { clan_name: 'One Updated' } }));
+		expect(store.getState()[CLANS_FEATURE_KEY].entities['clan-1']?.frame).toBe(9);
+
+		store.dispatch(updateClan.fulfilled({}, 'req-3', { clan_id: 'clan-1', request: { clan_name: 'One', frame: 0 } }));
+		expect(store.getState()[CLANS_FEATURE_KEY].entities['clan-1']?.frame).toBe(0);
 	});
 });

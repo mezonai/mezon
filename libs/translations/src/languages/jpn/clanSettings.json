@@ -9,6 +9,7 @@
 		},
 		"items": {
 			"overview": "概要",
+			"clanPro": "Clan Pro",
 			"roles": "ロール",
 			"emoji": "絵文字",
 			"imageStickers": "画像スタンプ",
@@ -103,5 +104,13 @@
 	"toast": {
 		"clanDeletedSuccess": "クランを削除しました",
 		"clanCreatedSuccess": "クランを作成しました"
+	},
+	"clanPro": {
+		"title": "クランアイコンフレーム",
+		"description": "クランアイコンの周りに表示するProデコレーションフレームを選択します。",
+		"noFrame": "フレームなし",
+		"notPro": "フレームを選択するには、このクランをClan Proにアップグレードしてください。",
+		"saved": "クランフレームを保存しました。",
+		"saveFailed": "クランフレームの保存に失敗しました。もう一度お試しください。"
 	}
 }

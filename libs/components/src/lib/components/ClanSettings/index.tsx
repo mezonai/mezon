@@ -20,6 +20,7 @@ import DeleteClanModal from '../DeleteClanModal';
 import SettingComunity from '../SettingComunity';
 import { ExitSetting } from '../SettingProfile';
 import AuditLog from './AuditLog';
+import ClanProSetting from './ClanProSetting';
 import ClanSettingOverview from './ClanSettingOverview';
 import Integrations from './Integrations';
 import type { ItemObjProps } from './ItemObj';
@@ -48,6 +49,7 @@ const ClanSetting = (props: ModalSettingProps) => {
 	const allSettings: ItemObjProps[] = useMemo(
 		() => [
 			{ id: ItemSetting.OVERVIEW, name: t('sidebar.items.overview') },
+			{ id: ItemSetting.CLAN_PRO, name: t('sidebar.items.clanPro') },
 			{ id: ItemSetting.ROLES, name: t('sidebar.items.roles') },
 			{ id: ItemSetting.CATEGORY_ORDER, name: t('sidebar.items.categoryOrder') },
 			{ id: ItemSetting.ARCHIVED_CHANNELS, name: t('sidebar.items.archivedChannels') },
@@ -118,6 +120,8 @@ const ClanSetting = (props: ModalSettingProps) => {
 		switch (currentSettingId) {
 			case ItemSetting.OVERVIEW:
 				return <ClanSettingOverview />;
+			case ItemSetting.CLAN_PRO:
+				return <ClanProSetting />;
 			case ItemSetting.ROLES:
 				return <ServerSettingMainRoles />;
 			case ItemSetting.INTEGRATIONS:

@@ -866,7 +866,8 @@ export const clansSlice = createSlice({
 					is_community: rawData.is_community ?? currentClanData?.is_community,
 					community_banner: rawData.community_banner ?? currentClanData?.community_banner,
 					short_url: rawData.short_url ?? currentClanData?.short_url,
-					hashtags: rawData.hashtags ?? currentClanData?.hashtags
+					hashtags: rawData.hashtags ?? currentClanData?.hashtags,
+					frame: dataUpdate.frame ?? currentClanData?.frame
 				}
 			});
 		},
@@ -923,6 +924,15 @@ export const clansSlice = createSlice({
 		builder.addCase(deleteClan.rejected, (state: ClansState, action) => {
 			state.loadingStatus = 'error';
 			state.error = action.error.message;
+		});
+		builder.addCase(updateClan.fulfilled, (state: ClansState, action) => {
+			const { clan_id, request } = action.meta.arg;
+			if (request.frame !== undefined) {
+				clansAdapter.updateOne(state, {
+					id: clan_id,
+					changes: { frame: request.frame }
+				});
+			}
 		});
 		builder.addCase(transferClan.fulfilled, (state: ClansState, action) => {
 			if (!action.payload) return;

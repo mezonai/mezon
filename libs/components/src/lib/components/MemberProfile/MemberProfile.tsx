@@ -7,7 +7,7 @@ import { EUserStatus, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { ReactNode } from 'react';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../components';
-import { DEFAULT_PRO_PALETTE, ProAvatarFrame, type ProPalette } from '../ProfileBadges';
+import { ProAvatarFrame } from '../ProfileBadges';
 import { UserStatusIconClan } from './IconStatus';
 
 type WithProPlan = { pro_plan?: boolean };
@@ -20,7 +20,6 @@ type BaseMemberProfileProps = {
 	avatar: string;
 	isOwner?: boolean;
 	userStatus?: ReactNode;
-	proPalette?: ProPalette;
 	isPro?: boolean;
 	ownProUserId?: string;
 	onContextMenu: (event: React.MouseEvent<Element, MouseEvent>, channelId: string, user: UsersClanEntity) => void;
@@ -35,7 +34,6 @@ export const BaseMemberProfile = ({
 	avatar,
 	isOwner,
 	userStatus,
-	proPalette,
 	isPro: isProProp,
 	ownProUserId,
 	onContextMenu,
@@ -71,7 +69,7 @@ export const BaseMemberProfile = ({
 				data-e2e={generateE2eId('clan_page.secondary_side_bar.member')}
 			>
 				<div className="relative">
-					<ProAvatarFrame isPro={isPro} palette={proPalette ?? DEFAULT_PRO_PALETTE} glow={false} ringWidth={2} className="-m-[2px]">
+					<ProAvatarFrame isPro={isPro} userId={user?.user?.id || user?.id || id}>
 						<AvatarImage
 							alt={username}
 							username={user?.user?.username ?? username}

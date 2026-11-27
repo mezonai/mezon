@@ -22,7 +22,7 @@ import { AvatarImage, useVirtualizer } from '../../components';
 import { useMemberContextMenu } from '../../contexts';
 import { UserStatusIconClan } from '../MemberProfile';
 import { BaseMemberProfile, ClanUserName } from '../MemberProfile/MemberProfile';
-import { ProAvatarFrame, getProPalette, type ProPalette } from '../ProfileBadges';
+import { ProAvatarFrame } from '../ProfileBadges';
 
 type WithProPlan = { pro_plan?: boolean };
 
@@ -31,11 +31,10 @@ const heightTopBar = 50;
 type TempMemberItemProps = {
 	id: string;
 	isOwner?: boolean;
-	proPalette?: ProPalette;
 	ownProUserId?: string;
 };
 
-const TempMemberItem = memo(({ id, isOwner, proPalette, ownProUserId }: TempMemberItemProps) => {
+const TempMemberItem = memo(({ id, isOwner, ownProUserId }: TempMemberItemProps) => {
 	const { t } = useTranslation('memberPage');
 	const user = useAppSelector((state) => selectMemberClanByUserId(state, id));
 	const userMeta = useMemberStatus(id);
@@ -69,7 +68,7 @@ const TempMemberItem = memo(({ id, isOwner, proPalette, ownProUserId }: TempMemb
 		<div className={`relative group w-full ${isOffline ? 'opacity-50' : ''}`}>
 			<div className="cursor-pointer flex items-center gap-[9px] relative">
 				<div className="relative">
-					<ProAvatarFrame isPro={isPro} palette={proPalette ?? getProPalette()} glow={false} ringWidth={2} className="-m-[2px]">
+					<ProAvatarFrame isPro={isPro} userId={id}>
 						<AvatarImage
 							alt={username}
 							username={user?.user?.username ?? username}
@@ -101,13 +100,12 @@ type MemberClanProps = {
 	isOwner?: boolean;
 	temp: boolean;
 	clanId: string;
-	proPalette: ProPalette;
 	ownProUserId: string;
 };
 
 const MemoizedMemberItem = memo((props: MemberClanProps) => {
 	const { t } = useTranslation('memberPage');
-	const { id, isOwner, temp, clanId, proPalette, ownProUserId } = props;
+	const { id, isOwner, temp, clanId, ownProUserId } = props;
 	const user = useAppSelector((state) => selectMemberClanByUserId(state, id));
 	const userMeta = useMemberStatus(id);
 	const userCustomStatus = useAppSelector((state) => selectMemberCustomStatusByUserId(state, user?.user?.id || ''));
@@ -123,7 +121,7 @@ const MemoizedMemberItem = memo((props: MemberClanProps) => {
 		openProfileItem(event, user);
 	};
 	return temp ? (
-		<TempMemberItem id={id} isOwner={isOwner} proPalette={proPalette} ownProUserId={ownProUserId} />
+		<TempMemberItem id={id} isOwner={isOwner} ownProUserId={ownProUserId} />
 	) : (
 		<BaseMemberProfile
 			userStatus={
@@ -154,7 +152,6 @@ const MemoizedMemberItem = memo((props: MemberClanProps) => {
 			username={username}
 			id={id}
 			isOwner={isOwner}
-			proPalette={proPalette}
 			ownProUserId={ownProUserId}
 			onContextMenu={showContextMenu}
 			onClick={handleClick}
@@ -217,7 +214,6 @@ const ListMember = () => {
 	}, [members, showFullList, height]);
 
 	const appearanceTheme = useSelector(selectTheme);
-	const proPalette = useMemo(() => getProPalette(appearanceTheme), [appearanceTheme]);
 	const currentUserId = useSelector(selectCurrentUserId);
 	const isOwnPro = useSelector(selectAccountProPlan);
 	const ownProUserId = isOwnPro ? currentUserId : '';
@@ -293,7 +289,6 @@ const ListMember = () => {
 										temp={!showFullList}
 										isOwner={currentClanCreatorId === user}
 										clanId={currentClanId || ''}
-										proPalette={proPalette}
 										ownProUserId={ownProUserId}
 									/>
 								)}

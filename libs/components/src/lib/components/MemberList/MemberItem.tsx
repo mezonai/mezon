@@ -4,7 +4,6 @@ import { selectAccountCustomStatus } from '@mezon/store';
 import { useSelector } from 'react-redux';
 import { useDirectMessageContextMenu } from '../../contexts';
 import { BaseMemberProfile } from '../MemberProfile/MemberProfile';
-import type { ProPalette } from '../ProfileBadges';
 export type MemberItemProps = {
 	user: ChannelMembersEntity;
 
@@ -14,10 +13,9 @@ export type MemberItemProps = {
 	isMe?: boolean;
 	createId?: string;
 	isPro?: boolean;
-	proPalette?: ProPalette;
 };
 
-function MemberItem({ user, directMessageId, isDM = true, isMe, createId, isPro, proPalette }: MemberItemProps) {
+function MemberItem({ user, directMessageId, isDM = true, isMe, createId, isPro }: MemberItemProps) {
 	const userMetaById = useMemberStatus(user.id);
 	const currentUserCustomStatus = useSelector(selectAccountCustomStatus);
 	const status = useMemberStatus(user?.id);
@@ -41,7 +39,6 @@ function MemberItem({ user, directMessageId, isDM = true, isMe, createId, isPro,
 				isOwner={createId === user?.user?.id}
 				userStatus={isMe ? currentUserCustomStatus : status.user_status}
 				isPro={isPro}
-				proPalette={proPalette}
 				onContextMenu={showContextMenu}
 				onClick={handleClick}
 			/>

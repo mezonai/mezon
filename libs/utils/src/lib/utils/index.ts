@@ -46,6 +46,7 @@ import { getPresignUploadKey, putAttachmentFile } from './presignUpload';
 import { isFromAllowedDomain, isMezonCdnUrl, isMezonMediaUrl, isTenorUrl } from './urlSanitization';
 export * from './animateScroll';
 export * from './audio';
+export * from './avatarFrames';
 export * from './buildClassName';
 export * from './buildStyle';
 export * from './calculateAlbumLayout';
