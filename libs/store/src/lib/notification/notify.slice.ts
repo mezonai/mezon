@@ -1,6 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import type { INotification, LoadingStatus, NotificationEntity } from '@mezon/utils';
-import { Direction_Mode, NotificationCategory } from '@mezon/utils';
+import { Direction_Mode, NotificationCategory, normalizeClanId } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiChannelMessageHeader, ApiMessageMention } from 'mezon-js';
@@ -58,7 +58,7 @@ function deduplicateNotifications(notifications: INotification[], category: Noti
 		const messageKey =
 			category === NotificationCategory.MENTIONS && messageId && messageId !== '0'
 				? JSON.stringify([
-						notification.content?.clan_id || notification.clan_id || '0',
+						normalizeClanId(notification.content?.clan_id || notification.clan_id),
 						notification.content?.channel_id || notification.channel_id || '0',
 						notification.topic_id || notification.content?.tp || '0',
 						messageId
@@ -196,7 +196,7 @@ export const markMessageNotify = createAsyncThunk('notification/markMessageNotif
 			message_id: message.id,
 			content: contentString,
 			avatar: message.avatar || '',
-			clan_id: message.clan_id || '0',
+			clan_id: normalizeClanId(message.clan_id),
 			channel_id: message.channel_id,
 			attachments: message?.attachments || []
 		};
@@ -433,7 +433,7 @@ export const notificationSlice = createSlice({
 						},
 						category: NotificationCategory.MESSAGES,
 						avatar_url: message?.avatar?.[0] || '',
-						clan_id: message.clan_id || '0',
+						clan_id: normalizeClanId(message.clan_id),
 						topic_id: message.topic_id || '0'
 					};
 

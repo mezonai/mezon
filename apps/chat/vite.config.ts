@@ -37,7 +37,7 @@ export default defineConfig(({ mode }) => {
 		root: path.join(appRoot, 'src'),
 		publicDir: mode === 'production' ? false : path.join(appRoot, 'src/assets'),
 		cacheDir: path.join(workspaceRoot, 'node_modules/.vite/apps/chat'),
-		base: mode === 'production' ? '/chat' : './chat',
+		base: mode === 'production' ? '/chat/' : './chat',
 
 		server: {
 			port: 4200,
@@ -85,7 +85,7 @@ export default defineConfig(({ mode }) => {
 					`connect-src 'self' ws: wss: https: blob: *.mezon.ai media.tenor.com *.googletagmanager.com *.google-analytics.com *.googleapis.com *.gstatic.com ${streamingUrl}`,
 					`media-src 'self' blob: https: *.mezon.ai media.tenor.com ${streamingUrl}`,
 					"child-src 'self' https://www.youtube.com https://www.tiktok.com https://www.facebook.com https://player.vimeo.com",
-					"frame-src 'self' https://www.youtube.com https://www.tiktok.com https://www.facebook.com https://player.vimeo.com https://quiz.mezon.ai https://blackboard.mezon.ai https://interactive.mezon.ai",
+					"frame-src 'self' https://www.youtube.com https://www.tiktok.com https://www.facebook.com https://player.vimeo.com",
 					"base-uri 'self'",
 					"form-action 'self' *.mezon.ai",
 					"frame-ancestors 'self'"
@@ -167,6 +167,9 @@ export default defineConfig(({ mode }) => {
 			'process.env.NODE_ENV': JSON.stringify(mode),
 			'process.env.BABEL_ENV': JSON.stringify(process.env.BABEL_ENV ?? ''),
 			'process.env.APP_VERSION': JSON.stringify(APP_VERSION),
+			'process.env.NX_PRO_PLAN_RECIPIENT_ID': JSON.stringify(env.NX_PRO_PLAN_RECIPIENT_ID ?? ''),
+			'process.env.NX_PRO_PLAN_USER_PRICE': JSON.stringify(env.NX_PRO_PLAN_USER_PRICE ?? ''),
+			'process.env.NX_PRO_PLAN_CLAN_PRICE': JSON.stringify(env.NX_PRO_PLAN_CLAN_PRICE ?? ''),
 			...Object.keys(env).reduce(
 				(acc, key) => {
 					acc[`process.env.${key}`] = JSON.stringify(env[key]);

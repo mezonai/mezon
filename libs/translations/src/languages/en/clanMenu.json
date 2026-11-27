@@ -55,8 +55,32 @@
         "processing": "Processing...",
         "invitePeople": "Invite People",
         "clanSettings": "Clan Settings", 
+		"clanBenefits": "Enable Pro Plan",
         "notificationSettings": "Notification Settings",
         "showEmptyCategories": "Show Empty Categories",
         "leaveClan": "Leave Clan"
+	},
+	"proPlanConfirm": {
+		"title": "Confirm Clan Pro purchase",
+		"message": "Enable Clan Pro for {{clanName}} for {{price}} tokens per year?",
+		"yourClan": "your clan",
+		"confirmButton": "Confirm purchase",
+		"processing": "Processing purchase…",
+		"purchaseUnavailable": "Purchases are unavailable until a recipient user ID is configured.",
+		"purchaseSubmitted": "Clan Pro payment submitted.",
+		"couponTitle": "Confirm Clan Pro coupon",
+		"couponMessage": "Are you sure you want to enable Clan Pro for {{clanName}} with this coupon?",
+		"couponConfirmButton": "Enable Clan Pro",
+		"couponProcessing": "Applying coupon…",
+		"couponApplied": "Coupon applied successfully.",
+		"couponFailed": "This coupon could not be applied.",
+		"couponNotFound": "This coupon was not found.",
+		"couponExpiredOrWrongPlan": "This coupon has expired or isn't valid for this plan.",
+		"couponAlreadyUsed": "This coupon has already been used.",
+		"couponNotClanOwner": "Only the clan owner can redeem this coupon.",
+		"userCouponTitle": "Confirm User Pro coupon",
+		"userCouponMessage": "Are you sure you want to enable User Pro for {{userName}} with this coupon?",
+		"userCouponConfirmButton": "Enable User Pro",
+		"yourAccount": "your account"
     }
 }

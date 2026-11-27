@@ -1,6 +1,7 @@
 import { Direction_Mode, TypeMessage, generatePathAttachments, getPresignIngestKeys, getWebUploadedAttachments } from '@mezon/utils';
 import { configureStore } from '@reduxjs/toolkit';
 import { ChannelStreamMode } from 'mezon-js';
+import { toast } from 'react-toastify';
 import { shouldForceApiCall } from '../cache-metadata';
 import { handleSendTopic } from '../topicDiscussion/topicDiscussions.slice';
 import {
@@ -21,6 +22,7 @@ import {
 
 jest.mock('@mezon/logger', () => ({ captureSentryError: jest.fn() }));
 jest.mock('@mezon/utils', () => ({
+	...jest.requireActual('../../../../utils/src/lib/utils/clanChannel'),
 	mergePresignFinishContent: jest.requireActual('../../../../utils/src/lib/utils/presignFinish').mergePresignFinishContent,
 	TypeMessage: { Chat: 0, ChatUpdate: 1, ChatRemove: 2 },
 	EMessageCode: { FIRST_MESSAGE: 4 },
@@ -31,6 +33,7 @@ jest.mock('@mezon/utils', () => ({
 	createLocalPreviewUrl: jest.fn(() => 'blob:independent-preview'),
 	generatePathAttachments: jest.fn(),
 	getPresignIngestKeys: jest.fn(() => []),
+	getPresignUploadKey: (uploadName?: string) => uploadName?.split('/').pop()?.split('.')[0],
 	getWebUploadedAttachments: jest.fn(),
 	getMessageCreateTimeSeconds: () => 1,
 	withCreateTimeSecondsInUpdateContent: (content: unknown) => content,
@@ -39,7 +42,11 @@ jest.mock('@mezon/utils', () => ({
 	isYouTubeLink: jest.fn(),
 	isTikTokLink: jest.fn()
 }));
-jest.mock('mezon-js', () => ({ safeJSONParse: JSON.parse, ChannelStreamMode: { STREAM_MODE_THREAD: 6 } }));
+jest.mock('mezon-js', () => ({
+	safeJSONParse: JSON.parse,
+	ChannelType: { CHANNEL_TYPE_CHANNEL: 1, CHANNEL_TYPE_GROUP: 2, CHANNEL_TYPE_DM: 3, CHANNEL_TYPE_THREAD: 7 },
+	ChannelStreamMode: { STREAM_MODE_CHANNEL: 2, STREAM_MODE_GROUP: 3, STREAM_MODE_DM: 4, STREAM_MODE_THREAD: 6 }
+}));
 jest.mock('i18next', () => ({ t: (key: string) => key }));
 jest.mock('react-toastify', () => ({ toast: { error: jest.fn() } }));
 jest.mock('../account/account.slice', () => ({ selectAllAccount: () => ({ user: { id: 'user' } }) }));
@@ -95,6 +102,7 @@ function setup() {
 	const client = {
 		writeChatMessage: jest.fn().mockResolvedValue({ message_id: '900' }),
 		sendChannelMessage: jest.fn(),
+		sendChannelMessageApi: jest.fn().mockResolvedValue({ message_id: '901' }),
 		updateChannelMessage: jest.fn().mockResolvedValue({}),
 		listChannelMessages: jest.fn()
 	};
@@ -894,10 +902,33 @@ describe('reopening a channel that missed messages while offline', () => {
 	it('fetches the missed messages in order instead of the page before its newest cached row', async () => {
 		const { store, client } = await openThenMiss(1003);
 		await store.dispatch(fetchMessages(args)).unwrap();
-		expect(client.listChannelMessages.mock.calls.at(-1)).toEqual([{}, 'clan', 'channel', '0', undefined, 50, undefined]);
+		expect(client.listChannelMessages.mock.calls.at(-1)).toEqual([{}, 'clan', 'channel', '0', undefined, 50, undefined, msg(1000).id]);
 		expect(store.getState().messages.channelViewPortMessageIds.channel.slice(-4)).toEqual(ids(1000, 1003));
 		expect(store.getState().messages.lastMessageByChannel.channel?.id).toBe(msg(1003).id);
 		expect(selectHasMoreBottomByChannelId(store.getState() as any, 'channel')).toBe(false);
+	});
+
+	it('keeps cached messages and refreshes cache metadata when server returns empty for matching lastSeenMessageId', async () => {
+		const { store, client } = await openThenMiss(1000);
+		client.listChannelMessages.mockResolvedValueOnce({ messages: [] });
+		const beforeCache = store.getState().messages.channelMessages.channel.cache;
+
+		await store.dispatch(fetchMessages(args)).unwrap();
+
+		expect(client.listChannelMessages.mock.calls.at(-1)).toEqual([{}, 'clan', 'channel', '0', undefined, 50, undefined, msg(1000).id]);
+		expect(store.getState().messages.channelViewPortMessageIds.channel).toEqual(ids(951, 1000));
+		expect(store.getState().messages.channelMessages.channel.cache).toBeDefined();
+		expect(store.getState().messages.channelMessages.channel.cache).not.toBe(beforeCache);
+	});
+
+	it('does not send lastSeenMessageId when channel only has an unfetched realtime message', async () => {
+		const { store, client } = setup();
+		store.dispatch(messagesActions.addOneMessage({ ...msg(1000) } as any));
+		client.listChannelMessages.mockResolvedValueOnce({ messages: page(951, 1000), last_sent_message: msg(1000) });
+
+		await store.dispatch(fetchMessages(args)).unwrap();
+
+		expect(client.listChannelMessages.mock.calls.at(-1)).toEqual([{}, 'clan', 'channel', '0', undefined, 50, undefined]);
 	});
 
 	it('replaces a cache that no longer connects to the latest page', async () => {
@@ -985,5 +1016,200 @@ describe('scoping message update and delete events by conversation', () => {
 		store.dispatch(messagesActions.newMessage({ id: '100', channel_id: 'parent', topic_id: '0', code: TypeMessage.ChatRemove } as any));
 
 		expect(store.getState().messages.channelMessages.topic.entities['100']).toBeUndefined();
+	});
+
+	it('normalizes negative synthetic DM/Group clan_id when fetching and sending messages', async () => {
+		const { store, client, mezon } = setup();
+		client.listChannelMessages.mockResolvedValue({ messages: [] });
+
+		await fetchMessagesCached(store.getState as any, mezon as any, '-999001', 'dm-channel', '0', undefined, undefined, true);
+		expect(client.listChannelMessages).toHaveBeenCalledWith({}, '0', 'dm-channel', '0', undefined, 50, undefined);
+
+		await store
+			.dispatch(
+				sendMessage({
+					clanId: '-999001',
+					channelId: 'dm-channel',
+					senderId: 'user',
+					mode: ChannelStreamMode.STREAM_MODE_DM,
+					isPublic: false,
+					content: { t: 'hello dm' }
+				})
+			)
+			.unwrap();
+
+		const sentMessages = Object.values(store.getState().messages.channelMessages['dm-channel']?.entities ?? {});
+		expect(sentMessages.length).toBeGreaterThan(0);
+		expect(sentMessages[0]?.clan_id).toBeUndefined();
+	});
+
+	it('routes payloads exceeding 4 KB over HTTP sendChannelMessageApi instead of writeChatMessage', async () => {
+		const { store, client, mezon } = setup();
+		const references = [{ message_ref_id: 'ref-1', content: JSON.stringify({ t: 'q'.repeat(3000) }) }];
+		const longContent = { t: 'a'.repeat(1500) };
+
+		const result = await store.dispatch(
+			sendMessage({
+				...payload,
+				content: longContent,
+				attachments: [],
+				references: references as any,
+				topicId: 'topic'
+			})
+		);
+
+		expect(result.meta.requestStatus).toBe('fulfilled');
+		expect(result.payload).toBe(true);
+		expect(client.writeChatMessage).not.toHaveBeenCalled();
+		expect(client.sendChannelMessage).not.toHaveBeenCalled();
+		expect(client.sendChannelMessageApi).toHaveBeenCalledTimes(1);
+		expect(client.sendChannelMessageApi).toHaveBeenCalledWith(
+			mezon.sessionRef.current,
+			'clan',
+			'channel',
+			2,
+			true,
+			longContent,
+			undefined,
+			[],
+			references,
+			undefined,
+			undefined,
+			'',
+			undefined,
+			'topic'
+		);
+		expect(store.getState().messages.channelMessages.topic.ids).toEqual(['901']);
+		expect(store.getState().messages.channelMessages.topic.entities['901']?.isSending).toBe(false);
+	});
+
+	it('routes small payloads over writeChatMessage and returns true', async () => {
+		const { store, client } = setup();
+
+		const result = await store.dispatch(
+			sendMessage({
+				...payload,
+				content: { t: 'short message' },
+				attachments: []
+			})
+		);
+
+		expect(result.meta.requestStatus).toBe('fulfilled');
+		expect(result.payload).toBe(true);
+		expect(client.writeChatMessage).toHaveBeenCalledTimes(1);
+		expect(client.sendChannelMessageApi).not.toHaveBeenCalled();
+	});
+
+	it('removes the optimistic row and resolves false on SEND_TIMEOUT', async () => {
+		jest.useFakeTimers();
+		try {
+			const { store, client } = setup();
+			client.writeChatMessage.mockReturnValue(deferred<{ message_id: string }>().promise);
+			const request = store.dispatch(sendMessage({ ...payload, attachments: [], content: { t: 'Timeout' } }));
+			await jest.advanceTimersByTimeAsync(0);
+			expect(store.getState().messages.channelMessages.channel.ids).toHaveLength(1);
+			await jest.advanceTimersByTimeAsync(30_000);
+			const result = await request;
+			expect(result.meta.requestStatus).toBe('fulfilled');
+			expect(result.payload).toBe(false);
+			expect(store.getState().messages.channelMessages.channel.ids).toEqual([]);
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	it('refuses a presign-first channel message when its presign_finish patch would exceed 4 KB', async () => {
+		const longPrepared = Array.from({ length: 8 }, (_, index) => ({
+			...prepared,
+			filename: `photo-${index}.png`,
+			url: `https://cdn.example/${'x'.repeat(180)}-${index}.png`,
+			uploadPath: `https://upload.example/${index}`,
+			uploadName: `clan/channel/${index}_photo.png`
+		}));
+		jest.mocked(generatePathAttachments).mockResolvedValueOnce(longPrepared);
+		const { store, client } = setup();
+
+		const result = await store.dispatch(
+			sendMessage({
+				...payload,
+				content: { t: 'a'.repeat(3900) },
+				attachments: Array.from({ length: 8 }, (_, index) => ({ ...attachment, filename: `photo-${index}.png` }))
+			})
+		);
+
+		expect(result.meta.requestStatus).toBe('fulfilled');
+		expect(result.payload).toBe(false);
+		expect(toast.error).toHaveBeenCalledWith('message:tooLongMessage');
+		expect(client.writeChatMessage).not.toHaveBeenCalled();
+		expect(client.sendChannelMessageApi).not.toHaveBeenCalled();
+		expect(store.getState().messages.channelMessages.channel.ids).toEqual([]);
+		expect(store.getState().messages.queueSending).toEqual({});
+	});
+
+	it('sends a presign-first message whose upload patch fits even though its full payload with long attachment URLs does not', async () => {
+		const longPrepared = Array.from({ length: 8 }, (_, index) => ({
+			...prepared,
+			filename: `photo-${index}.png`,
+			url: `https://cdn.example/${'x'.repeat(180)}-${index}.png`,
+			uploadPath: `https://upload.example/${index}`,
+			uploadName: `clan/channel/${index}_photo.png`
+		}));
+		jest.mocked(generatePathAttachments).mockResolvedValueOnce(longPrepared);
+		const { store, client } = setup();
+
+		const result = await store.dispatch(
+			sendMessage({
+				...payload,
+				content: { t: 'a'.repeat(3000) },
+				attachments: Array.from({ length: 8 }, (_, index) => ({ ...attachment, filename: `photo-${index}.png` }))
+			})
+		);
+
+		expect(result.payload).toBe(true);
+		expect(client.sendChannelMessageApi).toHaveBeenCalledTimes(1);
+		expect(toast.error).not.toHaveBeenCalled();
+	});
+
+	it.each([
+		['a 403 without a message', { status: 403 }],
+		['a request timeout', new Error('Request timed out.')]
+	])('does not retry an oversized HTTP send after %s and leaves the row failed', async (_label, failure) => {
+		const { store, client } = setup();
+		client.sendChannelMessageApi.mockRejectedValue(failure);
+
+		const result = await store.dispatch(
+			sendMessage({
+				...payload,
+				content: { t: 'a'.repeat(5000) },
+				attachments: []
+			})
+		);
+
+		expect(result.meta.requestStatus).toBe('rejected');
+		expect(client.sendChannelMessageApi).toHaveBeenCalledTimes(1);
+		expect(client.writeChatMessage).not.toHaveBeenCalled();
+		const channel = store.getState().messages.channelMessages.channel;
+		expect(channel?.ids).toHaveLength(1);
+		expect(channel?.entities[channel.ids[0] as string]?.isError).toBe(true);
+	});
+
+	it('sends a presign-first channel reply with a long quoted message over HTTP when its patch stays under 4 KB', async () => {
+		const { store, client } = setup();
+		const references = [{ message_ref_id: 'ref-1', content: JSON.stringify({ t: 'q'.repeat(4000) }) }];
+
+		const result = await store.dispatch(
+			sendMessage({
+				...payload,
+				content: { t: 'ok' },
+				attachments: [attachment],
+				references: references as any
+			})
+		);
+
+		expect(result.meta.requestStatus).toBe('fulfilled');
+		expect(result.payload).toBe(true);
+		expect(client.sendChannelMessageApi).toHaveBeenCalledTimes(1);
+		expect(client.writeChatMessage).not.toHaveBeenCalled();
+		expect(toast.error).not.toHaveBeenCalled();
 	});
 });

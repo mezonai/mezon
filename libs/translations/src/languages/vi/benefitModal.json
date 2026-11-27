@@ -1,0 +1,74 @@
+{
+	"popular": "PHỔ BIẾN NHẤT",
+	"vipBadge": "VIP",
+	"close": "Đóng",
+	"membershipLabel": "MEZON MEMBERSHIP",
+	"heading": "Nâng cấp trải nghiệm",
+	"productName": "Mezon Workplace & Clan",
+	"description": "Mở khóa giới hạn thành viên, tạo webinar, gọi điện không giới hạn và sử dụng các tính năng cao cấp dành riêng cho bạn.",
+	"coupon": {
+		"label": "MÃ COUPON",
+		"placeholder": "Nhập mã coupon",
+		"processing": "Đang xử lý…",
+		"apply": "Áp dụng",
+		"applied": "Đã áp dụng coupon thành công.",
+		"invalid": "Coupon không hợp lệ.",
+		"unavailable": "Chưa cấu hình chức năng xử lý coupon.",
+		"processingFailed": "Không thể xử lý coupon. Vui lòng thử lại."
+	},
+	"plans": {
+		"standard": {
+			"name": "Gói Thường",
+			"label": "HIỆN TẠI",
+			"category": "GÓI TIÊU CHUẨN",
+			"description": "Dành cho cá nhân và người dùng mới bắt đầu",
+			"price": "0 đ",
+			"period": "/ Miễn phí",
+			"featuresTitle": "TÍNH NĂNG & GIỚI HẠN",
+			"buttonText": "Đang sử dụng",
+			"features": {
+				"voice": { "title": "Kênh thoại:", "description": "Tối đa 100 người dùng có thể tham gia cùng một kênh" },
+				"livestream": { "title": "Livestream:", "description": "Tối đa 1 giờ, tối đa 100 người dùng có thể tham gia cùng một kênh" },
+				"soundEffects": { "title": "Hiệu ứng âm thanh:", "description": "Giới hạn thời lượng tạo mỗi hiệu ứng âm thanh" },
+				"storage": { "title": "Dung lượng & lưu trữ:", "description": "Giới hạn lưu trữ hình ảnh, video và tệp" }
+			}
+		},
+		"user": {
+			"name": "User Pro",
+			"label": "CÁ NHÂN",
+			"category": "HỒ SƠ / NÂNG CẤP TÀI KHOẢN",
+			"description": "Trang bị quyền năng cao cấp cho người dùng chuyên nghiệp",
+			"price": "500.000 đ",
+			"period": "/ năm",
+			"priceNote": "Tương đương ~41.600 đ / tháng · Thanh toán hàng năm",
+			"featuresTitle": "TẤT CẢ TÍNH NĂNG GÓI THƯỜNG, CỘNG THÊM",
+			"buttonText": "Nâng cấp User Pro",
+			"features": {
+				"meetings": { "title": "Phòng họp bên ngoài:", "description": "Tối đa 500 người dùng tham gia, không giới hạn thời gian" },
+				"soundEffects": { "title": "Hiệu ứng âm thanh nâng cao:", "description": "Tạo hiệu ứng âm thanh dài hơn với nhiều tùy chọn" },
+				"storage": { "title": "Dung lượng lưu trữ:", "description": "Tăng đáng kể dung lượng tệp đính kèm và lịch sử lưu trữ" },
+				"badge": { "title": "Huy hiệu PRO độc quyền:", "description": "Huy hiệu lấp lánh hiển thị trên ảnh đại diện và hồ sơ" },
+				"bandwidth": { "title": "Băng thông ưu tiên:", "description": "Âm thanh và video chất lượng studio, độ trễ cực thấp" }
+			}
+		},
+		"clan": {
+			"name": "Clan Pro",
+			"label": "DÀNH CHO CỘNG ĐỒNG",
+			"category": "CÀI ĐẶT CLAN / NÂNG CẤP CLAN PRO",
+			"description": "Giải pháp mở rộng sức chứa tối đa cho Clan và hội nhóm",
+			"price": "2.000.000 đ",
+			"period": "/ năm",
+			"priceNote": "Tương đương ~166.000 đ / tháng",
+			"featuresTitle": "NÂNG CẤP TOÀN DIỆN CHO CLAN",
+			"buttonText": "Nâng cấp Clan Pro",
+			"features": {
+				"livestream": { "title": "Livestream:", "description": "Thời lượng dài hơn, hỗ trợ tối đa 500 người dùng cùng tham gia" },
+				"events": { "title": "Sự kiện bên ngoài:", "description": "Tạo sự kiện tối đa 500 người dùng, không giới hạn thời gian" },
+				"webinar": { "title": "Webinar:", "description": "Hỗ trợ tạo webinar cho tối đa 500 người dùng cùng tham gia" },
+				"storage": { "title": "Dung lượng & lưu trữ:", "description": "Kho lưu trữ Clan lớn hơn, cho phép tải tệp lên đến 10 GB" },
+				"soundboard": { "title": "Soundboard Clan:", "description": "Tạo hiệu ứng âm thanh dài hơn cho toàn bộ thành viên" },
+				"customization": { "title": "Tùy biến Clan:", "description": "Tùy chỉnh vai trò, icon động và giao diện Clan độc quyền" }
+			}
+		}
+	}
+}

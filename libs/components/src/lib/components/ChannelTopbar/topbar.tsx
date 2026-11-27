@@ -15,6 +15,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import type { IChannel } from '@mezon/utils';
+import { isRealClanId } from '@mezon/utils';
 import type { ChannelStreamMode } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import { memo, useMemo, type ReactNode } from 'react';
@@ -53,10 +54,10 @@ const Topbar = memo(({ isHidden = false, children }: { isHidden?: boolean; child
 	// Mirror exactly the two panel conditions used in ClanLayout:
 	//   thread panel: isShowCreateThread && !isShowCreateTopic (no channel-type guard)
 	//   topic panel:  isShowCreateTopic && !isShowCreateThread && not streaming/voice
-	const isThreadPanelOpen = Boolean(currentClanId && currentClanId !== '0') && isShowCreateThread && !isShowCreateTopic;
+	const isThreadPanelOpen = isRealClanId(currentClanId) && isShowCreateThread && !isShowCreateTopic;
 
 	const isTopicPanelOpen =
-		Boolean(currentClanId && currentClanId !== '0') &&
+		isRealClanId(currentClanId) &&
 		isShowCreateTopic &&
 		!isShowCreateThread &&
 		currentChannelType !== ChannelType.CHANNEL_TYPE_STREAMING &&

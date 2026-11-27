@@ -7,6 +7,7 @@ import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
 import { UserStatusIcon } from '../MemberProfile/IconStatus';
+import { DEFAULT_PRO_PALETTE, ProAvatarFrame, type ProPalette } from '../ProfileBadges';
 type AvatarProfileProps = {
 	avatar?: string;
 	username?: string;
@@ -21,6 +22,8 @@ type AvatarProfileProps = {
 	statusOnline?: EUserStatus;
 	identifierE2E?: string;
 	isMobile?: boolean;
+	isPro?: boolean;
+	proPalette?: ProPalette;
 };
 
 const AvatarProfile = ({
@@ -33,7 +36,9 @@ const AvatarProfile = ({
 	isFooterProfile,
 	activityByUserId,
 	statusOnline,
-	isMobile
+	isMobile,
+	isPro,
+	proPalette
 }: AvatarProfileProps) => {
 	const currentClanId = useSelector(selectCurrentClanId);
 
@@ -53,6 +58,7 @@ const AvatarProfile = ({
 	};
 
 	const isUserLeft = !avatar && !username;
+	const showProFrame = Boolean(isPro && !isUserLeft && !isAnonymous);
 	const activityStatus = useMemo(() => {
 		return typeof customStatus === 'string'
 			? customStatus
@@ -65,19 +71,21 @@ const AvatarProfile = ({
 			data-e2e={generateE2eId('user_setting.profile.user_profile.preview.avatar')}
 		>
 			<div className="relative h-fit">
-				<AvatarImage
-					alt={username || ''}
-					username={username || ''}
-					className={`w-[90px] h-[90px] min-w-[90px] min-h-[90px] xl:w-[90px] xl:h-[90px] rounded-[50px] border-[6px] border-color-avatar object-cover my-0 ${styleAvatar} ${isUserLeft ? 'opacity-60' : ''}`}
-					srcImgProxy={avatar ? createImgproxyUrl(avatar, { width: 300, height: 300, resizeType: 'fill-down' }) : undefined}
-					src={avatar || ''}
-					isAnonymous={isAnonymous}
-					useUserPlaceholder
-					classNameText="!text-5xl"
-				/>
+				<ProAvatarFrame isPro={showProFrame} palette={proPalette ?? DEFAULT_PRO_PALETTE} glow ringWidth={3}>
+					<AvatarImage
+						alt={username || ''}
+						username={username || ''}
+						className={`w-[90px] h-[90px] min-w-[90px] min-h-[90px] xl:w-[90px] xl:h-[90px] rounded-[50px] ${showProFrame ? 'border-[3px]' : 'border-[6px]'} border-color-avatar object-cover my-0 ${styleAvatar} ${isUserLeft ? 'opacity-60' : ''}`}
+						srcImgProxy={avatar ? createImgproxyUrl(avatar, { width: 300, height: 300, resizeType: 'fill-down' }) : undefined}
+						src={avatar || ''}
+						isAnonymous={isAnonymous}
+						useUserPlaceholder
+						classNameText="!text-5xl"
+					/>
+				</ProAvatarFrame>
 
 				{userID !== '0' && !isUserLeft && (
-					<div className="absolute bottom-1 right-2" data-e2e={generateE2eId('icon.profile_status')}>
+					<div className="absolute bottom-1 right-2 z-10" data-e2e={generateE2eId('icon.profile_status')}>
 						<UserStatusIcon status={statusOnline} />
 					</div>
 				)}

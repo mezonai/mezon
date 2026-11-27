@@ -1,12 +1,34 @@
 import { useAuth, useMemberStatus } from '@mezon/core';
 import type { ChannelMembersEntity } from '@mezon/store';
-import { accountActions, giveCoffeeActions, useAppDispatch, useWallet, userClanProfileActions } from '@mezon/store';
+import {
+	accountActions,
+	clansActions,
+	giveCoffeeActions,
+	toastActions,
+	useAppDispatch,
+	useWallet,
+	userClanProfileActions,
+	walletActions
+} from '@mezon/store';
 import { Menu, MezonIcon, MzIcons16, MzIcons20, MzIcons32 } from '@mezon/ui';
-import { CURRENCY, EUserStatus, formatBalanceToString, generateE2eId, useAppLayout } from '@mezon/utils';
+
+import {
+	CURRENCY,
+	EUserStatus,
+	USER_PRO_PLAN_MIN_PRICE,
+	USER_PRO_PLAN_PRICE,
+	formatBalanceToString,
+	generateE2eId,
+	useAppLayout
+} from '@mezon/utils';
 import type { ReactElement, ReactNode } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useModal } from 'react-modal-hook';
 import { ButtonCopy } from '../../../components';
+import BenefitModal, { type BenefitPlanId, type CouponValidationResult } from '../../BenefitModal';
+import { getCouponFailureKey } from '../../BenefitModal/couponError';
+import ItemModal from '../../ClanHeader/ItemModal';
 import TransactionHistory from '../../TransactionHistory';
 import ItemStatus from './ItemStatus';
 import ItemStatusUpdate from './ItemStatusUpdate';
@@ -18,7 +40,7 @@ type StatusProfileProps = {
 	onClose: () => void;
 };
 const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfileProps) => {
-	const { t } = useTranslation(['userProfile', 'message']);
+	const { t, i18n } = useTranslation(['userProfile', 'message']);
 	const dispatch = useAppDispatch();
 	const { isMobile } = useAppLayout();
 	const [statusMenuVisible, setStatusMenuVisible] = useState(false);
@@ -28,6 +50,9 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 	const getStatus = useMemberStatus(userById?.id || '');
 
 	const { userProfile } = useAuth();
+	const proPlanRecipientUserId = process.env.NX_PRO_PLAN_RECIPIENT_ID?.trim() ?? '';
+	const isUserPro = Boolean(userProfile?.pro_plan || userProfile?.user?.pro_plan);
+	const [isBuyingUserPro, setIsBuyingUserPro] = useState(false);
 
 	const status = useMemo(() => {
 		if (userById?.id !== userProfile?.user?.id) {
@@ -41,6 +66,70 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 	const [isShowModalHistory, setIsShowModalHistory] = useState<boolean>(false);
 
 	const { walletDetail } = useWallet();
+	const handleBuyUserProPlan = useCallback(async (): Promise<boolean> => {
+		const senderUserId = userProfile?.user?.id;
+		if (!senderUserId || isUserPro || isBuyingUserPro) return false;
+		if (!proPlanRecipientUserId || USER_PRO_PLAN_PRICE < USER_PRO_PLAN_MIN_PRICE) {
+			dispatch(toastActions.addToast({ message: t('statusProfile.userProPlan.purchaseUnavailable'), type: 'error' }));
+			return false;
+		}
+
+		setIsBuyingUserPro(true);
+		try {
+			const result = await dispatch(
+				walletActions.buyUserProPlan({
+					senderUserId,
+					senderUsername: userProfile?.user?.username || '',
+					recipientUserId: proPlanRecipientUserId
+				})
+			);
+			if (walletActions.buyUserProPlan.fulfilled.match(result)) {
+				dispatch(toastActions.addToast({ message: t('statusProfile.userProPlan.purchaseSubmitted'), type: 'success' }));
+				return true;
+			}
+			return false;
+		} finally {
+			setIsBuyingUserPro(false);
+		}
+	}, [dispatch, isBuyingUserPro, isUserPro, proPlanRecipientUserId, t, userProfile?.user?.id, userProfile?.user?.username]);
+	const handleApplyUserProCoupon = useCallback(
+		async (_plan: BenefitPlanId, couponCode: string): Promise<CouponValidationResult> => {
+			const result = await dispatch(clansActions.applyCouponPro({ clanId: undefined, code: couponCode }));
+			const success = clansActions.applyCouponPro.fulfilled.match(result);
+			if (success) dispatch(accountActions.setUserProPlan(true));
+			const messageKey = success ? 'couponApplied' : getCouponFailureKey(result.payload ?? result.error);
+			return {
+				success,
+				message: t(`statusProfile.userProPlan.${messageKey}`)
+			};
+		},
+		[dispatch, t]
+	);
+	const [openUserBenefitModal, closeUserBenefitModal] = useModal(
+		() => (
+			<BenefitModal
+				open
+				onClose={closeUserBenefitModal}
+				availablePlans={['user']}
+				couponPlans={['user']}
+				onConfirmPlan={handleBuyUserProPlan}
+				onApplyCoupon={handleApplyUserProCoupon}
+				getConfirmation={(_plan, action) => ({
+					title: t(action === 'coupon' ? 'statusProfile.userProPlan.couponTitle' : 'statusProfile.userProPlan.confirmTitle'),
+					message: t(action === 'coupon' ? 'statusProfile.userProPlan.couponMessage' : 'statusProfile.userProPlan.confirmMessage', {
+						price: new Intl.NumberFormat(i18n.language).format(USER_PRO_PLAN_PRICE),
+						userName: userProfile?.user?.username || t('statusProfile.userProPlan.yourAccount')
+					}),
+					buttonName: t(action === 'coupon' ? 'statusProfile.userProPlan.couponConfirmButton' : 'statusProfile.userProPlan.confirmButton'),
+					processingButtonName: t(
+						action === 'coupon' ? 'statusProfile.userProPlan.couponProcessing' : 'statusProfile.userProPlan.processing'
+					),
+					buttonColor: 'bg-indigo-600 hover:bg-indigo-700'
+				})}
+			/>
+		),
+		[handleApplyUserProCoupon, handleBuyUserProPlan, i18n.language, t, userProfile?.user?.username]
+	);
 
 	const handleSendToken = () => {
 		dispatch(giveCoffeeActions.setShowModalSendToken(true));
@@ -203,6 +292,27 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 				copyText={userProfile?.user?.id || ''}
 				title={t('statusProfile.copyUserId')}
 				className=" px-2 py-[6px] text-theme-primary-hover bg-item-theme-hover"
+			/>
+			<ItemModal
+				className={
+					isUserPro
+						? 'text-theme-secondary'
+						: 'rounded-md text-white shadow-sm transition-[filter] duration-150 ease-out hover:brightness-[1.03]'
+				}
+				style={
+					isUserPro
+						? undefined
+						: {
+								background:
+									'linear-gradient(90deg, #7C3AED 0%, #853EE2 10%, #8F41D6 20%, #9843CB 30%, #A143C0 40%, #AB42B4 50%, #B540A8 60%, #BE3D9D 70%, #C83890 80%, #D13184 90%, #DB2777 100%)',
+								backgroundImage: 'linear-gradient(90deg in oklab, #7C3AED 0%, #DB2777 100%)'
+							}
+				}
+				onClick={openUserBenefitModal}
+				hoverTextColor={false}
+				disabled={isUserPro}
+				children={t('statusProfile.userProPlan.enable')}
+				endIcon={<MezonIcon icon={MzIcons16.mzLock} className={isUserPro ? 'text-theme-secondary' : 'text-white'} />}
 			/>
 			{isShowModalHistory && <TransactionHistory onClose={handleCloseHistoryModal} />}
 		</>

@@ -16,5 +16,12 @@
 			"description": "Envoyer un message temporaire (visible uniquement par l'utilisateur sélectionné)"
 		}
 	},
-	"convertLongToFile": "Convertir un long message en fichier"
+	"convertLongToFile": "Convertir un long message en fichier",
+	"longMessage": {
+		"title": "Message trop long",
+		"description": "Ce message contient {{count}} caractères, soit plus de {{multiplier}} fois la limite de {{limit}} caractères, il ne peut donc pas être envoyé sous forme de messages. Le convertir en fichier .txt ? Vous pourrez toujours le modifier si vous annulez.",
+		"convert": "Convertir en fichier",
+		"size": "{{size}}",
+		"chars": "{{count}} caractères"
+	}
 }

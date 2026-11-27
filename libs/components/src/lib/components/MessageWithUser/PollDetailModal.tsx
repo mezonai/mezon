@@ -40,7 +40,7 @@ export const PollDetailModal = ({
 	const [selectedIndex, setSelectedIndex] = useState(initialSelectedIndex);
 	const modalRef = useRef<HTMLDivElement>(null);
 
-	useEscapeKeyClose(modalRef, onClose);
+	useEscapeKeyClose(modalRef, onClose, open);
 
 	useEffect(() => {
 		if (open) setSelectedIndex(initialSelectedIndex);
@@ -65,7 +65,7 @@ export const PollDetailModal = ({
 			<div
 				ref={modalRef}
 				tabIndex={-1}
-				className="fixed inset-0 z-50 flex items-center justify-center p-4"
+				className="fixed inset-0 z-50 flex items-center justify-center p-4 outline-none focus:outline-none"
 				onClick={(e) => e.stopPropagation()}
 			>
 				<div className="bg-theme-primary rounded-lg w-full min-w-[600px] min-h-[700px] max-w-[620px] shadow-xl flex flex-col max-h-[85vh] overflow-hidden">

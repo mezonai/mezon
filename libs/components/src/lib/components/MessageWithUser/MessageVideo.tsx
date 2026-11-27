@@ -24,6 +24,7 @@ export type MessageImage = {
 	isSending?: boolean;
 	isPresignPending?: boolean;
 	isIngest?: boolean;
+	isCdnSignaturePending?: boolean;
 	observeIntersection?: ObserveFn;
 };
 export const DEFAULT_HEIGHT_VIDEO_SHOW = 150;
@@ -491,6 +492,7 @@ function DefaultVideo({
 	isSending = false,
 	isPresignPending = false,
 	isIngest = false,
+	isCdnSignaturePending = false,
 	observeIntersection
 }: MessageImage) {
 	const { t } = useTranslation('media');
@@ -589,18 +591,20 @@ function DefaultVideo({
 							</button>
 						</div>
 					)}
-
-					<div
-						className={`${isDownloading ? 'flex cursor-default' : 'group-hover:flex hidden cursor-pointer'} top-2 right-1 absolute bg-bgSurface rounded-md w-6 h-6  items-center justify-center z-30`}
-						onClick={handleDownloadVideo}
-					>
-						{isDownloading ? (
-							<DownloadSpinner className="w-3.5 h-3.5 dark:text-[#AEAEAE] text-[#535353]" />
-						) : (
-							<MezonIcon icon={MzIcons20.mzDownload} />
-						)}
-					</div>
 				</>
+			)}
+
+			{showMedia && !isSending && !isPresignPending && !isCdnSignaturePending && (
+				<div
+					className={`${isDownloading ? 'flex cursor-default' : 'group-hover:flex hidden cursor-pointer'} top-2 right-1 absolute bg-bgSurface rounded-md w-6 h-6  items-center justify-center z-30`}
+					onClick={handleDownloadVideo}
+				>
+					{isDownloading ? (
+						<DownloadSpinner className="w-3.5 h-3.5 dark:text-[#AEAEAE] text-[#535353]" />
+					) : (
+						<MezonIcon icon={MzIcons20.mzDownload} />
+					)}
+				</div>
 			)}
 		</div>
 	);

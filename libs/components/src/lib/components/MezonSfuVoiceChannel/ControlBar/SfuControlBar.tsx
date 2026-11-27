@@ -6,6 +6,7 @@ import { RecordingControl } from '../Recording/RecordingControl';
 import { SfuAgentControl } from './AgentControl';
 import { BreakoutControl } from './BreakoutControl';
 import { CameraControl } from './CameraControl';
+import { CommentControl } from './CommentControl';
 import { EmojiReactionControl } from './EmojiReactionControl';
 import { FullscreenControl } from './FullscreenControl';
 import { LeaveButton } from './LeaveButton';
@@ -17,7 +18,6 @@ import { PushToTalkHint } from './PushToTalkHint';
 import { SfuRaisingHandControl } from './RaisingHandControl';
 import { ScreenDrawControl } from './ScreenDrawControl';
 import { ScreenShareControl } from './ScreenShareControl';
-import { SfuVoiceInteractiveControl } from './SfuVoiceInteractiveControl';
 import { SoundReactionControl } from './SoundReactionControl';
 
 interface SfuControlBarProps {
@@ -48,7 +48,6 @@ interface SfuControlBarProps {
 	isGridView: boolean;
 	showEmojiPanel: boolean;
 	showSoundPanel: boolean;
-	showVoiceInteractivePanel?: boolean;
 	microphones: MediaDeviceInfo[];
 	cameras: MediaDeviceInfo[];
 	speakers?: MediaDeviceInfo[];
@@ -61,7 +60,6 @@ interface SfuControlBarProps {
 	channelLabel: string;
 	onEmojiPanelChange: (visible: boolean) => void;
 	onSoundPanelChange: (visible: boolean) => void;
-	onVoiceInteractivePanelChange?: (visible: boolean) => void;
 	onEmojiSelect: (emojiId: string, emoji: string) => void;
 	onSoundSelect: (soundId: string, soundUrl: string) => void;
 	onPushToTalk: (active: boolean) => void;
@@ -77,6 +75,10 @@ interface SfuControlBarProps {
 	roomId?: string;
 	showBreakoutModal?: boolean;
 	onToggleBreakoutModal?: () => void;
+	showCommentInput?: boolean;
+	commentsHidden?: boolean;
+	hasUnseenComments?: boolean;
+	onToggleComment?: () => void;
 }
 
 export const SfuControlBar = ({
@@ -107,7 +109,6 @@ export const SfuControlBar = ({
 	isGridView,
 	showEmojiPanel,
 	showSoundPanel,
-	showVoiceInteractivePanel,
 	microphones,
 	cameras,
 	speakers,
@@ -120,7 +121,6 @@ export const SfuControlBar = ({
 	channelLabel,
 	onEmojiPanelChange,
 	onSoundPanelChange,
-	onVoiceInteractivePanelChange,
 	onEmojiSelect,
 	onSoundSelect,
 	onPushToTalk,
@@ -135,11 +135,12 @@ export const SfuControlBar = ({
 	onFullScreen,
 	roomId,
 	showBreakoutModal = false,
-	onToggleBreakoutModal
+	onToggleBreakoutModal,
+	showCommentInput = false,
+	commentsHidden = false,
+	hasUnseenComments = false,
+	onToggleComment
 }: SfuControlBarProps) => {
-	const [localShowVoiceInteractive, setLocalShowVoiceInteractive] = useState(false);
-	const showVoiceInteractive = showVoiceInteractivePanel ?? localShowVoiceInteractive;
-	const handleVoiceInteractiveChange = onVoiceInteractivePanelChange ?? setLocalShowVoiceInteractive;
 	const [networkWarningDismissed, setNetworkWarningDismissed] = useState(false);
 	useEffect(() => {
 		if (!weakNetwork) setNetworkWarningDismissed(false);
@@ -170,10 +171,16 @@ export const SfuControlBar = ({
 								onSoundSelect={onSoundSelect}
 							/>
 						</div>
-
-						<div className="max-md:hidden">
-							<SfuVoiceInteractiveControl showVoiceInteractive={showVoiceInteractive} onVisibleChange={handleVoiceInteractiveChange} />
-						</div>
+						{!isFullScreen && onToggleComment && (
+							<div className="max-md:hidden">
+								<CommentControl
+									active={showCommentInput}
+									hidden={commentsHidden}
+									hasUnseen={hasUnseenComments}
+									onToggle={onToggleComment}
+								/>
+							</div>
+						)}
 					</>
 				)}
 				<div className="max-md:hidden">

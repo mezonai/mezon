@@ -218,17 +218,22 @@ function MessageWithUser({
 		if (message?.code === TypeMessage.Poll) return 'poll';
 		if (message?.content?.callLog?.callLogType) return 'callLog';
 		if (message?.code === TypeMessage.SendToken) return 'token';
-		const trimmedText = message?.content?.t?.trim();
-		if (trimmedText && message?.attachments?.[0]?.url !== trimmedText) return 'text';
-		if (message?.attachments?.length) return 'attachment';
+		if (!isTopic && message?.code === TypeMessage.Topic) return 'topic';
 		if (message?.content?.embed?.length) return 'embed';
+		if (message?.attachments?.length) return 'attachment';
+		if (message?.content?.t?.trim()) return 'text';
 		return undefined;
 	})();
 
+	const isQuickReactionBurstingRef = useRef(false);
 	const renderQuickReaction = (target: typeof quickReactionTarget, className: string) =>
 		quickReactionTarget === target ? (
 			<MessageHoverContext.Consumer>
-				{(isHover) => isHover && <QuickReaction message={message} isTopic={!!isTopic} className={className} />}
+				{(isHover) =>
+					(isHover || isQuickReactionBurstingRef.current) && (
+						<QuickReaction message={message} isTopic={!!isTopic} className={className} isBurstingRef={isQuickReactionBurstingRef} />
+					)
+				}
 			</MessageHoverContext.Consumer>
 		) : undefined;
 
@@ -418,7 +423,7 @@ function MessageWithUser({
 									isInTopic={isTopic}
 									isEphemeral={isEphemeralMessage}
 									onContextMenu={onContextMenu}
-									quickReaction={renderQuickReaction('text', 'left-1 -top-1')}
+									quickReaction={renderQuickReaction('text', 'left-1 -top-3')}
 								/>
 								{isEphemeralMessage && (
 									<div className="flex items-center gap-1 mt-1 mb-1 text-xs italic text-theme-primary opacity-60">
@@ -436,6 +441,7 @@ function MessageWithUser({
 								channelId={channelId || message.channel_id}
 								onContextMenu={onContextMenu}
 								isInSearchMessage={isSearchMessage}
+								isTopic={isTopic}
 								defaultMaxWidth={isTopic ? TOPIC_MAX_WIDTH : undefined}
 								isPreview={isPreview}
 								quickReaction={renderQuickReaction('attachment', '-right-2 -bottom-2 z-[2]')}
@@ -454,7 +460,7 @@ function MessageWithUser({
 						)}
 						{!isTopic && message?.code === TypeMessage.Topic && (
 							<div className="w-full flex">
-								<TopicViewButton message={message} />
+								<TopicViewButton message={message} quickReaction={renderQuickReaction('topic', '-right-2 -bottom-2 z-[2]')} />
 							</div>
 						)}
 						{!!message?.content?.callLog?.callLogType && (

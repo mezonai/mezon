@@ -40,6 +40,7 @@ import {
 	generateE2eId,
 	isAttachmentPresignPendingForMessage,
 	isMediaTypeNotSupported,
+	isRealClanId,
 	shouldHidePresignAttachment
 } from '@mezon/utils';
 import { clamp, endOfDay, format, getUnixTime, isSameDay, startOfDay } from 'date-fns';
@@ -92,7 +93,7 @@ export function useGalleryTarget() {
 	const currentDm = useSelector(selectCurrentDM);
 
 	return useMemo(() => {
-		const isDM = !currentClanId || currentClanId === '0';
+		const isDM = !isRealClanId(currentClanId);
 		return {
 			clanId: isDM ? '0' : currentClanId,
 			channelId: (isDM ? currentDm?.id : currentChannelId) ?? ''
@@ -465,7 +466,8 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 
 			if (!attachmentData) return;
 
-			const channelId = currentClanId !== '0' ? (currentChannelId as string) : (currentDmGroupId as string);
+			const isRealClan = isRealClanId(currentClanId);
+			const channelId = isRealClan ? (currentChannelId as string) : (currentDmGroupId as string);
 			const sourceMessage =
 				attachmentData.message_id && channelId ? selectMessageByMessageId(state, channelId, attachmentData.message_id) : undefined;
 			if (isAttachmentPresignPendingForMessage(attachmentData.url, sourceMessage)) return;
@@ -489,7 +491,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			dispatch(attachmentActions.setAttachment(enhancedAttachmentData.url));
 
 			if ((currentClanId && currentChannelId) || currentDmGroupId) {
-				const clanId = currentClanId === '0' ? '0' : (currentClanId as string);
+				const clanId = isRealClan ? currentClanId : '0';
 				dispatch(
 					attachmentActions.setChannelAttachments({
 						channelId,

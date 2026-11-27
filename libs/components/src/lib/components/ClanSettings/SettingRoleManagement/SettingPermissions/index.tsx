@@ -13,10 +13,16 @@ import {
 	toggleIsShowTrue
 } from '@mezon/store';
 import { InputField } from '@mezon/ui';
-import { EOverriddenPermission, SlugPermission, generateE2eId } from '@mezon/utils';
+import { EOverriddenPermission, EPermission, EPermissionId, SlugPermission, generateE2eId } from '@mezon/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+
+const isRequiredRolePermission = (permissionId: string, slug?: string) =>
+	permissionId === EPermissionId.VIEW_CHANNEL ||
+	permissionId === EPermissionId.SEND_MESSAGE ||
+	slug === EPermission.viewChannel ||
+	slug === EOverriddenPermission.sendMessage;
 
 export type ModalSettingSave = {
 	flagOption: boolean;
@@ -45,6 +51,7 @@ const SettingPermissions = ({
 	const colorRole = useSelector(getNewColorRole);
 
 	const activeRole = RolesClan.find((role) => role.id === clickRole);
+	const isEveryoneRole = activeRole?.slug?.startsWith('everyone-') ?? false;
 	const permissionsRole = activeRole?.permission_list;
 	const permissions = useMemo(() => permissionsRole?.permissions?.filter((permission) => permission.active === 1) || [], [permissionsRole]);
 	const permissionIds = useMemo(() => permissions.map((permission) => permission.id) || [], [permissions]);
@@ -58,6 +65,9 @@ const SettingPermissions = ({
 
 	const handlePermissionToggle = (permissionId: string) => {
 		const isSelected = selectedPermissions.includes(permissionId);
+		const permission = permissionsDefault.find((item) => item.id === permissionId);
+		if (!isEveryoneRole && isRequiredRolePermission(permissionId, permission?.slug) && isSelected) return;
+
 		const newPermissions = isSelected ? selectedPermissions.filter((id) => id !== permissionId) : [...selectedPermissions, permissionId];
 		dispatch(setSelectedPermissions(newPermissions));
 
@@ -159,6 +169,9 @@ const SettingPermissions = ({
 										hiddenPermissionAdmin(permission.slug || '') ||
 										!hasPermissionEdit ||
 										(permission.level !== undefined && permission.level >= userMaxPermissionLevel && !isClanOwner) ||
+										(!isEveryoneRole &&
+											isRequiredRolePermission(permission.id, permission.slug) &&
+											selectedPermissions.includes(permission.id)) ||
 										(activeRole?.slug?.startsWith('everyone-') && permission.slug === EOverriddenPermission.sendMessage)
 									}
 									data-e2e={generateE2eId('clan_page.settings.role.container.role_option.permissions.item.switch')}

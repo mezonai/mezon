@@ -1,4 +1,5 @@
 import type { LoadingStatus } from '@mezon/utils';
+import { isDmOrGroupChannelType, isRealClanId, normalizeClanId } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiChannelDescription, ApiChannelMessageHeader, ChannelMessage } from 'mezon-js';
@@ -31,7 +32,7 @@ function extractChannelMeta(channel: ApiChannelDescription & { id?: string }, cl
 			Number.isNaN(channel.last_sent_message?.timestamp_seconds) || !channel.last_sent_message?.timestamp_seconds
 				? 0
 				: channel.last_sent_message?.timestamp_seconds,
-		clanId: (clanId || channel.clan_id) ?? '0',
+		clanId: isDmOrGroupChannelType(channel.type) ? '0' : normalizeClanId(clanId || channel.clan_id),
 		isMute: channel.is_mute ?? false,
 		senderId: channel.last_sent_message?.sender_id ?? '0',
 		count_mess_unread: channel?.count_mess_unread ?? 0,
@@ -73,7 +74,7 @@ export const channelMetaSlice = createSlice({
 		add: channelMetaAdapter.addOne,
 		upsertOne: channelMetaAdapter.upsertOne,
 		setChannelLastSentTimestamp: (state, action: PayloadAction<{ channelId: string; timestamp: number; senderId: string; clanId: string }>) => {
-			if (action.payload.clanId === '0') {
+			if (!isRealClanId(action.payload.clanId)) {
 				dmMetaAdapter.updateOne(state.dmEntities, {
 					id: action.payload.channelId,
 					changes: {
@@ -103,7 +104,7 @@ export const channelMetaSlice = createSlice({
 			} else {
 				channelMetaAdapter.upsertOne(state, {
 					id: channelId,
-					clanId,
+					clanId: normalizeClanId(clanId),
 					isMute: false,
 					lastSeenMessageId: messageId,
 					senderId: '0',
@@ -132,7 +133,7 @@ export const channelMetaSlice = createSlice({
 					meta.push(extractChannelMeta(ch, action?.payload?.clanId));
 				}
 			}
-			if (action?.payload?.clanId === '0') {
+			if (!isRealClanId(action?.payload?.clanId)) {
 				dmMetaAdapter.setMany(state.dmEntities, meta);
 				return;
 			}
@@ -140,7 +141,7 @@ export const channelMetaSlice = createSlice({
 		},
 		updateChannelBadgeCount: (state, action: PayloadAction<{ clanId: string; channelId: string; count: number; isReset?: boolean }>) => {
 			const { clanId, channelId, count, isReset = false } = action.payload;
-			const isDM = clanId === '0';
+			const isDM = !isRealClanId(clanId);
 			const adapter = isDM ? dmMetaAdapter : channelMetaAdapter;
 			const entitiesState = isDM ? state.dmEntities : state;
 			const entity = entitiesState.entities[channelId];
@@ -150,7 +151,7 @@ export const channelMetaSlice = createSlice({
 				if (initialCount <= 0) return;
 				adapter.addOne(entitiesState, {
 					id: channelId,
-					clanId,
+					clanId: isDM ? '0' : clanId,
 					isMute: false,
 					lastSeenTimestamp: 0,
 					lastSentTimestamp: Date.now() / 1000,
@@ -234,7 +235,7 @@ export const channelMetaSlice = createSlice({
 			} else {
 				dmMetaAdapter.addOne(state.dmEntities, {
 					id: channelId,
-					clanId: message.clan_id || '',
+					clanId: '0',
 					isMute: false,
 					senderId: message.sender_id,
 					lastSeenTimestamp: updatedMessage?.timestamp_seconds || Date.now() / 1000 - 1,

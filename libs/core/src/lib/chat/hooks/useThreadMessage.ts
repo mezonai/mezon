@@ -82,7 +82,7 @@ export function useThreadMessage({ channelId, username }: UseThreadMessage) {
 					mk
 				};
 			}
-			await dispatch(
+			const sent = await dispatch(
 				messagesActions.sendMessage({
 					clanId: currentClanId,
 					channelId: thread.channel_id,
@@ -97,6 +97,10 @@ export function useThreadMessage({ channelId, username }: UseThreadMessage) {
 					username: account.user.display_name || username || account.user.username
 				})
 			).unwrap();
+
+			if (sent === false) {
+				return false;
+			}
 
 			const userIds = uniqueUsers(mentions ?? [], mapToMemberIds, rolesClan, []);
 			if (userIds.length) {

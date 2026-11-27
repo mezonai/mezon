@@ -83,5 +83,14 @@
 		"online": "Niemand online die past bij je zoekopdracht. Probeer een andere naam.",
 		"pending": "Geen vriendenverzoeken die passen bij je zoekopdracht. Controleer de naam of probeer opnieuw.",
 		"block": "Geen geblokkeerde gebruikers die passen bij je zoekopdracht. Probeer een andere naam."
+	},
+	"sort": {
+		"label": "Sorteren",
+		"recent": "Recente interactie",
+		"name": "Naam (A–Z)"
+	},
+	"sections": {
+		"recent": "Recent",
+		"others": "Andere vrienden"
 	}
 }

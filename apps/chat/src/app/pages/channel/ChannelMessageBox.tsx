@@ -15,7 +15,7 @@ import { MezonIcon, MzIcons32 } from '@mezon/ui';
 import type { IMessageSendPayload, ThreadValue } from '@mezon/utils';
 import { DONE_ONBOARDING_STATUS, generateE2eId } from '@mezon/utils';
 import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
-import { ChannelStreamMode } from 'mezon-js';
+import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { memo, useCallback, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
@@ -37,6 +37,7 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 	const { sendMessage, sendMessageTyping } = useChatSending({ channelOrDirect: channel, mode });
 	const anonymousMode = useSelector((state) => selectAnonymousMode(state, channelId as string));
 	const chatboxRef = useRef<HTMLDivElement | null>(null);
+	const lastDispatchedMissionRef = useRef<string | null>(null);
 	const currentClanIsOnboarding = useSelector(selectCurrentClanIsOnboarding);
 	const onboardingList = useSelector((state) => selectOnboardingByClan(state, clanId as string));
 
@@ -53,8 +54,9 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 			clanNick?: string,
 			ephemeralReceiverId?: string
 		) => {
-			sendMessage(content, mentions, attachments, references, anonymous, mentionEveryone, false, undefined, ephemeralReceiverId);
+			const sent = sendMessage(content, mentions, attachments, references, anonymous, mentionEveryone, false, undefined, ephemeralReceiverId);
 			handDoMessageMission();
+			return sent;
 		},
 		[sendMessage, currentMission, onboardingList?.mission]
 	);
@@ -68,6 +70,11 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 			onboardingList?.mission?.[currentMission]?.channel_id === channel?.channel_id &&
 			onboardingList?.mission?.[currentMission]?.task_type === ETypeMission.SEND_MESSAGE
 		) {
+			const missionKey = `${clanId ?? ''}:${currentMission}`;
+			if (lastDispatchedMissionRef.current === missionKey) {
+				return;
+			}
+			lastDispatchedMissionRef.current = missionKey;
 			dispatch(onboardingActions.doneMission({ clan_id: clanId as string }));
 			if (currentMission + 1 === onboardingList.mission.length) {
 				appDispatch(onboardingActions.doneOnboarding({ clan_id: clanId as string }));
@@ -92,6 +99,7 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 				currentChannelId={channelId}
 				currentClanId={clanId}
 				mode={mode}
+				wrapQuickReplies={channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE}
 			/>
 			{anonymousMode && (
 				<div className="absolute -top-3 -right-3 rotate-45 anonymousAnimation" data-e2e={generateE2eId('chat.anonymous')}>

@@ -95,6 +95,26 @@
 		"manageAccounts": "Quản lý tài khoản",
 		"switchAccounts": "Chuyển đổi tài khoản",
 		"copyUserId": "Sao chép ID người dùng",
+		"userProPlan": {
+			"enable": "Bật User Pro Plan",
+			"confirmTitle": "Xác nhận mua User Pro Plan",
+			"confirmMessage": "Bật User Pro Plan với giá {{price}} token mỗi năm?",
+			"confirmButton": "Xác nhận mua",
+			"processing": "Đang xử lý giao dịch…",
+			"purchaseUnavailable": "Chưa thể mua vì chưa cấu hình ID người nhận hoặc giá.",
+			"purchaseSubmitted": "Đã gửi giao dịch thanh toán User Pro.",
+			"couponTitle": "Xác nhận dùng coupon User Pro",
+			"couponMessage": "Bạn có chắc muốn bật User Pro cho tài khoản {{userName}} bằng coupon này không?",
+			"couponConfirmButton": "Xác nhận bật User Pro",
+			"couponProcessing": "Đang xử lý coupon…",
+			"couponApplied": "Đã áp dụng coupon thành công.",
+			"couponFailed": "Không thể áp dụng coupon này.",
+			"couponNotFound": "Không tìm thấy coupon này.",
+			"couponExpiredOrWrongPlan": "Coupon này đã hết hạn hoặc không hợp lệ cho gói này.",
+			"couponAlreadyUsed": "Coupon này đã được sử dụng.",
+			"couponNotClanOwner": "Chỉ chủ sở hữu clan mới có thể đổi coupon này.",
+			"yourAccount": "của bạn"
+		},
 		"statusOptions": {
 			"online": "Trực tuyến",
 			"idle": "Tạm vắng",
@@ -223,5 +243,9 @@
 		"banList": "Danh sách cấm",
 		"search": "Tìm người dùng bị cấm",
 		"banListEmpty": "Không tìm thấy người dùng bị cấm nào"
+	},
+	"badges": {
+		"mezonPro": "Mezon Pro",
+		"clanPro": "Clan Pro"
 	}
 }

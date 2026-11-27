@@ -11,7 +11,6 @@ import {
 import { EmojiSuggestionProvider } from '@mezon/core';
 import {
 	appActions,
-	channelAppActions,
 	generateMeetToken,
 	getStore,
 	selectBreakoutRoom,
@@ -39,7 +38,7 @@ import {
 	voiceActions
 } from '@mezon/store';
 
-import { reportMediaAccessError, useLastCallback } from '@mezon/utils';
+import { isRealClanId, reportMediaAccessError, useLastCallback } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { ReactNode, RefObject } from 'react';
 import React, { Suspense, memo, useCallback, useEffect, useRef, useState, type ErrorInfo } from 'react';
@@ -117,6 +116,7 @@ interface VoiceConferenceContentProps {
 	handleToggleChat: () => void;
 	isPrivateVoice?: boolean;
 	onRefreshToken?: () => Promise<string | undefined>;
+	onSfuFailover?: (failedServerUrl: string) => Promise<{ token?: string; url?: string } | undefined>;
 	containerRef?: RefObject<HTMLDivElement | null>;
 	selectedCamera: string;
 	onSelectCamera: (deviceId: string) => void;
@@ -138,6 +138,7 @@ const VoiceConferenceContent = memo(
 		handleToggleChat,
 		isPrivateVoice,
 		onRefreshToken,
+		onSfuFailover,
 		containerRef,
 		selectedCamera,
 		onSelectCamera,
@@ -293,7 +294,8 @@ const VoiceConferenceContent = memo(
 					onToggleChat={handleToggleChat}
 					isPrivateVoice={isPrivateVoice}
 					onRefreshToken={onRefreshToken}
-					cameraManagedExternally={false}
+					onSfuFailover={onSfuFailover}
+					cameraManagedExternally={Boolean(selectedBg)}
 					customVideoTrack={shareCamera && selectedBg && customVideoTrack?.readyState === 'live' ? customVideoTrack : null}
 					preferredCameraId={selectedCamera}
 					onSelectCamera={handleSelectCamera}
@@ -392,7 +394,6 @@ const MezonSfuChannelVoiceInner = () => {
 		if (target) {
 			flushSync(() => {
 				dispatch(voiceActions.resetVoiceControl({ keepBreakout: true }));
-				dispatch(channelAppActions.clearAppInteractiveData());
 			});
 		} else if (token) {
 			dispatch(voiceActions.setJoined(false));
@@ -489,6 +490,30 @@ const MezonSfuChannelVoiceInner = () => {
 		}
 	});
 
+	const handleSfuFailover = useLastCallback(async (failedServerUrl: string) => {
+		const channelId = voiceInfo?.channelId;
+		const clanId = voiceInfo?.clanId;
+		if (!channelId || !clanId) return undefined;
+		const storeState = getStore().getState();
+		const userProfile = storeState.account.userProfile;
+		const clanMember = selectMemberByIdAndClanId(storeState, clanId, userProfile?.user?.id || '');
+		const username = clanMember?.clan_nick || clanMember?.prioritizeName || userProfile?.user?.display_name || userProfile?.user?.username;
+		const avatar = clanMember?.clan_avatar || userProfile?.user?.avatar_url;
+		const metadata = username || avatar ? `${username};${avatar}` : '';
+		try {
+			return await dispatch(
+				generateMeetToken({
+					channelId,
+					roomName: '',
+					metadata,
+					avoidingSfuUrl: failedServerUrl
+				})
+			).unwrap();
+		} catch {
+			return undefined;
+		}
+	});
+
 	const handleReconnectRequired = useLastCallback((networkLost: boolean) => {
 		if (!voiceInfo) return;
 		setRejoinNetworkLost(networkLost);
@@ -504,7 +529,6 @@ const MezonSfuChannelVoiceInner = () => {
 		setSelectedBg(null);
 		setSelectedCamera('default');
 		dispatch(voiceActions.resetVoiceControl());
-		dispatch(channelAppActions.clearAppInteractiveData());
 		dispatch(appActions.setIsShowChatVoice(false));
 	});
 
@@ -521,7 +545,6 @@ const MezonSfuChannelVoiceInner = () => {
 		setSelectedCamera('default');
 
 		dispatch(voiceActions.resetVoiceControl());
-		dispatch(channelAppActions.clearAppInteractiveData());
 		dispatch(appActions.setIsShowChatVoice(false));
 
 		isDisconnectingRef.current = false;
@@ -540,7 +563,7 @@ const MezonSfuChannelVoiceInner = () => {
 				className={`${isOpenPopOut ? 'pointer-events-none' : ''} ${!isChannelMezonVoice || isShowSettingFooter?.status ? 'hidden' : ''} ${isVoiceFullScreen ? 'fixed inset-0 z-[100]' : `absolute bottom-0 right-0 ${isOnMenu ? 'max-sbm:z-1 z-30' : 'z-30'}`} ${!isOnMenu && !isVoiceFullScreen ? ' max-sbm:left-0 max-sbm:!w-full max-sbm:!h-[calc(100%_-_50px)]' : ''}`}
 				style={!isVoiceFullScreen ? { width: 'calc(100% - 72px - 272px)', height: '100%' } : { width: '100vw', height: '100vh' }}
 			>
-				{!rejoinTarget && (token === '' || !serverUrl || voiceInfo?.clanId === '0') ? (
+				{!rejoinTarget && (token === '' || !serverUrl || !isRealClanId(voiceInfo?.clanId)) ? (
 					isChannelMezonVoice && <VoicePreJoinWrapper loading={loading} handleJoinRoom={handleJoinRoom} />
 				) : (
 					<>
@@ -560,6 +583,7 @@ const MezonSfuChannelVoiceInner = () => {
 									isVoiceFullScreen={!!isVoiceFullScreen}
 									handleToggleChat={handleToggleChat}
 									onRefreshToken={handleRefreshToken}
+									onSfuFailover={handleSfuFailover}
 									containerRef={containerRef}
 									selectedCamera={selectedCamera}
 									onSelectCamera={setSelectedCamera}

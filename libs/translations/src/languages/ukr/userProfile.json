@@ -223,5 +223,9 @@
 		"banList": "Список банів",
 		"search": "Пошук заблокованих користувачів",
 		"banListEmpty": "Заблокованих користувачів не знайдено"
+	},
+	"badges": {
+		"mezonPro": "Mezon Pro",
+		"clanPro": "Clan Pro"
 	}
 }

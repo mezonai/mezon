@@ -388,7 +388,7 @@
 	},
 	"updateUsername": {
 		"enterUsername": "Mezon исемен кертегез",
-		"usernamePreview": "Кулланучы исеме: {{кулланучы исеме}}{{username}}",
+		"usernamePreview": "Кулланучы исеме: {{username}}",
 		"yourName": "Синең исемең ...",
 		"usernamePlaceholder": "Зинһар өчен, үзегезнең исемегезне кулланыгыз, кешеләргә сезне тану җиңел булсын.",
 		"update": "Яңарту",

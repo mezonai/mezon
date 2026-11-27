@@ -251,5 +251,11 @@
 		"you": "Jij",
 		"enlarge": "{{name}} vergroten",
 		"restoreLayout": "Terug naar de weergave naast elkaar"
+	},
+	"comment": {
+		"button": "Reageren",
+		"placeholder": "Schrijf een reactie…",
+		"hide": "Zwevende reacties verbergen",
+		"show": "Zwevende reacties weergeven"
 	}
 }

@@ -223,5 +223,9 @@
 		"banList": "Lista bannati",
 		"search": "Cerca utenti bannati",
 		"banListEmpty": "Nessun utente bannato trovato"
+	},
+	"badges": {
+		"mezonPro": "Mezon Pro",
+		"clanPro": "Clan Pro"
 	}
 }

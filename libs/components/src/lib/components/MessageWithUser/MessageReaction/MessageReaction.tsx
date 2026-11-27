@@ -2,7 +2,7 @@ import { useIdleRender, useQuickReactionEmoji } from '@mezon/core';
 import { selectBanMeInChannel, selectEmojiSrcById, selectMessageByMessageId, useAppSelector } from '@mezon/store';
 import type { EmojiDataOptionals, IMessageWithUser } from '@mezon/utils';
 import { getSrcEmoji } from '@mezon/utils';
-import type { CSSProperties } from 'react';
+import type { CSSProperties, MutableRefObject } from 'react';
 import React, { useRef, useState } from 'react';
 import ReactionItem from '../../ContextMenu/ReactionItem';
 import ItemEmoji, { REACTION_POP_KEYFRAMES } from './ItemEmoji';
@@ -20,7 +20,12 @@ const QUICK_REACTION_BURST = Array.from({ length: 8 }, (_, index) => {
 	return { x: Math.round(Math.cos(angle) * distance), y: Math.round(Math.sin(angle) * distance) };
 });
 
-export const QuickReaction = ({ message, isTopic, className }: MessageReactionProps & { className: string }) => {
+export const QuickReaction = ({
+	message,
+	isTopic,
+	className,
+	isBurstingRef
+}: MessageReactionProps & { className: string; isBurstingRef: MutableRefObject<boolean> }) => {
 	const quickReaction = useQuickReactionEmoji();
 	const emojiSrc = useAppSelector((state) => selectEmojiSrcById(state, quickReaction?.id || ''));
 	const isBanned = useAppSelector((state) => selectBanMeInChannel(state, message.channel_id));
@@ -35,7 +40,13 @@ export const QuickReaction = ({ message, isTopic, className }: MessageReactionPr
 		event.stopPropagation();
 		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 		popRef.current?.animate(REACTION_POP_KEYFRAMES, { duration: 420, easing: 'ease-out' });
+		isBurstingRef.current = true;
 		setBurstKey(Date.now());
+	};
+
+	const handleBurstEnd = () => {
+		isBurstingRef.current = false;
+		setBurstKey(0);
 	};
 
 	return (
@@ -52,15 +63,15 @@ export const QuickReaction = ({ message, isTopic, className }: MessageReactionPr
 				/>
 			</span>
 			{burstKey > 0 && (
-				<span key={burstKey} className="pointer-events-none absolute left-1/2 top-1/2">
+				<span key={burstKey} className="pointer-events-none absolute left-1/2 top-1/2 visible">
 					{QUICK_REACTION_BURST.map(({ x, y }, index) => (
 						<img
 							key={index}
 							src={getSrcEmoji(quickReaction.id || '', emojiSrc)}
 							alt=""
-							className="absolute z-100 left-0 top-0 w-3.5 h-3.5 max-w-none object-scale-down animate-reaction_burst"
+							className="absolute z-[100] left-0 top-0 w-3.5 h-3.5 max-w-none object-scale-down animate-reaction_burst"
 							style={{ '--reaction-burst-x': `${x}px`, '--reaction-burst-y': `${y}px` } as CSSProperties}
-							onAnimationEnd={index === 0 ? () => setBurstKey(0) : undefined}
+							onAnimationEnd={index === 0 ? handleBurstEnd : undefined}
 						/>
 					))}
 				</span>

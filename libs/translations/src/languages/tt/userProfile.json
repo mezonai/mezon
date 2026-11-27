@@ -223,5 +223,9 @@
 	},
 	"placeholders": {
 		"messageUser": "Хәбәр @ {{кулланучы исеме}}{{username}}"
+	},
+	"badges": {
+		"mezonPro": "Mezon Pro",
+		"clanPro": "Clan Pro"
 	}
 }

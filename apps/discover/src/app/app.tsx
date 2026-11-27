@@ -1,7 +1,7 @@
 import i18n from '@mezon/translations';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { I18nextProvider } from 'react-i18next';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ScrollToTop from './components/common/ScrollToTop';
@@ -34,8 +34,28 @@ const LoadingSpinner = () => (
 	</div>
 );
 
+const CANONICAL_ORIGIN = 'https://mezon.ai';
+
 function AppWithStore() {
+	const location = useLocation();
 	useDiscoverAnalytics();
+
+	useEffect(() => {
+		const trimmedPath = location.pathname.replace(/\/+$/, '');
+		const canonicalUrl = `${CANONICAL_ORIGIN}${trimmedPath || '/'}`;
+		const canonicalLink = document.querySelector('link[rel="canonical"]');
+		if (canonicalLink) {
+			canonicalLink.setAttribute('href', canonicalUrl);
+		}
+		const ogUrl = document.querySelector('meta[property="og:url"]');
+		if (ogUrl) {
+			ogUrl.setAttribute('content', canonicalUrl);
+		}
+		const twitterUrl = document.querySelector('meta[name="twitter:url"]');
+		if (twitterUrl) {
+			twitterUrl.setAttribute('content', canonicalUrl);
+		}
+	}, [location.pathname]);
 
 	return (
 		<div className="min-h-screen bg-[var(--surface-page)]">

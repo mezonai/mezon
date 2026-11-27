@@ -95,6 +95,26 @@
 		"manageAccounts": "Manage Accounts",
 		"switchAccounts": "Switch Accounts",
 		"copyUserId": "Copy User ID",
+		"userProPlan": {
+			"enable": "Enable User Pro Plan",
+			"confirmTitle": "Confirm User Pro Plan purchase",
+			"confirmMessage": "Enable User Pro Plan for {{price}} tokens per year?",
+			"confirmButton": "Confirm purchase",
+			"processing": "Processing purchase…",
+			"purchaseUnavailable": "Purchases are unavailable until the recipient ID and price are configured.",
+			"purchaseSubmitted": "User Pro payment submitted.",
+			"couponTitle": "Confirm User Pro coupon",
+			"couponMessage": "Are you sure you want to enable User Pro for {{userName}} with this coupon?",
+			"couponConfirmButton": "Enable User Pro",
+			"couponProcessing": "Applying coupon…",
+			"couponApplied": "Coupon applied successfully.",
+			"couponFailed": "This coupon could not be applied.",
+			"couponNotFound": "This coupon was not found.",
+			"couponExpiredOrWrongPlan": "This coupon has expired or isn't valid for this plan.",
+			"couponAlreadyUsed": "This coupon has already been used.",
+			"couponNotClanOwner": "Only the clan owner can redeem this coupon.",
+			"yourAccount": "your account"
+		},
 		"statusOptions": {
 			"online": "Online",
 			"idle": "Idle",
@@ -224,5 +244,9 @@
 		"banList": "Ban List",
 		"search": "Search banned users",
 		"banListEmpty": "No banned users found"
+	},
+	"badges": {
+		"mezonPro": "Mezon Pro",
+		"clanPro": "Clan Pro"
 	}
 }

@@ -5,6 +5,7 @@ import {
 	getStore,
 	selectAllListAttachmentByChannel,
 	selectAttachment,
+	selectAttachmentListChannelId,
 	selectAttachmentPaginationByChannel,
 	selectCurrentAttachmentShowImage,
 	selectCurrentChannelId,
@@ -29,7 +30,8 @@ import {
 	createImgproxyUrl,
 	formatDateI18n,
 	handleSaveImage,
-	isAttachmentPresignPendingForMessage
+	isAttachmentPresignPendingForMessage,
+	normalizeClanId
 } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -49,9 +51,11 @@ const MessageModalImage = () => {
 
 	const [showList, setShowList] = useState(true);
 	const currentChannelId = useAppSelector(selectCurrentChannelId);
+	const listChannelId = useAppSelector(selectAttachmentListChannelId);
+	const attachmentChannelId = (listChannelId || directId || currentChannelId) as string;
 	const currentClanId = useAppSelector(selectCurrentClanId) ?? '';
-	const attachments = useAppSelector((state) => selectAllListAttachmentByChannel(state, (directId ?? currentChannelId) as string));
-	const paginationState = useAppSelector((state) => selectAttachmentPaginationByChannel(state, (directId ?? currentChannelId) as string));
+	const attachments = useAppSelector((state) => selectAllListAttachmentByChannel(state, attachmentChannelId));
+	const paginationState = useAppSelector((state) => selectAttachmentPaginationByChannel(state, attachmentChannelId));
 	const { setOpenModalAttachment } = useAttachments();
 	const openModalAttachment = useAppSelector(selectOpenModalAttachment);
 	const attachment = useAppSelector(selectAttachment);
@@ -84,12 +88,18 @@ const MessageModalImage = () => {
 
 	const mode = useAppSelector(selectModeAttachment);
 	const messageId = useAppSelector(selectMessageIdAttachment);
-	const channelIdForAttachments = (directId ?? currentChannelId) as string;
-	const sourceMessage = useAppSelector((state) =>
-		currentAttachment?.message_id && channelIdForAttachments
+	const channelIdForAttachments = attachmentChannelId;
+	const fallbackChannelId = (directId || currentChannelId) as string;
+	const sourceMessage = useAppSelector((state) => {
+		if (!currentAttachment?.message_id) return undefined;
+		const fromAttachmentChannel = channelIdForAttachments
 			? selectMessageByMessageId(state, channelIdForAttachments, currentAttachment.message_id)
-			: undefined
-	);
+			: undefined;
+		if (fromAttachmentChannel) return fromAttachmentChannel;
+		return fallbackChannelId && fallbackChannelId !== channelIdForAttachments
+			? selectMessageByMessageId(state, fallbackChannelId, currentAttachment.message_id)
+			: undefined;
+	});
 	const isMainPresignPending = isAttachmentPresignPendingForMessage(urlImg ?? currentAttachment?.url, sourceMessage);
 	const { signCdnUrl } = useCdnUrlSigner([urlImg]);
 	const signedUrlImg = signCdnUrl(urlImg ?? '');
@@ -97,10 +107,17 @@ const MessageModalImage = () => {
 
 	const getSourceMessageForAttachment = useCallback(
 		(att: AttachmentEntity | undefined) => {
-			if (!att?.message_id || !channelIdForAttachments) return undefined;
-			return selectMessageByMessageId(getStore()?.getState(), channelIdForAttachments, att.message_id);
+			if (!att?.message_id) return undefined;
+			const state = getStore()?.getState();
+			const fromAttachmentChannel = channelIdForAttachments
+				? selectMessageByMessageId(state, channelIdForAttachments, att.message_id)
+				: undefined;
+			if (fromAttachmentChannel) return fromAttachmentChannel;
+			return fallbackChannelId && fallbackChannelId !== channelIdForAttachments
+				? selectMessageByMessageId(state, fallbackChannelId, att.message_id)
+				: undefined;
 		},
-		[channelIdForAttachments]
+		[channelIdForAttachments, fallbackChannelId]
 	);
 
 	const isAttPresignPending = useCallback(
@@ -128,7 +145,7 @@ const MessageModalImage = () => {
 
 	const handleLoadMoreAttachments = useCallback(
 		async (direction: 'before' | 'after') => {
-			const channelId = (directId ?? currentChannelId) as string;
+			const channelId = attachmentChannelId;
 			if (paginationState.isLoading || !channelId) {
 				return;
 			}
@@ -151,7 +168,7 @@ const MessageModalImage = () => {
 						: currentAttachments?.[0]?.create_time_seconds;
 				const timestampNumber = timestamp ? Math.floor(Number(timestamp)) : undefined;
 
-				const clanId = currentClanId === '0' ? '0' : currentClanId;
+				const clanId = normalizeClanId(currentClanId);
 
 				let beforeParam: number | undefined;
 				let afterParam: number | undefined;
@@ -183,8 +200,7 @@ const MessageModalImage = () => {
 			paginationState.limit,
 			paginationState.hasMoreBefore,
 			paginationState.hasMoreAfter,
-			currentChannelId,
-			directId,
+			attachmentChannelId,
 			currentClanId,
 			dispatch
 		]
@@ -588,7 +604,13 @@ const SenderUser = () => {
 	const { directId } = useAppParams();
 	const attachment = useAppSelector(selectCurrentAttachmentShowImage);
 	const currentChannelId = useAppSelector(selectCurrentChannelId);
-	const message = useAppSelector((state) => selectMessageByMessageId(state, currentChannelId, attachment?.message_id || ''));
+	const listChannelId = useAppSelector(selectAttachmentListChannelId);
+	const message = useAppSelector((state) => {
+		const attachmentMessageId = attachment?.message_id || '';
+		if (!attachmentMessageId) return undefined;
+		const fromListChannel = listChannelId ? selectMessageByMessageId(state, listChannelId, attachmentMessageId) : undefined;
+		return fromListChannel ?? selectMessageByMessageId(state, currentChannelId, attachmentMessageId);
+	});
 	const clanUser = useAppSelector((state) => selectMemberClanByUserId(state, attachment?.uploader as string));
 	const dmUser = useAppSelector((state) => selectMemberGroupByUserId(state, directId as string, attachment?.uploader as string));
 	const modeResponsive = useAppSelector(selectModeResponsive);

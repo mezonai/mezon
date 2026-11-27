@@ -55,8 +55,32 @@
 		"processing": "Đang xử lý...",
 		"invitePeople": "Mời Người Tham Gia",
 		"clanSettings": "Cài Đặt Clan",
+		"clanBenefits": "Enable Pro Plan",
 		"notificationSettings": "Cài Đặt Thông Báo",
 		"showEmptyCategories": "Hiển Thị Danh Mục Trống",
 		"leaveClan": "Rời Clan"
+	},
+	"proPlanConfirm": {
+		"title": "Xác nhận mua Clan Pro",
+		"message": "Bật Clan Pro cho {{clanName}} với giá {{price}} token mỗi năm?",
+		"yourClan": "clan của bạn",
+		"confirmButton": "Xác nhận mua",
+		"processing": "Đang xử lý giao dịch…",
+		"purchaseUnavailable": "Chưa thể mua vì chưa cấu hình ID người nhận.",
+		"purchaseSubmitted": "Đã gửi giao dịch thanh toán Clan Pro.",
+		"couponTitle": "Xác nhận dùng coupon Clan Pro",
+		"couponMessage": "Bạn có chắc muốn bật Clan Pro cho {{clanName}} bằng coupon này không?",
+		"couponConfirmButton": "Xác nhận bật Clan Pro",
+		"couponProcessing": "Đang xử lý coupon…",
+		"couponApplied": "Đã áp dụng coupon thành công.",
+		"couponFailed": "Không thể áp dụng coupon này.",
+		"couponNotFound": "Không tìm thấy coupon này.",
+		"couponExpiredOrWrongPlan": "Coupon này đã hết hạn hoặc không hợp lệ cho gói này.",
+		"couponAlreadyUsed": "Coupon này đã được sử dụng.",
+		"couponNotClanOwner": "Chỉ chủ sở hữu clan mới có thể đổi coupon này.",
+		"userCouponTitle": "Xác nhận dùng coupon User Pro",
+		"userCouponMessage": "Bạn có chắc muốn bật User Pro cho tài khoản {{userName}} bằng coupon này không?",
+		"userCouponConfirmButton": "Xác nhận bật User Pro",
+		"yourAccount": "của bạn"
 	}
 }

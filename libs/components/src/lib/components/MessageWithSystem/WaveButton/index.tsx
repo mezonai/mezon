@@ -12,7 +12,16 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import type { IMessage, IMessageSendPayload } from '@mezon/utils';
-import { EMimeTypes, MEZON_AVATAR_URL, STICKER_WAVE, WAVE_SENDER_NAME, createImgproxyUrl, generateE2eId } from '@mezon/utils';
+import {
+	EMimeTypes,
+	MEZON_AVATAR_URL,
+	STICKER_WAVE,
+	WAVE_SENDER_NAME,
+	createImgproxyUrl,
+	generateE2eId,
+	isDMStreamMode,
+	isRealClanId
+} from '@mezon/utils';
 import type { ApiChannelDescription } from 'mezon-js';
 import { ChannelStreamMode } from 'mezon-js';
 import { memo, useMemo, useState } from 'react';
@@ -30,10 +39,13 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 	const currenChannel = useSelector(selectCurrentChannel);
 	const currentDm = useSelector(selectCurrentDM);
 	const mode = useMemo(() => {
-		return message?.clan_id === '0' ? ChannelStreamMode.STREAM_MODE_GROUP : ChannelStreamMode.STREAM_MODE_CHANNEL;
-	}, [message?.clan_id]);
+		if (isDMStreamMode(message?.mode)) {
+			return message.mode as ChannelStreamMode;
+		}
+		return !isRealClanId(message?.clan_id) ? ChannelStreamMode.STREAM_MODE_GROUP : ChannelStreamMode.STREAM_MODE_CHANNEL;
+	}, [message?.mode, message?.clan_id]);
 	const channelOrDirect = useMemo(() => {
-		return mode === ChannelStreamMode.STREAM_MODE_GROUP ? currentDm : currenChannel;
+		return isDMStreamMode(mode) ? currentDm : currenChannel;
 	}, [currenChannel, currentDm, mode]);
 
 	const { sendMessage } = useChatSending({

@@ -51,6 +51,7 @@ export type MessageBoxProps = {
 	readonly currentChannelId?: string;
 	readonly currentClanId?: string;
 	readonly mode?: number;
+	readonly wrapQuickReplies?: boolean;
 };
 
 const MessageBox = (props: MessageBoxProps): ReactElement => {
@@ -146,7 +147,12 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 		<div className="relative max-sm:-pb-2">
 			{isCheckQuickReply && (
 				<Suspense fallback={null}>
-					<Spelling updateDraft={updateRef} isQuickReply={isCheckQuickReply} channelId={currentChannelId || ''} />
+					<Spelling
+						updateDraft={updateRef}
+						isQuickReply={isCheckQuickReply}
+						channelId={currentChannelId || ''}
+						wrap={props.wrapQuickReplies}
+					/>
 				</Suspense>
 			)}
 			{dataReferences.message_ref_id && <ReplyMessageBox channelId={currentChannelId ?? ''} dataReferences={dataReferences} />}

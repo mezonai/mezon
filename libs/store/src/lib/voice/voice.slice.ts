@@ -1,7 +1,7 @@
 import { captureSentryError } from '@mezon/logger';
 import type { SfuBreakoutRoomEventPayload } from '@mezon/transport';
 import { SfuBreakoutApiError, callSfuBreakoutMerge, callSfuBreakoutRoom } from '@mezon/transport';
-import { LENGHT_USER_ID, type IvoiceInfo, type LoadingStatus } from '@mezon/utils';
+import { LENGHT_USER_ID, isRealClanId, type IvoiceInfo, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiGenerateMeetTokenResponse, ApiVoiceChannelUser, VoiceLeavedEvent } from 'mezon-js';
@@ -44,46 +44,13 @@ export interface VoiceEntity extends ApiVoiceChannelUser {
 }
 
 export enum EVoiceInteractEvent {
-	SENT_FLOWERS = 1
+	SENT_FLOWERS = 1,
+	RECORDING = 2
 }
 export enum EInvoice {
 	INVOICE,
 	SHARING_SCREEN
 }
-
-export enum EVoiceInteractEvent {
-	RECORDING = 2,
-	APP_QUIZ = 10,
-	APP_BLACKBOARD = 11,
-	APP_INTERACTIVE = 12
-}
-
-const E_APP_INTERACTIVE_KEY = {
-	Interactive: process.env.NX_APP_INTERACTIVE,
-	Blackboard: process.env.NX_APP_BLACKBOARD,
-	Quiz: process.env.NX_APP_QUIZ
-};
-
-export const VOICE_INTERACTIVE_APPS = [
-	{
-		key: E_APP_INTERACTIVE_KEY.Quiz,
-		eventType: EVoiceInteractEvent.APP_QUIZ,
-		name: 'Quiz',
-		url: 'https://quiz.mezon.ai'
-	},
-	{
-		key: E_APP_INTERACTIVE_KEY.Blackboard,
-		eventType: EVoiceInteractEvent.APP_BLACKBOARD,
-		name: 'Blackboard',
-		url: 'https://blackboard.mezon.ai'
-	},
-	{
-		key: E_APP_INTERACTIVE_KEY.Interactive,
-		eventType: EVoiceInteractEvent.APP_INTERACTIVE,
-		name: 'Interactive',
-		url: 'https://interactive.mezon.ai'
-	}
-];
 
 export interface InVoiceInfor {
 	clanId: string;
@@ -137,6 +104,7 @@ export interface VoiceState {
 	isPiPMode?: boolean;
 	openPopOut?: boolean;
 	openChatBox?: boolean;
+	externalChatUnread: number;
 	externalGroup?: boolean;
 	presenceRevisionByClan: Record<string, number>;
 	listInVoiceStatus: Record<string, InVoiceInfor>;
@@ -271,31 +239,6 @@ export const sendRecordingState = createAsyncThunk(
 			);
 		} catch (error) {
 			captureSentryError(error, 'voice/sendRecordingState');
-			return thunkAPI.rejectWithValue(error);
-		}
-	}
-);
-
-export const sendVoiceInteractiveEvent = createAsyncThunk(
-	'voice/sendVoiceInteractiveEvent',
-	async ({ event_type, clan_id, channel_id }: { event_type: EVoiceInteractEvent; clan_id: string; channel_id: string }, thunkAPI) => {
-		try {
-			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
-			const state = thunkAPI.getState() as RootState;
-			const sender_id = selectCurrentUserId(state);
-			const params = event_type === EVoiceInteractEvent.APP_BLACKBOARD ? `userId=${sender_id}` : '';
-			const response = await mezon.client.writeVoiceInteractiveEvent(
-				mezon.session,
-				clan_id,
-				channel_id,
-				sender_id,
-				sender_id,
-				event_type,
-				params
-			);
-			return response;
-		} catch (error) {
-			captureSentryError(error, 'voice/sendVoiceInteractiveEvent');
 			return thunkAPI.rejectWithValue(error);
 		}
 	}
@@ -692,6 +635,7 @@ export const initialVoiceState: VoiceState = {
 	isPiPMode: false,
 	openPopOut: false,
 	openChatBox: false,
+	externalChatUnread: 0,
 	externalGroup: false,
 	presenceRevisionByClan: {},
 	listInVoiceStatus: {},
@@ -901,6 +845,7 @@ export const voiceSlice = createSlice({
 			state.breakoutInvite = null;
 			state.breakoutParents = [];
 			state.breakoutPending = false;
+			state.externalChatUnread = 0;
 		},
 		syncHostedBreakoutsOwner: (state, action: PayloadAction<string | null>) => {
 			const nextOwnerId = action.payload || null;
@@ -1008,6 +953,17 @@ export const voiceSlice = createSlice({
 		},
 		setToggleChatBox: (state) => {
 			state.openChatBox = !state.openChatBox;
+			if (state.openChatBox) {
+				state.externalChatUnread = 0;
+			}
+		},
+		noteExternalChatMessage: (state) => {
+			if (!state.openChatBox) {
+				state.externalChatUnread += 1;
+			}
+		},
+		clearExternalChatUnread: (state) => {
+			state.externalChatUnread = 0;
 		},
 		setExternalGroup: (state) => {
 			state.externalGroup = true;
@@ -1045,7 +1001,7 @@ export const voiceSlice = createSlice({
 				state.loadingStatus = 'loaded';
 
 				if (presenceRevision !== undefined && presenceRevision !== (state.presenceRevisionByClan[clanId] ?? 0)) return;
-				if (clanId && clanId !== '0') {
+				if (isRealClanId(clanId)) {
 					state.voiceMembersLoadedByClan[clanId] = true;
 				}
 				if (fromCache || !users.length) return;
@@ -1195,7 +1151,6 @@ export const voiceReducer = voiceSlice.reducer;
 export const voiceActions = {
 	...voiceSlice.actions,
 	fetchVoiceChannelMembers,
-	sendVoiceInteractiveEvent,
 	sendRecordingState,
 	kickVoiceMember,
 	muteVoiceMember,
@@ -1246,7 +1201,7 @@ const selectChannelId = (_: RootState, channelId: string) => channelId;
 export const selectVoiceChannelMembersByChannelId = createSelector(
 	[getVoiceState, selectChannelId, (_, __, clanId: string) => clanId],
 	(state, channelId, clanId) => {
-		if (!clanId || clanId === '0') return [];
+		if (!isRealClanId(clanId)) return [];
 		const listByClan = state.listVoiceMemberByClan[clanId];
 
 		if (listByClan && listByClan[channelId]) {
@@ -1259,7 +1214,7 @@ export const selectVoiceChannelMembersByChannelId = createSelector(
 export const selectUserInvoiceData = createSelector(
 	[getVoiceState, (_, userId: string) => userId, selectCurrentChannelId, selectCurrentClanId],
 	(state, userId, channelId, clanId) => {
-		if (!clanId || clanId === '0' || !channelId) return null;
+		if (!isRealClanId(clanId) || !channelId) return null;
 		const listByClan = state.listVoiceMemberByClan[clanId];
 
 		if (listByClan && listByClan[channelId]) {
@@ -1288,6 +1243,7 @@ export const selectVoiceOpenPopOut = createSelector(getVoiceState, (state) => st
 export const selectGuestAccessToken = createSelector(getVoiceState, (state) => state.guestAccessToken);
 export const selectGuestUserId = createSelector(getVoiceState, (state) => state.guestUserId);
 export const selectOpenExternalChatBox = createSelector(getVoiceState, (state) => state.openChatBox);
+export const selectExternalChatUnread = createSelector(getVoiceState, (state) => state.externalChatUnread);
 export const selectBreakoutRoom = createSelector(getVoiceState, (state) => state.breakoutRoom);
 export const selectBreakoutInvite = createSelector(getVoiceState, (state) => state.breakoutInvite);
 export const selectBreakoutParents = createSelector(getVoiceState, (state) => state.breakoutParents);

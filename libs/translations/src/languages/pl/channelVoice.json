@@ -251,5 +251,11 @@
 		"you": "Ty",
 		"enlarge": "Powiększ {{name}}",
 		"restoreLayout": "Wróć do widoku obok siebie"
+	},
+	"comment": {
+		"button": "Komentarz",
+		"placeholder": "Napisz komentarz…",
+		"hide": "Ukryj pływające komentarze",
+		"show": "Pokaż pływające komentarze"
 	}
 }

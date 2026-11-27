@@ -34,6 +34,7 @@ import {
 	formatMoney,
 	generateE2eId,
 	isPublicChannel,
+	isRealClanId,
 	useMenuBuilder
 } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
@@ -106,7 +107,7 @@ const ChannelMessageOpt = ({
 	}
 	return (
 		<div
-			className={`chooseForText z-[1] absolute min-h-[34px] p-0.5 bg-theme-contexify rounded-lg block ${!isCombine ? (message?.references ? '-top-8' : 'top-4') : '-top-8'} ${isDifferentDay ? '-top-12 mt-1' : ''} right-6 w-fit`}
+			className={`chooseForText z-[1] absolute min-h-[34px] p-0.5 bg-theme-contexify rounded-lg block ${!isCombine ? (message?.references ? '-top-8' : 'top-0') : '-top-8'} ${isDifferentDay ? '-top-12 mt-1' : ''} right-6 w-fit`}
 			data-e2e={generateE2eId('chat.hover_message_actions')}
 		>
 			<div className="flex justify-between bg-theme-contexify rounded select-none">
@@ -173,7 +174,7 @@ function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: b
 		const plugin = {
 			setup: (builder: MenuBuilder) => {
 				builder.when(
-					clanId && clanId !== '0' && realTimeMessage?.code !== TypeMessage.Topic && !doNotAllowCreateTopic && notAllowedType,
+					isRealClanId(clanId) && realTimeMessage?.code !== TypeMessage.Topic && !doNotAllowCreateTopic && notAllowedType,
 					(builder: MenuBuilder) => {
 						builder.addMenuItem(
 							'topic',

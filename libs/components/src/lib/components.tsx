@@ -125,6 +125,7 @@ export { default as ChannelMessageThread } from './components/MessageBox/Reactio
 export { default as MessageWithSystem } from './components/MessageWithSystem';
 export { default as ModalInputMessageBuzz } from './components/ModalInputMessageBuzz';
 
+export * from './components/LiveComments';
 export * from './components/MezonSfuVoiceChannel';
 export * from './components/StreamPlayer';
 export * from './components/virtual-core/useVirtualizer';
@@ -136,11 +137,20 @@ export * from './components/PreJoinCalling/JoinForm';
 export * from './components/PreJoinCalling/VideoPreview';
 export * from './components/PreJoinCalling/mediaPipeBackground';
 
+export { default as BenefitModal } from './components/BenefitModal';
+export type {
+	BenefitConfirmation,
+	BenefitConfirmationAction,
+	BenefitModalProps,
+	BenefitPlanId,
+	CouponValidationResult
+} from './components/BenefitModal';
 export * from './components/ButtonSwitchCustom';
 export { default as ButtonCopy } from './components/ButtonSwitchCustom/CopyButtonComponent';
 export { default as CustomCookieConsent } from './components/CustomCookieConsent';
 export * from './components/DmCall';
 export { DmCallManager } from './components/DmCall/DmCallManager';
+export { default as FirstSetupUsername } from './components/FirstJoinPopup/FirstSetupUsername';
 export { default as InternetStatusPopover } from './components/InternetStatusPopover';
 export { MediaChannel } from './components/MediaChannel';
 export { MediaPermissionPrompt } from './components/MediaPermissionPrompt';

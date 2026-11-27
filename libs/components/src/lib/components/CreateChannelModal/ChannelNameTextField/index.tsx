@@ -4,7 +4,7 @@ import { ValidateSpecialCharacters, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChannelLableModal } from '../ChannelLabel';
+import { ChannelLabelModal } from '../ChannelLabel';
 
 interface ChannelNameModalProps {
 	type: ChannelType;
@@ -86,7 +86,7 @@ export const ChannelNameTextField = forwardRef<ChannelNameModalRef, ChannelNameM
 
 	return (
 		<div className="Frame408 self-stretch h-[84px] flex-col justify-start items-start gap-2 flex mt-1">
-			<ChannelLableModal labelProp={channelNameProps} />
+			<ChannelLabelModal labelProp={channelNameProps} />
 			<div className="ContentContainer self-stretch h-11 flex-col items-start flex">
 				<div
 					className={`InputContainer self-stretch h-11 px-4 py-3 bg-item-theme rounded shadow border w-full ${error || (shouldValidate && checkValidate && !checkNameChannel) ? 'border-red-500' : 'border-blue-600'}  justify-start items-center gap-2 inline-flex`}

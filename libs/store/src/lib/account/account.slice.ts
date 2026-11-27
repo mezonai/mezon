@@ -3,13 +3,15 @@ import { notificationService, type IUserAccount, type LoadingStatus } from '@mez
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { t } from 'i18next';
-import type { ApiAccountEmail, ApiLinkAccountConfirmRequest, ApiLinkAccountMezon, ApiUserStatusUpdate } from 'mezon-js';
+import type { ApiAccountEmail, ApiLinkAccountConfirmRequest, ApiLinkAccountMezon, ApiUpdateUsernameRequest, ApiUserStatusUpdate } from 'mezon-js';
 import { toast } from 'react-toastify';
+import type { ISession } from '../auth/auth.slice';
 import { authActions } from '../auth/auth.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 // import { selectCurrentClanId } from '../clans/clans.slice';
 import { settingActions } from '../app/setting.slice';
+import type { ThunkConfigWithError } from '../errors';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { RootState } from '../store';
@@ -19,6 +21,8 @@ export interface IAccount {
 	email: string;
 	password: string;
 }
+type WithProPlan = { pro_plan?: boolean };
+
 export interface AccountState {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
@@ -210,6 +214,34 @@ export const updateAccountStatus = createAsyncThunk('userstatusapi/updateUserSta
 	}
 });
 
+export const updateAccountUsername = createAsyncThunk<string, ApiUpdateUsernameRequest, ThunkConfigWithError>(
+	'userstatusapi/updateAccountUsername',
+	async (request: ApiUpdateUsernameRequest, thunkAPI) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+
+			const response = await mezon.client.updateUsername(mezon.session, request);
+			if (!response) {
+				return '';
+			}
+			const updatedSession = response as ISession;
+			const currentSession = (thunkAPI.getState() as RootState).auth.session ?? (mezon.session as ISession);
+			const nextSession = {
+				...currentSession,
+				token: updatedSession.token,
+				refresh_token: updatedSession.refresh_token,
+				created: false
+			};
+			mezon.sessionRef.current = nextSession;
+			thunkAPI.dispatch(authActions.updateSession(nextSession));
+			return updatedSession.username || (request.username || '').toLowerCase().replace(/\s/g, '');
+		} catch (error) {
+			captureSentryError(error, 'userstatusapi/updateAccountUsername');
+			return thunkAPI.rejectWithValue(error ?? null, { error: { toast: false } });
+		}
+	}
+);
+
 export const accountSlice = createSlice({
 	name: ACCOUNT_FEATURE_KEY,
 	initialState: initialAccountState,
@@ -252,6 +284,13 @@ export const accountSlice = createSlice({
 				state.userProfile.user.user_status = action.payload;
 			}
 		},
+		setUserProPlan(state, action: PayloadAction<boolean>) {
+			if (!state.userProfile) return;
+			state.userProfile.pro_plan = action.payload;
+			if (state.userProfile.user) {
+				state.userProfile.user.pro_plan = action.payload;
+			}
+		},
 		setWalletMetadata(state, action: PayloadAction<any>) {
 			if (state?.userProfile?.user) {
 				state.userProfile.user.user_status = action.payload;
@@ -290,12 +329,28 @@ export const accountSlice = createSlice({
 			}
 		},
 		setUpdateAccount(state, action: PayloadAction<IUserAccount>) {
-			state.userProfile = {
+			const prevProfile = state.userProfile as (IUserAccount & WithProPlan) | null | undefined;
+			const nextProfile = action.payload as IUserAccount & WithProPlan;
+			const prevUser = state.userProfile?.user as (NonNullable<IUserAccount['user']> & WithProPlan) | undefined;
+			const nextUser = action.payload.user as (NonNullable<IUserAccount['user']> & WithProPlan) | undefined;
+			const preservedProPlan = nextProfile.pro_plan !== undefined ? nextProfile.pro_plan : prevProfile?.pro_plan;
+			const preservedUserProPlan = nextUser?.pro_plan !== undefined ? nextUser.pro_plan : prevUser?.pro_plan;
+			const mergedUser: (NonNullable<IUserAccount['user']> & WithProPlan) | undefined =
+				state.userProfile?.user || action.payload.user
+					? {
+							...state.userProfile?.user,
+							...action.payload.user,
+							...(preservedUserProPlan !== undefined ? { pro_plan: preservedUserProPlan } : {})
+						}
+					: undefined;
+			const mergedProfile: IUserAccount & WithProPlan = {
 				...state.userProfile,
 				...action.payload,
-				user: { ...state.userProfile?.user, ...action.payload.user },
-				encrypt_private_key: action.payload.encrypt_private_key
+				user: mergedUser,
+				encrypt_private_key: action.payload.encrypt_private_key,
+				...(preservedProPlan !== undefined ? { pro_plan: preservedProPlan } : {})
 			};
+			state.userProfile = mergedProfile;
 		},
 		incrementAvatarVersion(state) {
 			state.avatarVersion = (state.avatarVersion || 0) + 1;
@@ -336,6 +391,11 @@ export const accountSlice = createSlice({
 			.addCase(getUserProfile.rejected, (state: AccountState, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
+			})
+			.addCase(updateAccountUsername.fulfilled, (state, action) => {
+				if (!state.userProfile?.user) return;
+
+				state.userProfile.user.username = action.payload;
 			});
 	}
 });
@@ -345,7 +405,16 @@ export const accountSlice = createSlice({
  */
 export const accountReducer = accountSlice.reducer;
 
-export const accountActions = { ...accountSlice.actions, getUserProfile, deleteAccount, addPhoneNumber, verifyPhone, updateAccountStatus, linkEmail };
+export const accountActions = {
+	...accountSlice.actions,
+	getUserProfile,
+	deleteAccount,
+	addPhoneNumber,
+	verifyPhone,
+	updateAccountStatus,
+	linkEmail,
+	updateAccountUsername
+};
 
 export const getAccountState = (rootState: { [ACCOUNT_FEATURE_KEY]: AccountState }): AccountState => rootState[ACCOUNT_FEATURE_KEY];
 
@@ -366,3 +435,10 @@ export const selectLogoCustom = createSelector(getAccountState, (state) => state
 export const selectAvatarVersion = createSelector(getAccountState, (state) => state.avatarVersion);
 
 export const selectCurrentUsername = createSelector(getAccountState, (state: AccountState) => state.userProfile?.user?.username || '');
+
+export const selectAccountProPlan = createSelector(getAccountState, (state: AccountState) =>
+	Boolean(
+		(state.userProfile as (IUserAccount & WithProPlan) | null | undefined)?.pro_plan ||
+			(state.userProfile?.user as (NonNullable<IUserAccount['user']> & WithProPlan) | undefined)?.pro_plan
+	)
+);

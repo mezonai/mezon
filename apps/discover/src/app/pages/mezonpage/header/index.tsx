@@ -1,3 +1,4 @@
+import { mezonLogoOnDark } from '@mezon/assets';
 import { Image, MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import throttle from 'lodash/throttle';
@@ -97,12 +98,7 @@ const HeaderMezon = memo((props: HeaderProps) => {
 				<div className="flex items-center justify-between md:px-[10px] xl:px-4 2xl:px-[32px] h-full gap-2 xl:gap-4">
 					<div className="hidden lg:flex items-center flex-shrink-0 min-w-fit 2xl:min-w-[260px]">
 						<Link to="/" className="flex items-center hover:scale-110 transition-transform duration-300 active:scale-95">
-							<Image
-								src="https://cdn.komu.vn/landing-page-mezon/mezonlogonew.png"
-								width={40}
-								height={40}
-								className="object-cover drop-shadow-md"
-							/>
+							<Image src={mezonLogoOnDark} alt="Mezon" className="h-7 w-auto object-contain" />
 						</Link>
 					</div>
 					<nav className="hidden lg:flex items-center justify-center flex-1 min-w-0 gap-x-1 xl:gap-x-1.5 2xl:gap-x-2">
