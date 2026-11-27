@@ -145,7 +145,7 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 						hoverTextColor={false}
 						disabled={isClanPro}
 						children={t('modalPanel.clanBenefits')}
-						endIcon={<MezonIcon icon={MzIcons16.mzSparkles} className={isClanPro ? 'text-theme-secondary' : 'text-white'} />}
+						endIcon={<MezonIcon icon={MzIcons16.mzLock} className={isClanPro ? 'text-theme-secondary' : 'text-white'} />}
 					/>
 				)}
 

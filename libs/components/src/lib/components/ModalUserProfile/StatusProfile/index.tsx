@@ -312,7 +312,7 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 				hoverTextColor={false}
 				disabled={isUserPro}
 				children={t('statusProfile.userProPlan.enable')}
-				endIcon={<MezonIcon icon={MzIcons16.mzSparkles} className={isUserPro ? 'text-theme-secondary' : 'text-white'} />}
+				endIcon={<MezonIcon icon={MzIcons16.mzLock} className={isUserPro ? 'text-theme-secondary' : 'text-white'} />}
 			/>
 			{isShowModalHistory && <TransactionHistory onClose={handleCloseHistoryModal} />}
 		</>
