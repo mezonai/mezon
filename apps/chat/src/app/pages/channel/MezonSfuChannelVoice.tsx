@@ -117,6 +117,7 @@ interface VoiceConferenceContentProps {
 	handleToggleChat: () => void;
 	isPrivateVoice?: boolean;
 	onRefreshToken?: () => Promise<string | undefined>;
+	onSfuFailover?: (failedServerUrl: string) => Promise<{ token?: string; url?: string } | undefined>;
 	containerRef?: RefObject<HTMLDivElement | null>;
 	selectedCamera: string;
 	onSelectCamera: (deviceId: string) => void;
@@ -138,6 +139,7 @@ const VoiceConferenceContent = memo(
 		handleToggleChat,
 		isPrivateVoice,
 		onRefreshToken,
+		onSfuFailover,
 		containerRef,
 		selectedCamera,
 		onSelectCamera,
@@ -293,6 +295,7 @@ const VoiceConferenceContent = memo(
 					onToggleChat={handleToggleChat}
 					isPrivateVoice={isPrivateVoice}
 					onRefreshToken={onRefreshToken}
+					onSfuFailover={onSfuFailover}
 					cameraManagedExternally={Boolean(selectedBg)}
 					customVideoTrack={shareCamera && selectedBg && customVideoTrack?.readyState === 'live' ? customVideoTrack : null}
 					preferredCameraId={selectedCamera}
@@ -489,6 +492,30 @@ const MezonSfuChannelVoiceInner = () => {
 		}
 	});
 
+	const handleSfuFailover = useLastCallback(async (failedServerUrl: string) => {
+		const channelId = voiceInfo?.channelId;
+		const clanId = voiceInfo?.clanId;
+		if (!channelId || !clanId) return undefined;
+		const storeState = getStore().getState();
+		const userProfile = storeState.account.userProfile;
+		const clanMember = selectMemberByIdAndClanId(storeState, clanId, userProfile?.user?.id || '');
+		const username = clanMember?.clan_nick || clanMember?.prioritizeName || userProfile?.user?.display_name || userProfile?.user?.username;
+		const avatar = clanMember?.clan_avatar || userProfile?.user?.avatar_url;
+		const metadata = username || avatar ? `${username};${avatar}` : '';
+		try {
+			return await dispatch(
+				generateMeetToken({
+					channelId,
+					roomName: '',
+					metadata,
+					avoidingSfuUrl: failedServerUrl
+				})
+			).unwrap();
+		} catch {
+			return undefined;
+		}
+	});
+
 	const handleReconnectRequired = useLastCallback((networkLost: boolean) => {
 		if (!voiceInfo) return;
 		setRejoinNetworkLost(networkLost);
@@ -560,6 +587,7 @@ const MezonSfuChannelVoiceInner = () => {
 									isVoiceFullScreen={!!isVoiceFullScreen}
 									handleToggleChat={handleToggleChat}
 									onRefreshToken={handleRefreshToken}
+									onSfuFailover={handleSfuFailover}
 									containerRef={containerRef}
 									selectedCamera={selectedCamera}
 									onSelectCamera={setSelectedCamera}
