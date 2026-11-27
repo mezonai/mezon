@@ -192,7 +192,7 @@ i18n.use(languageDetector)
 		interpolation: {
 			escapeValue: false
 		},
-		compatibilityJSON: 'v3',
+		compatibilityJSON: 'v4',
 		react: {
 			useSuspense: false
 		},

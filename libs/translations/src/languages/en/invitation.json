@@ -53,8 +53,9 @@
 	"acceptModal": {
 		"title": "Join Clan",
 		"invitedToJoin": "You've been invited to join",
-		"memberCount": "{{count}} Member",
-		"memberCount_plural": "{{count}} Members",
+		"memberCount": "{{count}} Members",
+		"memberCount_one": "{{count}} Member",
+		"memberCount_other": "{{count}} Members",
 		"clanSettings": "Clan Settings",
 		"customizeAnytime": "You can customize these at any time",
 		"noThanks": "No Thanks",
