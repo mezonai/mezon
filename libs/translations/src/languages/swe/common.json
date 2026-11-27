@@ -559,5 +559,15 @@
 		"open": "Öppna appen",
 		"dismiss": "Stäng",
 		"continueInBrowser": "Fortsätt i webbläsaren"
+	},
+	"voiceWaiting": {
+		"title": "Waiting for admission...",
+		"subtitle": "Someone in the voice channel needs to admit you before you can join.",
+		"cancel": "Cancel",
+		"wantsToJoin": "Wants to join this voice channel",
+		"admit": "Admit",
+		"decline": "Decline",
+		"declinedToast": "Your request to join the voice channel was declined.",
+		"reviewError": "Failed to review voice join request."
 	}
 }

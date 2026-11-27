@@ -1,6 +1,11 @@
 import { captureSentryError } from '@mezon/logger';
-import type { SfuBreakoutRoomEventPayload } from '@mezon/transport';
-import { SfuBreakoutApiError, callSfuBreakoutMerge, callSfuBreakoutRoom } from '@mezon/transport';
+import type {
+	SfuBreakoutRoomEventPayload,
+	VoiceJoinReviewedEventPayload,
+	VoiceJoinWaitingEventPayload,
+	VoiceJoinWaitingUserPayload
+} from '@mezon/transport';
+import { SfuBreakoutApiError, callReviewVoiceJoin, callSfuBreakoutMerge, callSfuBreakoutRoom } from '@mezon/transport';
 import { LENGHT_USER_ID, isRealClanId, type IvoiceInfo, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
@@ -113,6 +118,32 @@ export interface VoiceRecordingState {
 	error: string | null;
 }
 
+export interface VoiceJoinWaitingState {
+	channelId: string;
+	clanId: string;
+	clanName: string;
+	channelLabel: string;
+	channelPrivate: number;
+	joinRole: 'speaker' | 'audience';
+	url?: string;
+}
+
+export interface VoiceJoinAdmittedState {
+	channelId: string;
+	clanId: string;
+	clanName: string;
+	channelLabel: string;
+	channelPrivate: number;
+	joinRole: 'speaker' | 'audience';
+	token: string;
+	url: string;
+}
+
+export interface VoiceJoinRejectedState {
+	channelId: string;
+	timestamp: number;
+}
+
 export interface VoiceState {
 	voiceInfo: IvoiceInfo | null;
 	loadingStatus: LoadingStatus;
@@ -157,6 +188,10 @@ export interface VoiceState {
 	hostedBreakoutsOwnerId: string | null;
 	breakoutPending: boolean;
 	closingBreakoutIds: string[];
+	voiceJoinWaiting: VoiceJoinWaitingState | null;
+	voiceJoinAdmitted: VoiceJoinAdmittedState | null;
+	voiceJoinRejected: VoiceJoinRejectedState | null;
+	waitingUsersByChannel: Record<string, VoiceJoinWaitingUserPayload[]>;
 }
 
 type fetchVoiceChannelMembersPayload = {
@@ -669,6 +704,24 @@ export const acceptBreakoutInvite = createAsyncThunk(
 	}
 );
 
+export const reviewVoiceJoin = createAsyncThunk(
+	'voice/reviewVoiceJoin',
+	async ({ channelId, userId, approve }: { channelId: string; userId: string; approve: boolean }, thunkAPI) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const res = await callReviewVoiceJoin(mezon.client, mezon.session, {
+				channel_id: channelId,
+				user_id: userId,
+				approve
+			});
+			return { channelId, userId, approved: res?.approved ?? approve };
+		} catch (error) {
+			captureSentryError(error, 'voice/reviewVoiceJoin');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
 export const initialVoiceState: VoiceState = {
 	loadingStatus: 'not loaded',
 	error: null,
@@ -716,7 +769,11 @@ export const initialVoiceState: VoiceState = {
 	hostedBreakouts: {},
 	hostedBreakoutsOwnerId: null,
 	breakoutPending: false,
-	closingBreakoutIds: []
+	closingBreakoutIds: [],
+	voiceJoinWaiting: null,
+	voiceJoinAdmitted: null,
+	voiceJoinRejected: null,
+	waitingUsersByChannel: {}
 };
 
 export const voiceSlice = createSlice({
@@ -886,6 +943,71 @@ export const voiceSlice = createSlice({
 			state.breakoutInvite = null;
 			state.breakoutParents = [];
 			state.breakoutPending = false;
+			state.voiceJoinWaiting = null;
+			state.voiceJoinAdmitted = null;
+		},
+		setVoiceJoinWaiting: (state, action: PayloadAction<VoiceJoinWaitingState | null>) => {
+			state.voiceJoinWaiting = action.payload;
+			state.voiceJoinAdmitted = null;
+			state.voiceJoinRejected = null;
+		},
+		clearVoiceJoinWaiting: (state) => {
+			state.voiceJoinWaiting = null;
+		},
+		clearVoiceJoinAdmitted: (state) => {
+			state.voiceJoinAdmitted = null;
+		},
+		clearVoiceJoinRejected: (state) => {
+			state.voiceJoinRejected = null;
+		},
+		receiveVoiceJoinWaitingEvent: (state, action: PayloadAction<VoiceJoinWaitingEventPayload>) => {
+			const evt = action.payload;
+			const channelId = evt.channel_id ? String(evt.channel_id) : '';
+			const userId = evt.user_id ? String(evt.user_id) : '';
+			if (!channelId || !userId) return;
+			const existing = state.waitingUsersByChannel[channelId] ?? [];
+			if (evt.action === 1) {
+				state.waitingUsersByChannel[channelId] = existing.filter((u) => String(u.user_id) !== userId);
+				return;
+			}
+			const nextUser: VoiceJoinWaitingUserPayload = {
+				user_id: userId,
+				username: evt.username ?? '',
+				display_name: evt.display_name ?? '',
+				avatar: evt.avatar ?? '',
+				create_time_seconds: evt.create_time_seconds ?? ''
+			};
+			const filtered = existing.filter((u) => String(u.user_id) !== userId);
+			state.waitingUsersByChannel[channelId] = [...filtered, nextUser];
+		},
+		receiveVoiceJoinReviewedEvent: (state, action: PayloadAction<{ event: VoiceJoinReviewedEventPayload; selfUserId?: string }>) => {
+			const { event, selfUserId } = action.payload;
+			const channelId = event.channel_id ? String(event.channel_id) : '';
+			const userId = event.user_id ? String(event.user_id) : '';
+			if (channelId && userId && state.waitingUsersByChannel[channelId]) {
+				state.waitingUsersByChannel[channelId] = state.waitingUsersByChannel[channelId].filter((u) => String(u.user_id) !== userId);
+			}
+			if (selfUserId && userId === String(selfUserId) && state.voiceJoinWaiting?.channelId === channelId) {
+				const waitingTarget = state.voiceJoinWaiting;
+				state.voiceJoinWaiting = null;
+				if (event.approved && event.token) {
+					state.voiceJoinAdmitted = {
+						channelId,
+						clanId: (event.clan_id ? String(event.clan_id) : '') || waitingTarget.clanId,
+						clanName: waitingTarget.clanName,
+						channelLabel: waitingTarget.channelLabel,
+						channelPrivate: waitingTarget.channelPrivate,
+						joinRole: waitingTarget.joinRole,
+						token: event.token,
+						url: event.url || waitingTarget.url || ''
+					};
+				} else if (!event.approved) {
+					state.voiceJoinRejected = {
+						channelId,
+						timestamp: Date.now()
+					};
+				}
+			}
 		},
 		resetExternalCall: (state) => {
 			state.showMicrophone = false;
@@ -1201,6 +1323,12 @@ export const voiceSlice = createSlice({
 			.addCase(autoCloseHostedBreakout.rejected, (state: VoiceState, action) => {
 				state.closingBreakoutIds = state.closingBreakoutIds.filter((id) => id !== action.meta.arg.breakoutId);
 			});
+		builder.addCase(reviewVoiceJoin.fulfilled, (state: VoiceState, action) => {
+			const { channelId, userId } = action.payload;
+			if (state.waitingUsersByChannel[channelId]) {
+				state.waitingUsersByChannel[channelId] = state.waitingUsersByChannel[channelId].filter((u) => String(u.user_id) !== String(userId));
+			}
+		});
 	}
 });
 
@@ -1218,7 +1346,8 @@ export const voiceActions = {
 	closeBreakoutRooms,
 	autoCloseHostedBreakout,
 	acceptBreakoutInvite,
-	returnToMainRoom
+	returnToMainRoom,
+	reviewVoiceJoin
 };
 
 export const getVoiceState = (rootState: { [VOICE_FEATURE_KEY]: VoiceState }): VoiceState => rootState[VOICE_FEATURE_KEY];
@@ -1316,4 +1445,13 @@ export const selectListVoiceMemberByClan = createSelector(getVoiceState, (state)
 export const selectHostedBreakoutByChannelId = createSelector(
 	[selectHostedBreakouts, (_: RootState, channelId: string) => channelId],
 	(hostedBreakouts, channelId) => (channelId ? (hostedBreakouts[channelId] ?? null) : null)
+);
+
+const EMPTY_VOICE_WAITING_USERS: VoiceJoinWaitingUserPayload[] = [];
+export const selectVoiceJoinWaiting = createSelector(getVoiceState, (state) => state.voiceJoinWaiting);
+export const selectVoiceJoinAdmitted = createSelector(getVoiceState, (state) => state.voiceJoinAdmitted);
+export const selectVoiceJoinRejected = createSelector(getVoiceState, (state) => state.voiceJoinRejected);
+export const selectVoiceWaitingUsersByChannelId = createSelector(
+	[getVoiceState, (_: RootState, channelId: string) => channelId],
+	(state, channelId) => (channelId ? (state.waitingUsersByChannel[channelId] ?? EMPTY_VOICE_WAITING_USERS) : EMPTY_VOICE_WAITING_USERS)
 );

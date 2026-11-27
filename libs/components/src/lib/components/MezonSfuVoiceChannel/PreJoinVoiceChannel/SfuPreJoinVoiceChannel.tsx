@@ -18,6 +18,8 @@ interface PreJoinVoiceChannelProps {
 	clan_id?: string;
 	roomName?: string;
 	loading: boolean;
+	isWaiting?: boolean;
+	onCancelWaiting?: () => void;
 	handleJoinRoom: (role: SfuJoinRole) => void;
 	isCurrentChannel?: boolean;
 	isPrivateVoice: boolean;
@@ -30,6 +32,8 @@ export const SfuPreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({
 	channel_label,
 	channel_id,
 	loading,
+	isWaiting = false,
+	onCancelWaiting,
 	handleJoinRoom,
 	isCurrentChannel,
 	clan_id,
@@ -48,6 +52,12 @@ export const SfuPreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({
 	useEffect(() => {
 		setPickedJoinRole(null);
 	}, [channel_id, isCurrentChannel]);
+
+	useEffect(() => {
+		if (isWaiting) {
+			setShowJoinOptions(false);
+		}
+	}, [isWaiting]);
 
 	const getJoinLabel = (role: SfuJoinRole) => t(role === 'speaker' ? 'joinAsSpeaker' : 'joinAsAudience');
 
@@ -83,47 +93,70 @@ export const SfuPreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({
 					>
 						{channel_label && channel_label.length > 20 ? `${channel_label.substring(0, 20)}...` : channel_label}
 					</div>
-					{voiceChannelMembers.length > 0 ? (
-						<div className="text-gray-800 dark:text-white">{t('everyoneWaitingInside')}</div>
-					) : (
-						<div className="text-gray-800 dark:text-white">{t('noOneInVoice')}</div>
-					)}
-					<div className="relative flex w-64">
-						<button
-							disabled={!channel_id || loading}
-							className={`flex-1 rounded-l-3xl bg-green-700 px-4 py-2 font-semibold text-white ${channel_id ? 'hover:bg-green-600' : 'opacity-50'}`}
-							onClick={() => handleJoinRoom(joinRole)}
-							data-e2e={generateE2eId('clan_page.screen.voice_room.button.join_voice')}
-						>
-							{loading ? t('joining') : getJoinLabel(joinRole)}
-						</button>
-						<button
-							type="button"
-							disabled={!channel_id || loading}
-							className="flex w-10 items-center justify-center rounded-r-3xl border-l border-green-800 bg-green-700 hover:bg-green-600 disabled:opacity-50"
-							onClick={() => setShowJoinOptions((visible) => !visible)}
-							aria-label="Choose join role"
-						>
-							<MezonIcon icon={MzIcons16.mzChevronDown} className="text-white" />
-						</button>
-						{showJoinOptions && (
-							<div className="absolute left-0 top-full z-30 mt-1 w-full overflow-hidden rounded-lg border border-color-primary bg-theme-setting-nav py-1 text-left shadow-xl">
-								{(['speaker', 'audience'] as const).map((role) => (
-									<button
-										key={role}
-										type="button"
-										className="block w-full px-4 py-2 text-left text-sm text-theme-primary-active bg-item-theme-hover"
-										onClick={() => {
-											setPickedJoinRole(role);
-											setShowJoinOptions(false);
-										}}
-									>
-										{getJoinLabel(role)}
-									</button>
-								))}
+					{isWaiting ? (
+						<div className="flex max-w-sm flex-col items-center gap-3 px-4 text-center">
+							<div className="flex items-center gap-2 text-base font-semibold text-gray-800 dark:text-white">
+								<span className="h-4 w-4 animate-spin rounded-full border-2 border-indigo-400 border-t-transparent" />
+								<span>{t('voiceWaiting.title', 'Waiting for admission...')}</span>
 							</div>
-						)}
-					</div>
+							<p className="text-sm text-gray-600 dark:text-zinc-300">
+								{t('voiceWaiting.subtitle', 'Someone in the voice channel needs to admit you before you can join.')}
+							</p>
+							{onCancelWaiting && (
+								<button
+									type="button"
+									onClick={onCancelWaiting}
+									className="mt-1 rounded-3xl border border-gray-500/50 bg-transparent px-6 py-2 text-sm font-semibold text-gray-800 transition hover:bg-black/10 dark:border-white/25 dark:text-white dark:hover:bg-white/10"
+								>
+									{t('voiceWaiting.cancel', 'Cancel')}
+								</button>
+							)}
+						</div>
+					) : (
+						<>
+							{voiceChannelMembers.length > 0 ? (
+								<div className="text-gray-800 dark:text-white">{t('everyoneWaitingInside')}</div>
+							) : (
+								<div className="text-gray-800 dark:text-white">{t('noOneInVoice')}</div>
+							)}
+							<div className="relative flex w-64">
+								<button
+									disabled={!channel_id || loading}
+									className={`flex-1 rounded-l-3xl bg-green-700 px-4 py-2 font-semibold text-white ${channel_id ? 'hover:bg-green-600' : 'opacity-50'}`}
+									onClick={() => handleJoinRoom(joinRole)}
+									data-e2e={generateE2eId('clan_page.screen.voice_room.button.join_voice')}
+								>
+									{loading ? t('joining') : getJoinLabel(joinRole)}
+								</button>
+								<button
+									type="button"
+									disabled={!channel_id || loading}
+									className="flex w-10 items-center justify-center rounded-r-3xl border-l border-green-800 bg-green-700 hover:bg-green-600 disabled:opacity-50"
+									onClick={() => setShowJoinOptions((visible) => !visible)}
+									aria-label="Choose join role"
+								>
+									<MezonIcon icon={MzIcons16.mzChevronDown} className="text-white" />
+								</button>
+								{showJoinOptions && (
+									<div className="absolute left-0 top-full z-30 mt-1 w-full overflow-hidden rounded-lg border border-color-primary bg-theme-setting-nav py-1 text-left shadow-xl">
+										{(['speaker', 'audience'] as const).map((role) => (
+											<button
+												key={role}
+												type="button"
+												className="block w-full px-4 py-2 text-left text-sm text-theme-primary-active bg-item-theme-hover"
+												onClick={() => {
+													setPickedJoinRole(role);
+													setShowJoinOptions(false);
+												}}
+											>
+												{getJoinLabel(role)}
+											</button>
+										))}
+									</div>
+								)}
+							</div>
+						</>
+					)}
 				</div>
 			</div>
 			{children}

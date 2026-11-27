@@ -19,7 +19,8 @@
 			"onboarding": "Onboarding",
 			"enableCommunity": "Enable Community",
 			"archivedChannels": "Archived Channels",
-			"joinRequests": "Join Requests"
+			"joinRequests": "Join Requests",
+			"voiceAccess": "Voice Access"
 		}
 	},
 	"clanLogo": {
@@ -127,5 +128,10 @@
 		"approveSuccess": "Member approved and added to the clan.",
 		"rejectSuccess": "Join request rejected.",
 		"reviewError": "Failed to update join request."
+	},
+	"voiceAccess": {
+		"directVoiceAccessTitle": "Direct Voice Access",
+		"directVoiceAccessDesc": "Allow clan members to join voice channels directly without waiting. When turned off, users joining an active voice channel must wait until a participant admits them. The first person to join enters immediately.",
+		"updateError": "Failed to update Direct Voice Access setting."
 	}
 }

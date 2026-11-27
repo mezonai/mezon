@@ -19,7 +19,8 @@
 			"onboarding": "Адаптация",
 			"enableCommunity": "Включить сообщество",
 			"archivedChannels": "Архивированные каналы",
-			"joinRequests": "Join Requests"
+			"joinRequests": "Join Requests",
+			"voiceAccess": "Доступ к голосу"
 		}
 	},
 	"clanLogo": {
@@ -127,5 +128,10 @@
 		"approveSuccess": "Member approved and added to the clan.",
 		"rejectSuccess": "Join request rejected.",
 		"reviewError": "Failed to update join request."
+	},
+	"voiceAccess": {
+		"directVoiceAccessTitle": "Прямой доступ к голосовому каналу",
+		"directVoiceAccessDesc": "Разрешить участникам клана входить в голосовые каналы напрямую без ожидания. Если отключено, новым пользователям нужно дождаться одобрения участника. Первый вошедший подключается сразу.",
+		"updateError": "Не удалось обновить настройку прямого доступа к голосовому каналу."
 	}
 }

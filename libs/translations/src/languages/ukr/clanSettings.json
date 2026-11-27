@@ -19,7 +19,8 @@
 			"onboarding": "Вступ",
 			"enableCommunity": "Увімкнути спільноту",
 			"archivedChannels": "Архівовані канали",
-			"joinRequests": "Join Requests"
+			"joinRequests": "Join Requests",
+			"voiceAccess": "Голосовий доступ"
 		}
 	},
 	"clanLogo": {
@@ -127,5 +128,10 @@
 		"approveSuccess": "Member approved and added to the clan.",
 		"rejectSuccess": "Join request rejected.",
 		"reviewError": "Failed to update join request."
+	},
+	"voiceAccess": {
+		"directVoiceAccessTitle": "Прямий голосовий доступ",
+		"directVoiceAccessDesc": "Дозволити учасникам клану приєднуватися до голосових каналів напряму без очікування. Коли вимкнено, користувачі повинні дочекатися допуску від учасника. Перший учасник заходить одразу.",
+		"updateError": "Не вдалося оновити налаштування прямого голосового доступу."
 	}
 }

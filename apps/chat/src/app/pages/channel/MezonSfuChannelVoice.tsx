@@ -33,8 +33,12 @@ import {
 	selectTokenJoinVoice,
 	selectVoiceFullScreen,
 	selectVoiceInfo,
+	selectVoiceJoinAdmitted,
+	selectVoiceJoinRejected,
+	selectVoiceJoinWaiting,
 	selectVoiceJoined,
 	selectVoiceOpenPopOut,
+	toastActions,
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
@@ -44,6 +48,7 @@ import { ChannelType } from 'mezon-js';
 import type { ReactNode, RefObject } from 'react';
 import React, { Suspense, memo, useCallback, useEffect, useRef, useState, type ErrorInfo } from 'react';
 import { flushSync } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import ChatStream from '../chatStream';
 import { SfuReconnectModal } from './SfuReconnectModal';
@@ -56,14 +61,16 @@ const VOICE_CHAT_PANEL_CLASS =
 interface VoicePreJoinWrapperProps {
 	loading: boolean;
 	handleJoinRoom: (role: SfuJoinRole) => void;
+	onCancelWaiting: () => void;
 }
 
-const VoicePreJoinWrapper = memo(({ loading, handleJoinRoom }: VoicePreJoinWrapperProps) => {
+const VoicePreJoinWrapper = memo(({ loading, handleJoinRoom, onCancelWaiting }: VoicePreJoinWrapperProps) => {
 	const channelLabel = useSelector(selectCurrentChannelLabel);
 	const channelId = useSelector(selectCurrentChannelId);
 	const channelClanId = useSelector(selectCurrentChannelClanId);
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const isJoined = useSelector(selectVoiceJoined);
+	const voiceJoinWaiting = useSelector(selectVoiceJoinWaiting);
 	const breakoutRoom = useSelector(selectBreakoutRoom);
 	const isPrivateVoice = !!useSelector(selectCurrentChannelPrivate);
 	const isShowChatVoice = useSelector(selectIsShowChatVoice);
@@ -73,12 +80,15 @@ const VoicePreJoinWrapper = memo(({ loading, handleJoinRoom }: VoicePreJoinWrapp
 		isJoined &&
 		(voiceInfo?.channelId === channelId ||
 			(Boolean(breakoutRoom) && voiceInfo?.channelId === breakoutRoom?.roomId && breakoutRoom?.parentChannelId === channelId));
+	const isWaiting = Boolean(voiceJoinWaiting && voiceJoinWaiting.channelId === channelId && !isCurrentChannel);
 
 	return (
 		<SfuPreJoinVoiceChannel
 			channel_label={channelLabel}
 			channel_id={channelId as string}
 			loading={loading}
+			isWaiting={isWaiting}
+			onCancelWaiting={onCancelWaiting}
 			handleJoinRoom={handleJoinRoom}
 			clan_id={channelClanId}
 			isCurrentChannel={isCurrentChannel}
@@ -343,6 +353,10 @@ const MezonSfuChannelVoiceInner = () => {
 	const token = useSelector(selectTokenJoinVoice);
 	const sfuUrl = useSelector(selectSfuUrlJoinVoice);
 	const voiceInfo = useSelector(selectVoiceInfo);
+	const voiceJoinWaiting = useSelector(selectVoiceJoinWaiting);
+	const voiceJoinAdmitted = useSelector(selectVoiceJoinAdmitted);
+	const voiceJoinRejected = useSelector(selectVoiceJoinRejected);
+	const { t } = useTranslation('common');
 	const [loading, setLoading] = useState<boolean>(false);
 	const [joinRole, setJoinRole] = useState<SfuJoinRole>('speaker');
 	const [selectedCamera, setSelectedCamera] = useState('default');
@@ -417,6 +431,9 @@ const MezonSfuChannelVoiceInner = () => {
 			joiningRef.current = false;
 			return;
 		}
+		if (voiceJoinWaiting?.channelId && voiceJoinWaiting.channelId !== currentChannelId) {
+			dispatch(voiceActions.clearVoiceJoinWaiting());
+		}
 		setLoading(true);
 
 		try {
@@ -434,6 +451,7 @@ const MezonSfuChannelVoiceInner = () => {
 			if (request !== joinRequestRef.current) return;
 
 			if (result?.token) {
+				dispatch(voiceActions.clearVoiceJoinWaiting());
 				dispatch(voiceActions.setJoined(true));
 				dispatch(
 					voiceActions.setVoiceInfo({
@@ -447,6 +465,20 @@ const MezonSfuChannelVoiceInner = () => {
 				);
 				dispatch(voiceActions.setSfuUrl(result.url));
 				dispatch(voiceActions.setToken(result.token));
+				setRejoinTarget(null);
+			} else if (result) {
+				dispatch(voiceActions.setToken(''));
+				dispatch(
+					voiceActions.setVoiceJoinWaiting({
+						clanId: currentClanId as string,
+						clanName: (currentClanName as string) || '',
+						channelId: currentChannelId as string,
+						channelLabel: (currentChannelLabel as string) || '',
+						channelPrivate: (currentChannelPrivate as number) ?? 0,
+						joinRole: role,
+						url: result.url || ''
+					})
+				);
 				setRejoinTarget(null);
 			} else {
 				dispatch(voiceActions.setToken(''));
@@ -527,6 +559,42 @@ const MezonSfuChannelVoiceInner = () => {
 		isDisconnectingRef.current = false;
 	});
 
+	useEffect(() => {
+		if (!voiceJoinAdmitted?.token) return;
+		setJoinRole(voiceJoinAdmitted.joinRole);
+		dispatch(voiceActions.setJoined(true));
+		dispatch(
+			voiceActions.setVoiceInfo({
+				clanId: voiceJoinAdmitted.clanId,
+				clanName: voiceJoinAdmitted.clanName,
+				channelId: voiceJoinAdmitted.channelId,
+				channelLabel: voiceJoinAdmitted.channelLabel,
+				channelPrivate: voiceJoinAdmitted.channelPrivate,
+				joinRole: voiceJoinAdmitted.joinRole
+			})
+		);
+		dispatch(voiceActions.setSfuUrl(voiceJoinAdmitted.url));
+		dispatch(voiceActions.setToken(voiceJoinAdmitted.token));
+		setRejoinTarget(null);
+		dispatch(voiceActions.clearVoiceJoinAdmitted());
+	}, [dispatch, voiceJoinAdmitted]);
+
+	useEffect(() => {
+		if (!voiceJoinRejected) return;
+		dispatch(
+			toastActions.addToast({
+				message: t('voiceWaiting.declinedToast', 'Your request to join the voice channel was declined.'),
+				type: 'info',
+				autoClose: 4000
+			})
+		);
+		dispatch(voiceActions.clearVoiceJoinRejected());
+	}, [dispatch, t, voiceJoinRejected]);
+
+	const handleCancelWaiting = useLastCallback(() => {
+		dispatch(voiceActions.clearVoiceJoinWaiting());
+	});
+
 	const handleFullScreen = useCallback(() => {
 		dispatch(voiceActions.setFullScreen(!isVoiceFullScreen));
 	}, [dispatch, isVoiceFullScreen]);
@@ -541,10 +609,14 @@ const MezonSfuChannelVoiceInner = () => {
 				style={!isVoiceFullScreen ? { width: 'calc(100% - 72px - 272px)', height: '100%' } : { width: '100vw', height: '100vh' }}
 			>
 				{!rejoinTarget && (token === '' || !serverUrl || !isRealClanId(voiceInfo?.clanId)) ? (
-					isChannelMezonVoice && <VoicePreJoinWrapper loading={loading} handleJoinRoom={handleJoinRoom} />
+					isChannelMezonVoice && (
+						<VoicePreJoinWrapper loading={loading} handleJoinRoom={handleJoinRoom} onCancelWaiting={handleCancelWaiting} />
+					)
 				) : (
 					<>
-						{isChannelMezonVoice && !rejoinTarget && <VoicePreJoinWrapper loading={loading} handleJoinRoom={handleJoinRoom} />}
+						{isChannelMezonVoice && !rejoinTarget && (
+							<VoicePreJoinWrapper loading={loading} handleJoinRoom={handleJoinRoom} onCancelWaiting={handleCancelWaiting} />
+						)}
 						<VoiceConferenceContainer containerRef={containerRef} isOpenPopOut={isOpenPopOut} rejoinTarget={rejoinTarget}>
 							{token && serverUrl ? (
 								<VoiceConferenceContent

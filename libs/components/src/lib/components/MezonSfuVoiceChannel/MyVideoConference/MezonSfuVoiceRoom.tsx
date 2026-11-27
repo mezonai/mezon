@@ -78,6 +78,7 @@ import { ReactionCallHandler, useSendReaction } from './Reaction';
 import { ScreenAnnotationCompositor, ScreenDrawLayer, useScreenDraw, type ScreenDrawSession } from './ScreenAnnotation';
 import { SfuVoiceContextMenu } from './VoiceContextMenu';
 import { SfuVoiceInteractiveLayer } from './VoiceContextMenu/SfuVoiceInteractiveLayer';
+import { VoiceWaitingBanner } from './VoiceWaitingBanner';
 import { closeExternalChatNotification, externalChatNotificationTag, notifyExternalChatMessage } from './externalChatNotification';
 import { meetTokenNeedsRefresh } from './meetToken';
 import {
@@ -3556,6 +3557,7 @@ export function MezonSfuVoiceRoom({
 				<RecordingIndicator presentUserIds={presentUserIds} resolveName={resolveRecorderName} />
 
 				<div className="relative flex min-h-0 flex-1 flex-col">
+					<VoiceWaitingBanner channelId={roomId} enabled={!isExternalCalling} />
 					{isGridView ? (
 						<SfuGridLayoutContainer
 							ref={gridElRef}

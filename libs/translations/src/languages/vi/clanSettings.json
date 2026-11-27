@@ -19,7 +19,8 @@
 			"onboarding": "Hướng dẫn",
 			"enableCommunity": "Kích hoạt cộng đồng",
 			"archivedChannels": "Kênh đã lưu trữ",
-			"joinRequests": "Yêu cầu tham gia"
+			"joinRequests": "Yêu cầu tham gia",
+			"voiceAccess": "Quyền vào thoại"
 		}
 	},
 	"clanLogo": {
@@ -127,5 +128,10 @@
 		"approveSuccess": "Đã chấp nhận và thêm thành viên vào clan.",
 		"rejectSuccess": "Đã từ chối yêu cầu tham gia.",
 		"reviewError": "Không thể xử lý yêu cầu tham gia."
+	},
+	"voiceAccess": {
+		"directVoiceAccessTitle": "Truy cập thoại trực tiếp",
+		"directVoiceAccessDesc": "Cho phép thành viên clan vào trực tiếp kênh thoại mà không cần chờ duyệt. Khi tắt, người tham gia kênh thoại đang có người phải chờ một thành viên trong phòng chấp nhận. Người đầu tiên vào phòng không cần chờ.",
+		"updateError": "Không thể cập nhật cài đặt truy cập thoại trực tiếp."
 	}
 }

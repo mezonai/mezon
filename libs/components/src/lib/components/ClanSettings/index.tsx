@@ -33,6 +33,7 @@ import SettingOnBoarding from './SettingOnBoarding';
 import SettingSidebar from './SettingSidebar';
 import SettingSoundEffect from './SettingSoundEffect';
 import SettingSticker from './SettingSticker';
+import VoiceAccess from './VoiceAccess';
 import { useCanViewArchivedChannels } from './hooks/useCanViewArchivedChannels';
 
 export type ModalSettingProps = {
@@ -58,6 +59,7 @@ const ClanSetting = (props: ModalSettingProps) => {
 			{ id: ItemSetting.INTEGRATIONS, name: t('sidebar.items.integrations') },
 			{ id: ItemSetting.AUDIT_LOG, name: t('sidebar.items.auditLog') },
 			{ id: ItemSetting.JOIN_REQUESTS, name: t('sidebar.items.joinRequests') },
+			{ id: ItemSetting.VOICE_ACCESS, name: t('sidebar.items.voiceAccess') },
 			{ id: ItemSetting.ON_BOARDING, name: t('sidebar.items.onboarding') },
 			{ id: ItemSetting.ON_COMUNITY, name: t('sidebar.items.enableCommunity') }
 		],
@@ -69,10 +71,11 @@ const ClanSetting = (props: ModalSettingProps) => {
 	}, [currentSettingId, allSettings]);
 
 	const dispatch = useAppDispatch();
-	const [isClanOwner, canManageClan, canManagerChannel] = usePermissionChecker([
+	const [isClanOwner, canManageClan, canManagerChannel, isAdmin] = usePermissionChecker([
 		EPermission.clanOwner,
 		EPermission.manageClan,
-		EPermission.manageChannel
+		EPermission.manageChannel,
+		EPermission.administrator
 	]);
 	const { canViewArchivedChannels } = useCanViewArchivedChannels();
 
@@ -144,6 +147,8 @@ const ClanSetting = (props: ModalSettingProps) => {
 				return <AuditLog currentClanId={currentClanId} />;
 			case ItemSetting.JOIN_REQUESTS:
 				return isClanOwner ? <JoinRequests currentClanId={currentClanId} /> : null;
+			case ItemSetting.VOICE_ACCESS:
+				return isClanOwner || isAdmin ? <VoiceAccess currentClanId={currentClanId} /> : null;
 			case ItemSetting.ON_BOARDING:
 				return <SettingOnBoarding onClose={onClose} />;
 			case ItemSetting.ON_COMUNITY:

@@ -19,7 +19,8 @@
 			"onboarding": "Wprowadzenie",
 			"enableCommunity": "Włącz społeczność",
 			"archivedChannels": "Zarchiwizowane kanały",
-			"joinRequests": "Join Requests"
+			"joinRequests": "Join Requests",
+			"voiceAccess": "Dostęp głosowy"
 		}
 	},
 	"clanLogo": {
@@ -127,5 +128,10 @@
 		"approveSuccess": "Member approved and added to the clan.",
 		"rejectSuccess": "Join request rejected.",
 		"reviewError": "Failed to update join request."
+	},
+	"voiceAccess": {
+		"directVoiceAccessTitle": "Bezpośredni dostęp głosowy",
+		"directVoiceAccessDesc": "Pozwól członkom klanu dołączać bezpośrednio do kanałów głosowych bez czekania. Po wyłączeniu użytkownicy muszą poczekać na akceptację uczestnika. Pierwsza osoba wchodzi natychmiast.",
+		"updateError": "Nie udało się zaktualizować ustawienia bezpośredniego dostępu głosowego."
 	}
 }

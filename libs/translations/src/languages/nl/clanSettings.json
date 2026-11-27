@@ -19,7 +19,8 @@
 			"onboarding": "Inleiding",
 			"enableCommunity": "Community activeren",
 			"archivedChannels": "Gearchiveerde kanalen",
-			"joinRequests": "Join Requests"
+			"joinRequests": "Join Requests",
+			"voiceAccess": "Spraaktoegang"
 		}
 	},
 	"clanLogo": {
@@ -127,5 +128,10 @@
 		"approveSuccess": "Member approved and added to the clan.",
 		"rejectSuccess": "Join request rejected.",
 		"reviewError": "Failed to update join request."
+	},
+	"voiceAccess": {
+		"directVoiceAccessTitle": "Directe spraaktoegang",
+		"directVoiceAccessDesc": "Sta clanleden toe om direct zonder wachten aan spraakkanalen deel te nemen. Indien uitgeschakeld moeten gebruikers wachten tot een deelnemer hen toelaat. De eerste persoon komt direct binnen.",
+		"updateError": "Kan instelling voor directe spraaktoegang niet bijwerken."
 	}
 }

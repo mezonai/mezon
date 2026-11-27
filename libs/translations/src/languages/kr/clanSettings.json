@@ -19,7 +19,8 @@
 			"onboarding": "온보딩",
 			"enableCommunity": "커뮤니티 활성화",
 			"archivedChannels": "보관된 채널",
-			"joinRequests": "Join Requests"
+			"joinRequests": "Join Requests",
+			"voiceAccess": "음성 접근"
 		}
 	},
 	"clanLogo": {
@@ -127,5 +128,10 @@
 		"approveSuccess": "Member approved and added to the clan.",
 		"rejectSuccess": "Join request rejected.",
 		"reviewError": "Failed to update join request."
+	},
+	"voiceAccess": {
+		"directVoiceAccessTitle": "음성 채널 바로 입장",
+		"directVoiceAccessDesc": "클랜 멤버가 대기 없이 음성 채널에 바로 입장할 수 있도록 허용합니다. 끄면 이미 참여자가 있는 음성 채널에 입장할 때 참여자의 수락을 기다려야 합니다. 첫 번째 입장자는 바로 입장합니다.",
+		"updateError": "음성 채널 바로 입장 설정을 업데이트하지 못했습니다."
 	}
 }

@@ -19,7 +19,8 @@
 			"onboarding": "Påfyllning",
 			"enableCommunity": "Aktivera gemenskap",
 			"archivedChannels": "Arkiverade kanaler",
-			"joinRequests": "Join Requests"
+			"joinRequests": "Join Requests",
+			"voiceAccess": "Röståtkomst"
 		}
 	},
 	"clanLogo": {
@@ -127,5 +128,10 @@
 		"approveSuccess": "Member approved and added to the clan.",
 		"rejectSuccess": "Join request rejected.",
 		"reviewError": "Failed to update join request."
+	},
+	"voiceAccess": {
+		"directVoiceAccessTitle": "Direkt röståtkomst",
+		"directVoiceAccessDesc": "Tillåt klanmedlemmar att gå med i röstkanaler direkt utan att vänta. När detta är avstängt måste användare vänta tills en deltagare släpper in dem. Den första personen kommer in direkt.",
+		"updateError": "Kunde inte uppdatera inställningen för direkt röståtkomst."
 	}
 }
