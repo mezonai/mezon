@@ -9,6 +9,11 @@ import type {
 	ApiCheckDuplicateNameResponse,
 	ApiClanDesc,
 	ApiClanDescList,
+	ApiJoinPendingItem,
+	ApiListJoinPendingRequest,
+	ApiListJoinPendingResponse,
+	ApiReviewJoinPendingRequest,
+	ApiReviewJoinPendingResponse,
 	ApiUpdateAccountRequest,
 	ClanUpdatedEvent,
 	MezonUpdateClanDescBody
@@ -491,49 +496,12 @@ export const removeClanUsers = createAsyncThunk('clans/removeClanUsers', async (
 export const CLAN_JOIN_MODE_INSTANT = 0;
 export const CLAN_JOIN_MODE_REQUEST_APPROVAL = 1;
 
-export type ClanUpdateDescRequest = MezonUpdateClanDescBody & {
-	join_mode?: number;
-};
-
-export type JoinPendingItem = {
-	id: string;
-	clan_id: string;
-	user_id: string;
-	username?: string;
-	display_name?: string;
-	avatar_url?: string;
-	channel_id?: string;
-	invite_id?: string;
-	create_time_seconds?: number;
-};
-
-export type ListJoinPendingRequest = {
-	clan_id: string;
-	limit?: number;
-	cursor?: string;
-};
-
-export type ListJoinPendingResponse = {
-	items?: JoinPendingItem[];
-	cursor?: string;
-};
-
-export type ReviewJoinPendingRequest = {
-	clan_id: string;
-	user_id: string;
-	approve: boolean;
-};
-
-export type ReviewJoinPendingResponse = {
-	clan_id?: string;
-	user_id?: string;
-	approved?: boolean;
-};
-
-type ClanJoinPendingClient = {
-	listJoinPending?: (session: unknown, request: ListJoinPendingRequest) => Promise<ListJoinPendingResponse>;
-	reviewJoinPending?: (session: unknown, request: ReviewJoinPendingRequest) => Promise<ReviewJoinPendingResponse>;
-};
+export type ClanUpdateDescRequest = MezonUpdateClanDescBody;
+export type JoinPendingItem = ApiJoinPendingItem;
+export type ListJoinPendingRequest = ApiListJoinPendingRequest;
+export type ListJoinPendingResponse = ApiListJoinPendingResponse;
+export type ReviewJoinPendingRequest = ApiReviewJoinPendingRequest;
+export type ReviewJoinPendingResponse = ApiReviewJoinPendingResponse;
 
 export const updateClan = createAsyncThunk(
 	'clans/updateClans',
@@ -559,11 +527,7 @@ export const listJoinPending = createAsyncThunk<ListJoinPendingResponse, ListJoi
 	async (request, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const client = mezon.client as unknown as ClanJoinPendingClient;
-			if (typeof client.listJoinPending !== 'function') {
-				return thunkAPI.rejectWithValue(new Error('listJoinPending is not supported by the current mezon-js client'));
-			}
-			return await client.listJoinPending(mezon.session, request);
+			return await mezon.client.listJoinPending(mezon.session, request);
 		} catch (error) {
 			captureSentryError(error, 'clans/listJoinPending');
 			return thunkAPI.rejectWithValue(error);
@@ -576,11 +540,7 @@ export const reviewJoinPending = createAsyncThunk<ReviewJoinPendingResponse, Rev
 	async (request, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const client = mezon.client as unknown as ClanJoinPendingClient;
-			if (typeof client.reviewJoinPending !== 'function') {
-				return thunkAPI.rejectWithValue(new Error('reviewJoinPending is not supported by the current mezon-js client'));
-			}
-			return await client.reviewJoinPending(mezon.session, request);
+			return await mezon.client.reviewJoinPending(mezon.session, request);
 		} catch (error) {
 			captureSentryError(error, 'clans/reviewJoinPending');
 			return thunkAPI.rejectWithValue(error);
@@ -928,7 +888,6 @@ export const clansSlice = createSlice({
 				community_banner?: string;
 				short_url?: string;
 				hashtags?: string;
-				join_mode?: number;
 			};
 
 			clansAdapter.updateOne(state, {
@@ -949,7 +908,7 @@ export const clansSlice = createSlice({
 					community_banner: rawData.community_banner ?? currentClanData?.community_banner,
 					short_url: rawData.short_url ?? currentClanData?.short_url,
 					hashtags: rawData.hashtags ?? currentClanData?.hashtags,
-					join_mode: rawData.join_mode ?? currentClanData?.join_mode
+					join_mode: dataUpdate.join_mode ?? currentClanData?.join_mode
 				}
 			});
 		},
