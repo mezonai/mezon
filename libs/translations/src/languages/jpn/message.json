@@ -166,7 +166,8 @@
 	"mapView": {
 		"yourLocation": "あなたの場所",
 		"sender": "送信者",
-		"locationOf": "{{name}} の場所"
+		"locationOf": "{{name}} の場所",
+		"mapCredit": "© OpenStreetMap contributors"
 	},
 	"sharedBy": "{{username}}が共有",
 	"deleteMessageModal": {

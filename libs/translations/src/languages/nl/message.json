@@ -166,7 +166,8 @@
 	"mapView": {
 		"yourLocation": "Je locatie",
 		"sender": "Afzender",
-		"locationOf": "Locatie van {{name}}"
+		"locationOf": "Locatie van {{name}}",
+		"mapCredit": "© OpenStreetMap contributors"
 	},
 	"sharedBy": "Gedeeld door {{username}}",
 	"deleteMessageModal": {

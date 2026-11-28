@@ -167,7 +167,8 @@
 	"mapView": {
 		"yourLocation": "Vị trí của bạn",
 		"sender": "Người gửi",
-		"locationOf": "Vị trí của {{name}}"
+		"locationOf": "Vị trí của {{name}}",
+		"mapCredit": "© OpenStreetMap contributors"
 	},
 	"sharedBy": "Được chia sẻ bởi {{username}}",
 	"deleteMessageModal": {

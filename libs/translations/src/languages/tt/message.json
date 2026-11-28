@@ -166,7 +166,8 @@
 	"mapView": {
 		"yourLocation": "Сезнең урыныгыз",
 		"sender": "Җибәрүче",
-		"locationOf": "{{name}} урыны"
+		"locationOf": "{{name}} урыны",
+		"mapCredit": "© OpenStreetMap contributors"
 	},
 	"sharedBy": "{{username}} уртаклашты",
 	"deleteMessageModal": {

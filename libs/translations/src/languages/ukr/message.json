@@ -166,7 +166,8 @@
 	"mapView": {
 		"yourLocation": "Ваше місцерозташування",
 		"sender": "Відправник",
-		"locationOf": "Місцерозташування {{name}}"
+		"locationOf": "Місцерозташування {{name}}",
+		"mapCredit": "© OpenStreetMap contributors"
 	},
 	"sharedBy": "Поділено {{username}}",
 	"deleteMessageModal": {

@@ -16,7 +16,8 @@ import {
 	convertDateStringI18n,
 	convertTimeHour,
 	convertTimestampToTimeRemainingI18n,
-	generateE2eId
+	generateE2eId,
+	parseLocationFromMessage
 } from '@mezon/utils';
 import classNames from 'classnames';
 import { ChannelStreamMode } from 'mezon-js';
@@ -34,6 +35,7 @@ import MessageAvatar from './MessageAvatar';
 import MessageContent, { TopicViewButton } from './MessageContent';
 import MessageHead from './MessageHead';
 import MessageInput from './MessageInput';
+import MessageLocationCard from './MessageLocationCard';
 import MessageReaction, { QuickReaction } from './MessageReaction/MessageReaction';
 import MessageReply from './MessageReply/MessageReply';
 import { PollMessage } from './PollMessage';
@@ -213,11 +215,14 @@ function MessageWithUser({
 
 	const shouldRenderMessageReply = checkMessageHasReply && !isEphemeralMessage;
 
+	const location = useMemo(() => parseLocationFromMessage(message?.code, message?.content?.t), [message?.code, message?.content?.t]);
+
 	const quickReactionTarget = (() => {
 		if (!popup || isEphemeralMessage || isSearchMessage || message?.isError) return undefined;
 		if (message?.code === TypeMessage.Poll) return 'poll';
 		if (message?.content?.callLog?.callLogType) return 'callLog';
 		if (message?.code === TypeMessage.SendToken) return 'token';
+		if (location) return 'location';
 		if (!isTopic && message?.code === TypeMessage.Topic) return 'topic';
 		if (message?.content?.embed?.length) return 'embed';
 		if (message?.attachments?.length) return 'attachment';
@@ -412,7 +417,7 @@ function MessageWithUser({
 								isTopic={!!isTopic}
 							/>
 						)}
-						{!isEditing && !message?.content?.callLog?.callLogType && !(message.code === TypeMessage.SendToken) && (
+						{!isEditing && !message?.content?.callLog?.callLogType && !(message.code === TypeMessage.SendToken) && !location && (
 							<>
 								<MessageContent
 									message={message}
@@ -432,6 +437,14 @@ function MessageWithUser({
 									</div>
 								)}
 							</>
+						)}
+						{!isEditing && !message?.content?.callLog?.callLogType && !(message.code === TypeMessage.SendToken) && location && (
+							<MessageLocationCard
+								message={message}
+								isMe={message.sender_id === userId}
+								onContextMenu={onContextMenu}
+								quickReaction={renderQuickReaction('location', '-right-3 -bottom-3 z-[2]')}
+							/>
 						)}
 						{(message?.attachments?.length as number) > 0 && (
 							<MessageAttachment

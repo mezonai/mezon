@@ -166,7 +166,8 @@
 	"mapView": {
 		"yourLocation": "La tua posizione",
 		"sender": "Mittente",
-		"locationOf": "Posizione di {{name}}"
+		"locationOf": "Posizione di {{name}}",
+		"mapCredit": "© OpenStreetMap contributors"
 	},
 	"sharedBy": "Condiviso da {{username}}",
 	"deleteMessageModal": {
