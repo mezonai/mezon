@@ -47,6 +47,7 @@ import { integrationClanWebhookReducer } from './clanWebhook/clanWebhook.slice';
 import { settingChannelReducer } from './clans/clanSettingChannel.slice';
 import { COMUNITY_FEATURE_KEY, comunityReducer } from './comunity/comunity.slice';
 import { dashboardReducer } from './dashboard/dashboard.slice';
+import { DECORATIONS_FEATURE_KEY, decorationsReducer } from './decorations/decorations.slice';
 import { DEVICES_FEATURE_KEY, devicesReducer } from './devices/devices.slice';
 import { USER_STATUS_FEATURE_KEY, statusReducer } from './direct/status.slice';
 import { audioCallReducer } from './dmcall/audioCall.slice';
@@ -330,6 +331,7 @@ const persistedSettingUserReducer = persistReducer(
 const reducer = {
 	app: persistedAppReducer,
 	dashboard: dashboardReducer,
+	[DECORATIONS_FEATURE_KEY]: decorationsReducer,
 	account: persistedAccountReducer,
 	auth: persistedReducer,
 	attachments: attachmentReducer,

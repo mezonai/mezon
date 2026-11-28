@@ -37,6 +37,7 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 	const getTranslatedItemName = (item: ItemObjProps) => {
 		const translationMap: Record<string, string> = {
 			[ItemSetting.OVERVIEW]: t('sidebar.items.overview'),
+			[ItemSetting.CLAN_PRO]: t('sidebar.items.clanPro'),
 			[ItemSetting.ROLES]: t('sidebar.items.roles'),
 			[ItemSetting.EMOJI]: t('sidebar.items.emoji'),
 			[ItemSetting.IMAGE_STICKERS]: t('sidebar.items.imageStickers'),
@@ -62,7 +63,7 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 
 	const sideBarListItemWithPermissions = sideBarListItem.map((sidebarItem) => {
 		const filteredListItem = sidebarItem.listItem.filter((item) => {
-			if (item.id === ItemSetting.OVERVIEW || item.id === ItemSetting.ON_COMUNITY) {
+			if (item.id === ItemSetting.OVERVIEW || item.id === ItemSetting.CLAN_PRO || item.id === ItemSetting.ON_COMUNITY) {
 				return hasAdminPermission;
 			}
 			if (item.id === ItemSetting.INTEGRATIONS) {

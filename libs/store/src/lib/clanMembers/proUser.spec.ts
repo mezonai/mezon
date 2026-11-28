@@ -1,6 +1,15 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { ACCOUNT_FEATURE_KEY, accountActions, accountReducer } from '../account/account.slice';
-import { USERS_CLANS_FEATURE_KEY, selectIsProUser, usersClanActions, usersClanReducer } from './clan.members';
+import { ensureSession, ensureSocket, fetchDataWithSocketFallback } from '../helpers';
+import {
+	USERS_CLANS_FEATURE_KEY,
+	buildPeerClanProfileUpdate,
+	fetchClanMembersWithStatus,
+	fetchUsersClan,
+	selectIsProUser,
+	usersClanActions,
+	usersClanReducer
+} from './clan.members';
 
 jest.mock('@mezon/logger', () => ({ captureSentryError: jest.fn() }));
 jest.mock('@mezon/utils', () => ({
@@ -13,6 +22,9 @@ jest.mock('i18next', () => ({ t: (key: string) => key }));
 jest.mock('react-toastify', () => ({ toast: { success: jest.fn(), error: jest.fn() } }));
 jest.mock('../auth/auth.slice', () => ({ authActions: {} }));
 jest.mock('../app/setting.slice', () => ({ settingActions: {} }));
+jest.mock('../decorations/decorations.slice', () => ({
+	fetchClanUserDecorations: jest.fn((clanId: string) => ({ type: 'decorations/fetchClanUserDecorations', payload: clanId }))
+}));
 jest.mock('../wallet/wallet.slice', () => ({ walletActions: {} }));
 jest.mock('../direct/status.slice', () => ({ convertStatusClan: jest.fn(), selectStatusEntities: jest.fn(), statusActions: {} }));
 jest.mock('../helpers', () => ({
@@ -197,5 +209,121 @@ describe('selectIsProUser and pro_plan preservation', () => {
 			clans: { currentClanId: CLAN_1 }
 		};
 		expect(selectIsProUser(state, ME)).toBe(true);
+	});
+});
+
+describe('peer profile bio preservation and clan decoration fetch', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
+	it('keeps stored about_me when peer UserProfileUpdatedEvent omits or blanks about_me', () => {
+		let usersClanState = usersClanReducer(undefined, { type: 'init' });
+		usersClanState = usersClanReducer(
+			usersClanState,
+			usersClanActions.upsertMany({
+				clanId: CLAN_1,
+				users: [{ id: PEER_PRO, user: { id: PEER_PRO, about_me: 'Keep my bio' } }] as never
+			})
+		);
+
+		const payload = buildPeerClanProfileUpdate({
+			user_id: PEER_PRO,
+			avatar: '',
+			display_name: 'Alice',
+			about_me: ''
+		});
+		expect(payload).toEqual({ userId: PEER_PRO, display_name: 'Alice' });
+
+		usersClanState = usersClanReducer(usersClanState, usersClanActions.updateUserProfileAcrossClans(payload));
+		const clan1User = usersClanState.byClans[CLAN_1].entities.entities[PEER_PRO]?.user as { about_me?: string; display_name?: string };
+		expect(clan1User?.about_me).toBe('Keep my bio');
+		expect(clan1User?.display_name).toBe('Alice');
+	});
+
+	it('skips updateOne in updateUserProfileAcrossClans when all provided fields match stored values', () => {
+		let usersClanState = usersClanReducer(undefined, { type: 'init' });
+		usersClanState = usersClanReducer(
+			usersClanState,
+			usersClanActions.upsertMany({
+				clanId: CLAN_1,
+				users: [
+					{
+						id: PEER_PRO,
+						user: {
+							id: PEER_PRO,
+							avatar_url: 'https://cdn/a.png',
+							display_name: 'Alice',
+							about_me: 'Bio'
+						}
+					}
+				] as never
+			})
+		);
+
+		const afterEcho = usersClanReducer(
+			usersClanState,
+			usersClanActions.updateUserProfileAcrossClans({
+				userId: PEER_PRO,
+				avatar: 'https://cdn/a.png',
+				display_name: 'Alice',
+				about_me: 'Bio'
+			})
+		);
+		expect(afterEcho).toBe(usersClanState);
+	});
+
+	it('dispatches fetchClanUserDecorations after fetchUsersClan loads', async () => {
+		jest.mocked(ensureSession).mockResolvedValueOnce({
+			client: { listClanUsers: jest.fn() },
+			session: { token: 't' }
+		} as never);
+		jest.mocked(fetchDataWithSocketFallback).mockResolvedValueOnce({
+			clan_users: [{ user: { id: PEER_PRO, pro_plan: true } }, { user: { id: PEER_FREE, pro_plan: false } }]
+		} as never);
+
+		const dispatched: unknown[] = [];
+		const dispatch = jest.fn((action: unknown) => {
+			dispatched.push(action);
+			return action;
+		});
+		const getState = () => ({ [USERS_CLANS_FEATURE_KEY]: usersClanReducer(undefined, { type: 'init' }) });
+
+		await fetchUsersClan({ clanId: CLAN_1, noCache: true })(dispatch as never, getState, undefined);
+		expect(dispatched).toContainEqual({
+			type: 'decorations/fetchClanUserDecorations',
+			payload: {
+				clanId: CLAN_1,
+				members: expect.arrayContaining([expect.objectContaining({ user: expect.objectContaining({ id: PEER_PRO, pro_plan: true }) })])
+			}
+		});
+	});
+
+	it('dispatches fetchClanUserDecorations after fetchClanMembersWithStatus loads and skips on member fetch error', async () => {
+		jest.mocked(ensureSocket).mockResolvedValue({
+			client: {
+				listUserOnline: jest.fn().mockResolvedValue({ users: [] }),
+				listClanUsersStatus: jest.fn().mockResolvedValue({ clan_user_statuses: [] })
+			},
+			session: { token: 't' }
+		} as never);
+		jest.mocked(fetchDataWithSocketFallback).mockResolvedValueOnce({
+			clan_users: [{ user: { id: PEER_PRO, pro_plan: true } }]
+		} as never);
+
+		const dispatched: unknown[] = [];
+		const dispatch = jest.fn((action: unknown) => {
+			dispatched.push(action);
+			return action;
+		});
+		const getState = () => ({ [USERS_CLANS_FEATURE_KEY]: usersClanReducer(undefined, { type: 'init' }) });
+
+		await fetchClanMembersWithStatus({ clanId: CLAN_1 })(dispatch as never, getState, undefined);
+		expect(dispatched).toContainEqual({ type: 'decorations/fetchClanUserDecorations', payload: CLAN_1 });
+
+		dispatched.length = 0;
+		jest.mocked(fetchDataWithSocketFallback).mockRejectedValueOnce(new Error('network'));
+		await fetchClanMembersWithStatus({ clanId: CLAN_2 })(dispatch as never, getState, undefined);
+		expect(dispatched.some((a) => (a as { type?: string }).type === 'decorations/fetchClanUserDecorations')).toBe(false);
 	});
 });

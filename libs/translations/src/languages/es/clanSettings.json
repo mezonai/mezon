@@ -9,6 +9,7 @@
 		},
 		"items": {
 			"overview": "Resumen",
+			"clanPro": "Clan Pro",
 			"roles": "Roles",
 			"emoji": "Emojis",
 			"imageStickers": "Stickers de Imagen",
@@ -103,5 +104,13 @@
 	"toast": {
 		"clanDeletedSuccess": "El clan se eliminó correctamente",
 		"clanCreatedSuccess": "El clan se creó correctamente"
+	},
+	"clanPro": {
+		"title": "Marco del icono del clan",
+		"description": "Elige un marco decorativo Pro para mostrar alrededor del icono de tu clan.",
+		"noFrame": "Sin marco",
+		"notPro": "Mejora este clan a Clan Pro para elegir un marco.",
+		"saved": "Marco del clan guardado.",
+		"saveFailed": "No se pudo guardar el marco del clan. Inténtalo de nuevo."
 	}
 }

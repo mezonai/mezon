@@ -1,9 +1,7 @@
-import { MezonIcon } from '@mezon/ui';
 import Tooltip from 'rc-tooltip';
 import type { CSSProperties } from 'react';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { mzPro16 } from './proIcon';
 import type { ProPalette, ProfileBadgeItem } from './proPalette';
 import { hexToRgba } from './proPalette';
 import { useProPalette } from './useProPalette';
@@ -31,20 +29,18 @@ const ProBadgeTile = memo(({ label, palette, focusable = true, cursorClassName =
 	}, []);
 
 	const tileStyle = useMemo<CSSProperties>(() => {
+		const base: CSSProperties = {
+			background: `linear-gradient(135deg, ${palette.start}, ${palette.end})`,
+			color: '#ffffff'
+		};
 		if (isHovered) {
 			return {
-				backgroundColor: hexToRgba(palette.accent, 0.3),
-				border: `1px solid ${palette.accent}`,
-				color: palette.accent,
+				...base,
 				boxShadow: `0 0 10px ${hexToRgba(palette.accent, 0.5)}`
 			};
 		}
-		return {
-			backgroundColor: hexToRgba(palette.accent, 0.16),
-			border: `1px solid ${hexToRgba(palette.accent, 0.45)}`,
-			color: palette.accent
-		};
-	}, [isHovered, palette.accent]);
+		return base;
+	}, [isHovered, palette.accent, palette.end, palette.start]);
 
 	const overlay = useMemo(
 		() => <div className="px-2 py-1 text-xs font-medium rounded bg-[#1e1f22] text-white shadow-md whitespace-nowrap">{label}</div>,
@@ -53,7 +49,7 @@ const ProBadgeTile = memo(({ label, palette, focusable = true, cursorClassName =
 
 	const tooltipTrigger = focusable ? TOOLTIP_TRIGGER : HOVER_ONLY_TOOLTIP_TRIGGER;
 	const tabIndex = focusable ? 0 : undefined;
-	const tileClassName = `mz-hover inline-flex items-center justify-center w-[22px] h-[22px] rounded-[6px] shrink-0 transition-all duration-150 ${cursorClassName}`;
+	const tileClassName = `inline-flex items-center justify-center h-[18px] px-[6px] rounded-[5px] text-[10px] font-bold leading-none tracking-[0.5px] select-none shrink-0 transition-all duration-150 ${cursorClassName}`;
 
 	return (
 		<Tooltip placement="top" trigger={tooltipTrigger} overlay={overlay} overlayInnerStyle={OVERLAY_INNER_STYLE} destroyTooltipOnHide>
@@ -65,7 +61,7 @@ const ProBadgeTile = memo(({ label, palette, focusable = true, cursorClassName =
 				aria-label={label}
 				tabIndex={tabIndex}
 			>
-				<MezonIcon icon={mzPro16} className="w-[14px] h-[14px]" />
+				PRO
 			</span>
 		</Tooltip>
 	);

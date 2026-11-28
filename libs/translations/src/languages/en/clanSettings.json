@@ -9,6 +9,7 @@
 		},
 		"items": {
 			"overview": "Overview",
+			"clanPro": "Clan Pro",
 			"roles": "Roles",
 			"emoji": "Emoji",
 			"imageStickers": "Image Stickers",
@@ -103,5 +104,13 @@
 	"toast": {
 		"clanDeletedSuccess": "Clan is deleted successfully",
 		"clanCreatedSuccess": "Clan is created successfully"
+	},
+	"clanPro": {
+		"title": "Clan Icon Frame",
+		"description": "Choose a Pro decoration frame to display around your clan icon.",
+		"noFrame": "No frame",
+		"notPro": "Upgrade this clan to Clan Pro to choose a frame.",
+		"saved": "Clan frame saved.",
+		"saveFailed": "Failed to save clan frame. Please try again."
 	}
 }

@@ -72,5 +72,16 @@
 		"description": "Utwórz lub dołącz do clanu, aby skonfigurować swój profil clanu.",
 		"createClan": "Utwórz clan",
 		"joinClan": "Dołącz do clanu"
+	},
+	"proAvatarFrame": {
+		"title": "Ramka awatara Pro",
+		"description": "Wybierz dekoracyjną ramkę Pro wyświetlaną wokół awatara.",
+		"noFrame": "Brak ramki",
+		"automatic": "Automatycznie",
+		"notPro": "Ulepsz do Mezon Pro, aby wybrać ramkę awatara.",
+		"saved": "Ramka awatara została zapisana.",
+		"saveFailed": "Nie udało się zapisać ramki awatara. Spróbuj ponownie.",
+		"rateLimited": "Poczekaj kilka sekund przed ponowną zmianą ramki awatara.",
+		"unsupported": "Aktualizacje ramki awatara są tymczasowo niedostępne. Spróbuj ponownie później."
 	}
 }

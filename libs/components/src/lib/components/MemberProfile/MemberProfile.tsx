@@ -1,13 +1,13 @@
 import { useColorsRoleById } from '@mezon/core';
 import type { ChannelMembersEntity } from '@mezon/store';
-import { selectCurrentChannelId, selectCurrentDmChannelId, useAppSelector } from '@mezon/store';
+import { selectCurrentChannelId, selectCurrentDmChannelId, selectUserDecorationFrame, useAppSelector } from '@mezon/store';
 import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { UsersClanEntity } from '@mezon/utils';
-import { EUserStatus, createImgproxyUrl, generateE2eId } from '@mezon/utils';
+import { EUserStatus, createImgproxyUrl, generateE2eId, userFrameId } from '@mezon/utils';
 import type { ReactNode } from 'react';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../components';
-import { DEFAULT_PRO_PALETTE, ProAvatarFrame, type ProPalette } from '../ProfileBadges';
+import { ProAvatarFrame } from '../ProfileBadges';
 import { UserStatusIconClan } from './IconStatus';
 
 type WithProPlan = { pro_plan?: boolean };
@@ -20,8 +20,8 @@ type BaseMemberProfileProps = {
 	avatar: string;
 	isOwner?: boolean;
 	userStatus?: ReactNode;
-	proPalette?: ProPalette;
 	isPro?: boolean;
+	frame?: number;
 	ownProUserId?: string;
 	onContextMenu: (event: React.MouseEvent<Element, MouseEvent>, channelId: string, user: UsersClanEntity) => void;
 	onClick: (event: React.MouseEvent) => void;
@@ -35,8 +35,8 @@ export const BaseMemberProfile = ({
 	avatar,
 	isOwner,
 	userStatus,
-	proPalette,
 	isPro: isProProp,
+	frame: frameProp,
 	ownProUserId,
 	onContextMenu,
 	onClick
@@ -60,7 +60,13 @@ export const BaseMemberProfile = ({
 	};
 
 	const isOffline = userMeta?.status === EUserStatus.INVISIBLE || !userMeta?.online;
-	const isPro = isProProp ?? (Boolean((user?.user as WithProPlan | undefined)?.pro_plan) || Boolean(ownProUserId && id === ownProUserId));
+	const memberUser = user?.user as WithProPlan | undefined;
+	const isOwnPro = Boolean(ownProUserId && id === ownProUserId);
+	const isPro = isProProp ?? (Boolean(memberUser?.pro_plan) || isOwnPro);
+	const frameUserId = user?.user?.id || user?.id || id;
+	const storedFrame = useAppSelector((state) => (frameProp === undefined ? selectUserDecorationFrame(state, frameUserId) : undefined));
+	const frame = frameProp !== undefined ? frameProp : storedFrame;
+	const resolvedFrameId = userFrameId(isPro, frame, frameUserId);
 
 	return (
 		<div className={`relative group w-full ${isOffline ? 'opacity-50' : ''}`}>
@@ -71,7 +77,7 @@ export const BaseMemberProfile = ({
 				data-e2e={generateE2eId('clan_page.secondary_side_bar.member')}
 			>
 				<div className="relative">
-					<ProAvatarFrame isPro={isPro} palette={proPalette ?? DEFAULT_PRO_PALETTE} glow={false} ringWidth={2} className="-m-[2px]">
+					<ProAvatarFrame isPro={Boolean(resolvedFrameId)} userId="" frameId={resolvedFrameId}>
 						<AvatarImage
 							alt={username}
 							username={user?.user?.username ?? username}

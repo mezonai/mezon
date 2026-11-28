@@ -11,6 +11,7 @@ import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 // import { selectCurrentClanId } from '../clans/clans.slice';
 import { settingActions } from '../app/setting.slice';
+import { fetchUserDecorations } from '../decorations/decorations.slice';
 import type { ThunkConfigWithError } from '../errors';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, getMezonCtx, withRetry } from '../helpers';
@@ -90,6 +91,14 @@ export const getUserProfile = createAsyncThunk<IUserAccount & { fromCache?: bool
 		}
 		if (response?.user?.id) {
 			thunkAPI.dispatch(settingActions.setSettingLocal(response?.user?.id));
+		}
+		const ownUserId = response?.user?.id;
+		const isOwnPro = Boolean(
+			(response as IUserAccount & WithProPlan)?.pro_plan ||
+				(response?.user as (NonNullable<IUserAccount['user']> & WithProPlan) | undefined)?.pro_plan
+		);
+		if (ownUserId && isOwnPro) {
+			thunkAPI.dispatch(fetchUserDecorations([ownUserId]));
 		}
 
 		if (response.fromCache) {
@@ -241,6 +250,15 @@ export const updateAccountUsername = createAsyncThunk<string, ApiUpdateUsernameR
 		}
 	}
 );
+
+export const buildOwnProfileAccountPatch = (event: { encrypt_private_key?: string }, currentEncryptPrivateKey?: string): IUserAccount | null => {
+	if (!event.encrypt_private_key || event.encrypt_private_key === currentEncryptPrivateKey) {
+		return null;
+	}
+	return {
+		encrypt_private_key: event.encrypt_private_key
+	};
+};
 
 export const accountSlice = createSlice({
 	name: ACCOUNT_FEATURE_KEY,

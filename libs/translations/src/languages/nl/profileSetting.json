@@ -72,5 +72,16 @@
 		"description": "Maak of join een clan om je clanprofiel in te stellen.",
 		"createClan": "Clan aanmaken",
 		"joinClan": "Clan betreden"
+	},
+	"proAvatarFrame": {
+		"title": "Pro-avatarkader",
+		"description": "Kies een Pro-decoratiekader om rond je avatar weer te geven.",
+		"noFrame": "Geen kader",
+		"automatic": "Automatisch",
+		"notPro": "Upgrade naar Mezon Pro om een avatarkader te kiezen.",
+		"saved": "Avatarkader opgeslagen.",
+		"saveFailed": "Opslaan van avatarkader mislukt. Probeer het opnieuw.",
+		"rateLimited": "Wacht een paar seconden voordat je je avatarkader opnieuw wijzigt.",
+		"unsupported": "Updates voor avatarkaders zijn tijdelijk niet beschikbaar. Probeer het later opnieuw."
 	}
 }

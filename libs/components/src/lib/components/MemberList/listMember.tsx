@@ -11,10 +11,11 @@ import {
 	selectMemberCustomStatusByUserId,
 	selectStatusInVoice,
 	selectTheme,
+	selectUserDecorationFrame,
 	useAppSelector
 } from '@mezon/store';
 import { MezonIcon, MzIcons16 } from '@mezon/ui';
-import { EUserStatus, createImgproxyUrl, generateE2eId, useWindowSize } from '@mezon/utils';
+import { EUserStatus, createImgproxyUrl, generateE2eId, useWindowSize, userFrameId } from '@mezon/utils';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -22,7 +23,7 @@ import { AvatarImage, useVirtualizer } from '../../components';
 import { useMemberContextMenu } from '../../contexts';
 import { UserStatusIconClan } from '../MemberProfile';
 import { BaseMemberProfile, ClanUserName } from '../MemberProfile/MemberProfile';
-import { ProAvatarFrame, getProPalette, type ProPalette } from '../ProfileBadges';
+import { ProAvatarFrame } from '../ProfileBadges';
 
 type WithProPlan = { pro_plan?: boolean };
 
@@ -31,11 +32,10 @@ const heightTopBar = 50;
 type TempMemberItemProps = {
 	id: string;
 	isOwner?: boolean;
-	proPalette?: ProPalette;
 	ownProUserId?: string;
 };
 
-const TempMemberItem = memo(({ id, isOwner, proPalette, ownProUserId }: TempMemberItemProps) => {
+const TempMemberItem = memo(({ id, isOwner, ownProUserId }: TempMemberItemProps) => {
 	const { t } = useTranslation('memberPage');
 	const user = useAppSelector((state) => selectMemberClanByUserId(state, id));
 	const userMeta = useMemberStatus(id);
@@ -45,7 +45,11 @@ const TempMemberItem = memo(({ id, isOwner, proPalette, ownProUserId }: TempMemb
 	const avatar = user.clan_avatar ? user.clan_avatar : (user?.user?.avatar_url ?? '');
 	const username = user?.clan_nick || user?.user?.display_name || user?.user?.username || '';
 	const isOffline = userMeta?.status === EUserStatus.INVISIBLE || !userMeta?.online;
-	const isPro = Boolean((user?.user as WithProPlan | undefined)?.pro_plan) || Boolean(ownProUserId && id === ownProUserId);
+	const memberUser = user?.user as WithProPlan | undefined;
+	const isOwnPro = Boolean(ownProUserId && id === ownProUserId);
+	const isPro = Boolean(memberUser?.pro_plan) || isOwnPro;
+	const frame = useAppSelector((state) => selectUserDecorationFrame(state, id));
+	const resolvedFrameId = userFrameId(isPro, frame, id);
 	const secondaryLine =
 		userVoiceStatus && userMeta?.online ? (
 			<span className="flex items-center gap-1" data-e2e={generateE2eId('clan_page.secondary_side_bar.member.in_voice')}>
@@ -69,7 +73,7 @@ const TempMemberItem = memo(({ id, isOwner, proPalette, ownProUserId }: TempMemb
 		<div className={`relative group w-full ${isOffline ? 'opacity-50' : ''}`}>
 			<div className="cursor-pointer flex items-center gap-[9px] relative">
 				<div className="relative">
-					<ProAvatarFrame isPro={isPro} palette={proPalette ?? getProPalette()} glow={false} ringWidth={2} className="-m-[2px]">
+					<ProAvatarFrame isPro={Boolean(resolvedFrameId)} userId="" frameId={resolvedFrameId}>
 						<AvatarImage
 							alt={username}
 							username={user?.user?.username ?? username}
@@ -101,13 +105,12 @@ type MemberClanProps = {
 	isOwner?: boolean;
 	temp: boolean;
 	clanId: string;
-	proPalette: ProPalette;
 	ownProUserId: string;
 };
 
 const MemoizedMemberItem = memo((props: MemberClanProps) => {
 	const { t } = useTranslation('memberPage');
-	const { id, isOwner, temp, clanId, proPalette, ownProUserId } = props;
+	const { id, isOwner, temp, clanId, ownProUserId } = props;
 	const user = useAppSelector((state) => selectMemberClanByUserId(state, id));
 	const userMeta = useMemberStatus(id);
 	const userCustomStatus = useAppSelector((state) => selectMemberCustomStatusByUserId(state, user?.user?.id || ''));
@@ -123,7 +126,7 @@ const MemoizedMemberItem = memo((props: MemberClanProps) => {
 		openProfileItem(event, user);
 	};
 	return temp ? (
-		<TempMemberItem id={id} isOwner={isOwner} proPalette={proPalette} ownProUserId={ownProUserId} />
+		<TempMemberItem id={id} isOwner={isOwner} ownProUserId={ownProUserId} />
 	) : (
 		<BaseMemberProfile
 			userStatus={
@@ -154,7 +157,6 @@ const MemoizedMemberItem = memo((props: MemberClanProps) => {
 			username={username}
 			id={id}
 			isOwner={isOwner}
-			proPalette={proPalette}
 			ownProUserId={ownProUserId}
 			onContextMenu={showContextMenu}
 			onClick={handleClick}
@@ -217,7 +219,6 @@ const ListMember = () => {
 	}, [members, showFullList, height]);
 
 	const appearanceTheme = useSelector(selectTheme);
-	const proPalette = useMemo(() => getProPalette(appearanceTheme), [appearanceTheme]);
 	const currentUserId = useSelector(selectCurrentUserId);
 	const isOwnPro = useSelector(selectAccountProPlan);
 	const ownProUserId = isOwnPro ? currentUserId : '';
@@ -293,7 +294,6 @@ const ListMember = () => {
 										temp={!showFullList}
 										isOwner={currentClanCreatorId === user}
 										clanId={currentClanId || ''}
-										proPalette={proPalette}
 										ownProUserId={ownProUserId}
 									/>
 								)}

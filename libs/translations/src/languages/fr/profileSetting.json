@@ -72,5 +72,16 @@
 		"description": "Créez ou rejoignez un clan pour configurer votre profil de clan.",
 		"createClan": "Créer un clan",
 		"joinClan": "Rejoindre un clan"
+	},
+	"proAvatarFrame": {
+		"title": "Cadre d'avatar Pro",
+		"description": "Choisissez un cadre décoratif Pro à afficher autour de votre avatar.",
+		"noFrame": "Sans cadre",
+		"automatic": "Automatique",
+		"notPro": "Passez à Mezon Pro pour choisir un cadre d'avatar.",
+		"saved": "Cadre d'avatar enregistré.",
+		"saveFailed": "Échec de l'enregistrement du cadre d'avatar. Veuillez réessayer.",
+		"rateLimited": "Veuillez patienter quelques secondes avant de modifier à nouveau votre cadre d'avatar.",
+		"unsupported": "Les mises à jour du cadre d'avatar sont temporairement indisponibles. Veuillez réessayer plus tard."
 	}
 }

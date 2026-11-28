@@ -9,6 +9,7 @@
 		},
 		"items": {
 			"overview": "Panoramica",
+			"clanPro": "Clan Pro",
 			"roles": "Ruoli",
 			"emoji": "Emoji",
 			"imageStickers": "Sticker immagine",
@@ -103,5 +104,13 @@
 	"toast": {
 		"clanDeletedSuccess": "Il clan è stato eliminato con successo",
 		"clanCreatedSuccess": "Il clan è stato creato con successo"
+	},
+	"clanPro": {
+		"title": "Cornice icona clan",
+		"description": "Scegli una cornice decorativa Pro da mostrare attorno all'icona del tuo clan.",
+		"noFrame": "Nessuna cornice",
+		"notPro": "Passa questo clan a Clan Pro per scegliere una cornice.",
+		"saved": "Cornice del clan salvata.",
+		"saveFailed": "Impossibile salvare la cornice del clan. Riprova."
 	}
 }

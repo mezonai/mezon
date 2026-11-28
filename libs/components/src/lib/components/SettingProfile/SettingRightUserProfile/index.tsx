@@ -3,33 +3,111 @@ import { useAccount, useAuth } from '@mezon/core';
 import {
 	accountActions,
 	clansActions,
+	classifyDecorationSaveError,
+	decorationsActions,
 	directActions,
+	selectAccountProPlan,
 	selectCurrentClanId,
 	selectLogoCustom,
 	selectTheme,
+	selectUserDecorationFrame,
 	toastActions,
 	useAppDispatch,
+	useAppSelector,
 	userChannelsActions,
 	usersClanActions
 } from '@mezon/store';
 import { handleUploadPublicFile, useMezon } from '@mezon/transport';
 import { DeleteAccountModal, InputField, MezonIcon, MzIcons32 } from '@mezon/ui';
-import type { ImageSourceObject } from '@mezon/utils';
-import { MAX_FILE_SIZE_10MB, MAX_FILE_SIZE_1MB, MEZON_AVATAR_URL, createImgproxyUrl, fileTypeImage, generateE2eId } from '@mezon/utils';
+import type { AvatarFrameId, ImageSourceObject } from '@mezon/utils';
+import {
+	AVATAR_FRAMES,
+	MAX_FILE_SIZE_10MB,
+	MAX_FILE_SIZE_1MB,
+	MEZON_AVATAR_URL,
+	USER_FRAME_AUTO,
+	USER_FRAME_HIDDEN,
+	createImgproxyUrl,
+	defaultAvatarFrameForUser,
+	fileTypeImage,
+	generateE2eId,
+	userFrameId
+} from '@mezon/utils';
 import type { ChangeEvent } from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { AvatarImage } from '../../AvatarImage/AvatarImage';
 import type { Coords } from '../../ChannelLink';
 import { ELimitSize } from '../../ModalValidateFile';
 import { ModalErrorTypeUpload, ModalOverData } from '../../ModalValidateFile/ModalOverData';
 import PanelClan from '../../PanelClan';
+import { ProAvatarFrame } from '../../ProfileBadges';
 import ImageEditor from '../ImageEditor/ImageEditor';
 import type { Profilesform } from '../SettingUserClanProfileCard';
 import PreviewSetting from '../SettingUserClanProfileCard';
 import { processImage } from '../helper';
+
+type UserFrameAvatarProps = {
+	size: 'md' | 'lg';
+	avatar: string;
+	username: string;
+};
+
+const UserFrameAvatar = ({ size, avatar, username }: UserFrameAvatarProps) => {
+	const sizeClass = size === 'lg' ? 'w-20 h-20 min-w-20 min-h-20' : 'w-10 h-10 min-w-10 min-h-10';
+	const proxySize = size === 'lg' ? 160 : 100;
+
+	return (
+		<AvatarImage
+			alt={username}
+			username={username}
+			className={`${sizeClass} rounded-full object-cover`}
+			classNameText={size === 'lg' ? '!text-3xl' : 'font-semibold'}
+			srcImgProxy={avatar ? createImgproxyUrl(avatar, { width: proxySize, height: proxySize, resizeType: 'fill-down' }) : undefined}
+			src={avatar}
+			useUserPlaceholder
+		/>
+	);
+};
+
+type UserFrameTileProps = {
+	frameId?: AvatarFrameId;
+	frameValue: number;
+	label?: string;
+	selected: boolean;
+	disabled: boolean;
+	avatar: string;
+	username: string;
+	onSelect: (frame: number) => void;
+};
+
+const UserFrameTile = memo(({ frameId, frameValue, label, selected, disabled, avatar, username, onSelect }: UserFrameTileProps) => {
+	const handleClick = useCallback(() => {
+		onSelect(frameValue);
+	}, [onSelect, frameValue]);
+
+	const stateClasses = selected ? 'ring-2 ring-[var(--bg-button-primary,#5865f2)] bg-item-theme' : 'border-theme-primary';
+	const interactionClasses = disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer bg-item-theme-hover';
+	const layoutClasses = label ? 'flex-col gap-2' : '';
+
+	return (
+		<button
+			type="button"
+			disabled={disabled}
+			aria-pressed={selected}
+			onClick={disabled ? undefined : handleClick}
+			className={`flex items-center justify-center rounded-lg p-3 bg-theme-setting-nav transition-colors ${layoutClasses} ${stateClasses} ${interactionClasses}`}
+		>
+			<ProAvatarFrame isPro={Boolean(frameId)} userId="" frameId={frameId}>
+				<UserFrameAvatar size="md" avatar={avatar} username={username} />
+			</ProAvatarFrame>
+			{label && <span className="text-xs text-theme-primary truncate max-w-full">{label}</span>}
+		</button>
+	);
+});
 
 const SettingRightUser = ({
 	onClanProfileClick,
@@ -202,6 +280,61 @@ const SettingRightUser = ({
 		setFlags(true);
 	};
 	const appearanceTheme = useSelector(selectTheme);
+	const isPro = useSelector(selectAccountProPlan);
+	const currentUserId = userProfile?.user?.id || '';
+	const savedFrameRaw = useAppSelector((state) => selectUserDecorationFrame(state, currentUserId));
+	const savedFrame = savedFrameRaw ?? USER_FRAME_AUTO;
+	const [draftFrame, setDraftFrame] = useState<number>(savedFrame);
+	const [isSavingFrame, setIsSavingFrame] = useState<boolean>(false);
+
+	useEffect(() => {
+		if (currentUserId) {
+			dispatch(decorationsActions.fetchUserDecorations([currentUserId]));
+		}
+	}, [dispatch, currentUserId]);
+
+	useEffect(() => {
+		setDraftFrame(savedFrame);
+	}, [savedFrame]);
+
+	const hasFrameChanges = draftFrame !== savedFrame;
+	const canSelectFallback = isPro || savedFrame > 0;
+	const autoFrameId = useMemo(() => (currentUserId ? defaultAvatarFrameForUser(currentUserId) : undefined), [currentUserId]);
+	const sectionPreviewFrameId = useMemo(() => userFrameId(isPro, draftFrame, currentUserId), [isPro, draftFrame, currentUserId]);
+	const previewUsername = userProfile?.user?.username || valueDisplayName || name;
+	const previewAvatar = editProfile.urlImage || avatar || '';
+
+	const handleSelectFrame = useCallback((frame: number) => {
+		setDraftFrame(frame);
+	}, []);
+
+	const handleResetFrame = useCallback(() => {
+		setDraftFrame(savedFrame);
+	}, [savedFrame]);
+
+	const handleSaveFrame = useCallback(async () => {
+		if (isSavingFrame || !hasFrameChanges) {
+			return;
+		}
+		setIsSavingFrame(true);
+		try {
+			await dispatch(decorationsActions.updateUserDecoration(draftFrame)).unwrap();
+			dispatch(toastActions.addToast({ message: t('proAvatarFrame.saved'), type: 'success' }));
+		} catch (error) {
+			const reason = classifyDecorationSaveError(error);
+			const messageKey =
+				reason === 'notPro'
+					? 'proAvatarFrame.notPro'
+					: reason === 'rateLimited'
+						? 'proAvatarFrame.rateLimited'
+						: reason === 'unsupported'
+							? 'proAvatarFrame.unsupported'
+							: 'proAvatarFrame.saveFailed';
+			dispatch(toastActions.addToast({ message: t(messageKey), type: 'error' }));
+		} finally {
+			setIsSavingFrame(false);
+		}
+	}, [isSavingFrame, hasFrameChanges, dispatch, draftFrame, t]);
 
 	const handleChangeLogo = (e: ChangeEvent<HTMLInputElement>) => {
 		if (!e.target.files || e.target.files.length === 0) {
@@ -412,6 +545,77 @@ const SettingRightUser = ({
 							</label>
 						</div>
 					</div>
+					<div className="mt-8 rounded-lg border-theme-primary bg-theme-input p-4">
+						<h3 className="text-base font-semibold text-theme-primary-active mb-1">{t('proAvatarFrame.title')}</h3>
+						<p className="text-sm text-theme-primary mb-4">{t('proAvatarFrame.description')}</p>
+
+						{!isPro && (
+							<div className="mb-4 rounded-lg border-theme-primary bg-item-theme px-4 py-3 text-sm text-theme-primary">
+								{t('proAvatarFrame.notPro')}
+							</div>
+						)}
+
+						<div className="p-6 mb-4 rounded-lg bg-item-theme border-theme-primary flex items-center justify-center">
+							<ProAvatarFrame isPro={Boolean(sectionPreviewFrameId)} userId="" frameId={sectionPreviewFrameId} animated>
+								<UserFrameAvatar size="lg" avatar={previewAvatar} username={previewUsername} />
+							</ProAvatarFrame>
+						</div>
+
+						<div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+							<UserFrameTile
+								frameValue={USER_FRAME_HIDDEN}
+								label={t('proAvatarFrame.noFrame')}
+								selected={draftFrame === USER_FRAME_HIDDEN}
+								disabled={!canSelectFallback}
+								avatar={previewAvatar}
+								username={previewUsername}
+								onSelect={handleSelectFrame}
+							/>
+							<UserFrameTile
+								frameId={autoFrameId}
+								frameValue={USER_FRAME_AUTO}
+								label={t('proAvatarFrame.automatic')}
+								selected={draftFrame === USER_FRAME_AUTO}
+								disabled={!canSelectFallback}
+								avatar={previewAvatar}
+								username={previewUsername}
+								onSelect={handleSelectFrame}
+							/>
+							{AVATAR_FRAMES.map((frameId, idx) => (
+								<UserFrameTile
+									key={frameId}
+									frameId={frameId}
+									frameValue={idx + 1}
+									selected={draftFrame === idx + 1}
+									disabled={!isPro}
+									avatar={previewAvatar}
+									username={previewUsername}
+									onSelect={handleSelectFrame}
+								/>
+							))}
+						</div>
+
+						{hasFrameChanges && (
+							<div className="mt-4 flex items-center justify-end gap-3">
+								<button
+									type="button"
+									disabled={isSavingFrame}
+									onClick={handleResetFrame}
+									className="rounded-[4px] px-3 py-1.5 hover:underline text-sm disabled:opacity-50"
+								>
+									{t('reset')}
+								</button>
+								<button
+									type="button"
+									disabled={isSavingFrame}
+									onClick={handleSaveFrame}
+									className="btn-primary btn-primary-hover rounded-lg px-3 py-1.5 text-nowrap text-sm disabled:opacity-50"
+								>
+									{t('saveChanges')}
+								</button>
+							</div>
+						)}
+					</div>
 					<div className="mt-8">
 						<div className="flex mt-[10px] gap-x-5">
 							<button
@@ -425,7 +629,7 @@ const SettingRightUser = ({
 				</div>
 				<div className="flex-1 flex flex-col gap-2 relative">
 					<p className="font-semibold tracking-wide text-sm">{t('preview')}</p>
-					<PreviewSetting isLoading={isLoading} profiles={editProfile} />
+					<PreviewSetting isLoading={isLoading} profiles={editProfile} draftFrame={draftFrame} />
 				</div>
 			</div>
 			{(urlImage !== avatar && flags) ||

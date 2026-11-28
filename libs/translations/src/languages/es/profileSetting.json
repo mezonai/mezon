@@ -72,5 +72,16 @@
 		"description": "¡Crea o únete a un clan para empezar!",
 		"createClan": "Crear un clan",
 		"joinClan": "Unirse a un clan"
+	},
+	"proAvatarFrame": {
+		"title": "Marco de avatar Pro",
+		"description": "Elige un marco decorativo Pro para mostrar alrededor de tu avatar.",
+		"noFrame": "Sin marco",
+		"automatic": "Automático",
+		"notPro": "Mejora a Mezon Pro para elegir un marco de avatar.",
+		"saved": "Marco de avatar guardado.",
+		"saveFailed": "No se pudo guardar el marco de avatar. Inténtalo de nuevo.",
+		"rateLimited": "Espera unos segundos antes de volver a cambiar tu marco de avatar.",
+		"unsupported": "Las actualizaciones de marcos de avatar no están disponibles temporalmente. Inténtalo más tarde."
 	}
 }

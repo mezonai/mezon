@@ -72,5 +72,16 @@
 		"description": "Create or join a clan to get started!",
 		"createClan": "Create a clan",
 		"joinClan": "Join a clan"
+	},
+	"proAvatarFrame": {
+		"title": "Pro Avatar Frame",
+		"description": "Choose a Pro decoration frame to display around your avatar.",
+		"noFrame": "No frame",
+		"automatic": "Automatic",
+		"notPro": "Upgrade to Mezon Pro to choose an avatar frame.",
+		"saved": "Avatar frame saved.",
+		"saveFailed": "Failed to save avatar frame. Please try again.",
+		"rateLimited": "Please wait a few seconds before changing your avatar frame again.",
+		"unsupported": "Avatar frame updates are temporarily unavailable. Please try again later."
 	}
 }

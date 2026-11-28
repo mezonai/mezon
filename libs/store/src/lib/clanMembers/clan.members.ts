@@ -8,6 +8,7 @@ import { batch } from 'react-redux';
 import { ACCOUNT_FEATURE_KEY, selectAllAccount, selectCurrentUserId, type AccountState } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import { fetchClanUserDecorations } from '../decorations/decorations.slice';
 import { convertStatusClan, selectStatusEntities, statusActions } from '../direct/status.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
@@ -17,6 +18,25 @@ export const USERS_CLANS_FEATURE_KEY = 'usersClan';
 // ListClanUsers stops at this many members, newest joiners first: a clan that fills it has members the store never sees.
 type WithProPlan = { pro_plan?: boolean };
 const readProPlan = (value: unknown): boolean | undefined => (value as WithProPlan | null | undefined)?.pro_plan;
+
+export type PeerProfileUpdatePayload = {
+	userId: string;
+	avatar?: string;
+	display_name?: string;
+	about_me?: string;
+};
+
+export const buildPeerClanProfileUpdate = (event: {
+	user_id: string;
+	avatar?: string;
+	display_name?: string;
+	about_me?: string;
+}): PeerProfileUpdatePayload => ({
+	userId: event.user_id,
+	...(event.avatar ? { avatar: event.avatar } : {}),
+	...(event.display_name ? { display_name: event.display_name } : {}),
+	...(event.about_me ? { about_me: event.about_me } : {})
+});
 
 export const CLAN_USERS_LIST_LIMIT = 1000;
 
@@ -103,6 +123,9 @@ export const fetchUsersClan = createAsyncThunk('UsersClan/fetchUsersClan', async
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await fetchUsersClanCached(thunkAPI.getState as () => RootState, mezon, clanId, noCache);
+		if (clanId && clanId !== '0') {
+			thunkAPI.dispatch(fetchClanUserDecorations({ clanId, members: response?.users }));
+		}
 		return { users: response?.users, fromCache: response.fromCache, clanId };
 	} catch (error) {
 		captureSentryError(error, 'UsersClan/fetchUsersClan');
@@ -232,6 +255,9 @@ export const fetchClanMembersWithStatus = createAsyncThunk(
 					thunkAPI.dispatch(statusActions.updateBulkStatus(statusData));
 				}
 			});
+			if (membersResponse && clanId && clanId !== '0') {
+				thunkAPI.dispatch(fetchClanUserDecorations(clanId));
+			}
 		} catch (error) {
 			captureSentryError(error, 'UsersClan/fetchClanMembersWithStatus');
 			return thunkAPI.rejectWithValue(error);
@@ -481,35 +507,31 @@ export const UsersClanSlice = createSlice({
 				}
 			});
 		},
-		updateUserProfileAcrossClans: (
-			state,
-			action: PayloadAction<{ userId: string; avatar?: string; display_name?: string; about_me?: string }>
-		) => {
+		updateUserProfileAcrossClans: (state, action: PayloadAction<PeerProfileUpdatePayload>) => {
 			const { userId, avatar, display_name, about_me } = action.payload;
 			Object.keys(state.byClans).forEach((clanId) => {
 				const existingMember = state.byClans[clanId].entities.entities[userId];
 				if (existingMember) {
-					const updates: Partial<UsersClanEntity> = {
-						user: {
-							...existingMember.user
-						}
+					const hasAvatarChange = avatar !== undefined && existingMember.user?.avatar_url !== avatar;
+					const hasDisplayNameChange = display_name !== undefined && existingMember.user?.display_name !== display_name;
+					const hasAboutMeChange = about_me !== undefined && existingMember.user?.about_me !== about_me;
+
+					if (!hasAvatarChange && !hasDisplayNameChange && !hasAboutMeChange) {
+						return;
+					}
+
+					const nextUser = {
+						...existingMember.user,
+						...(hasAvatarChange ? { avatar_url: avatar } : {}),
+						...(hasDisplayNameChange ? { display_name } : {}),
+						...(hasAboutMeChange ? { about_me } : {})
 					};
-
-					if (avatar !== undefined) {
-						updates.user!.avatar_url = avatar;
-					}
-
-					if (display_name !== undefined) {
-						updates.user!.display_name = display_name;
-					}
-
-					if (about_me !== undefined) {
-						updates.user!.about_me = about_me;
-					}
 
 					UsersClanAdapter.updateOne(state.byClans[clanId].entities, {
 						id: userId,
-						changes: updates
+						changes: {
+							user: nextUser
+						}
 					});
 				}
 			});

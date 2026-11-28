@@ -13,7 +13,16 @@ import {
 	useUserByUserId
 } from '@mezon/core';
 import type { RootState } from '@mezon/store';
-import { EStateFriend, selectAllAccount, selectFriendById, selectIsProUser, selectStatusInVoice, useAppSelector } from '@mezon/store';
+import {
+	EStateFriend,
+	decorationsActions,
+	selectAllAccount,
+	selectFriendById,
+	selectIsProUser,
+	selectStatusInVoice,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store';
 import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { ChannelMembersEntity, IMessageWithUser } from '@mezon/utils';
 import { EUserStatus, generateE2eId } from '@mezon/utils';
@@ -103,6 +112,12 @@ const ModalUserProfile = ({
 	const effectiveUserId = isFooterProfile ? userProfile?.user?.id || userID : userID;
 	const isProFromStore = useAppSelector((state) => selectIsProUser(state, effectiveUserId));
 	const isPro = Boolean(!isUserRemoved && !checkAnonymous && isProFromStore);
+	const dispatch = useAppDispatch();
+	useEffect(() => {
+		if (effectiveUserId && isPro) {
+			dispatch(decorationsActions.fetchUserDecorations([effectiveUserId]));
+		}
+	}, [dispatch, effectiveUserId, isPro]);
 	const proPalette = useProPalette();
 	const isDmPanel = Boolean(isDM && showPopupLeft);
 	const showProCardGlow = isPro && !isFooterProfile && !isDmPanel;
@@ -289,11 +304,11 @@ const ModalUserProfile = ({
 				customStatus={status.user_status}
 				isAnonymous={checkAnonymous}
 				userID={userID}
+				frameUserId={effectiveUserId}
 				positionType={positionType}
 				isFooterProfile={isFooterProfile}
 				statusOnline={userStatus?.status as EUserStatus}
 				isPro={showProAvatar}
-				proPalette={proPalette}
 			/>
 			<div className="px-[16px]">
 				<div className=" w-full border-theme-primary p-2 my-[16px] text-theme-primary shadow rounded-[10px] flex flex-col text-justify bg-item-theme">
