@@ -124,7 +124,7 @@ export const fetchUsersClan = createAsyncThunk('UsersClan/fetchUsersClan', async
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await fetchUsersClanCached(thunkAPI.getState as () => RootState, mezon, clanId, noCache);
 		if (clanId && clanId !== '0') {
-			thunkAPI.dispatch(fetchClanUserDecorations(clanId));
+			thunkAPI.dispatch(fetchClanUserDecorations({ clanId, members: response?.users }));
 		}
 		return { users: response?.users, fromCache: response.fromCache, clanId };
 	} catch (error) {

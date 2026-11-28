@@ -290,7 +290,13 @@ describe('peer profile bio preservation and clan decoration fetch', () => {
 		const getState = () => ({ [USERS_CLANS_FEATURE_KEY]: usersClanReducer(undefined, { type: 'init' }) });
 
 		await fetchUsersClan({ clanId: CLAN_1, noCache: true })(dispatch as never, getState, undefined);
-		expect(dispatched).toContainEqual({ type: 'decorations/fetchClanUserDecorations', payload: CLAN_1 });
+		expect(dispatched).toContainEqual({
+			type: 'decorations/fetchClanUserDecorations',
+			payload: {
+				clanId: CLAN_1,
+				members: expect.arrayContaining([expect.objectContaining({ user: expect.objectContaining({ id: PEER_PRO, pro_plan: true }) })])
+			}
+		});
 	});
 
 	it('dispatches fetchClanUserDecorations after fetchClanMembersWithStatus loads and skips on member fetch error', async () => {

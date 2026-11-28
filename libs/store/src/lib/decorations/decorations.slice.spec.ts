@@ -615,4 +615,56 @@ describe('decorations.slice', () => {
 		expect(selectUserDecorationFrame(store.getState(), 'u')).toBe(7);
 		expect(selectUserDecorationFrame(store.getState(), 'n')).toBeUndefined();
 	});
+
+	it('keeps a realtime change made while two clan requests are in flight', async () => {
+		const store = createStore();
+		const resolvers: Array<(value: unknown) => void> = [];
+		mockListUserDecorations.mockImplementation(
+			() =>
+				new Promise((resolve) => {
+					resolvers.push(resolve);
+				})
+		);
+		const first = store.dispatch(fetchClanUserDecorations('c1') as never);
+		const second = store.dispatch(fetchClanUserDecorations('c2') as never);
+		for (let i = 0; i < 5; i += 1) {
+			await Promise.resolve();
+		}
+		expect(resolvers).toHaveLength(2);
+
+		store.dispatch(decorationsActions.receiveDecorationUpdated({ userId: 'u', frame: 14 }));
+		resolvers[0]({ decorations: [{ user_id: 'u', frame: 3 }] });
+		resolvers[1]({ decorations: [{ user_id: 'u', frame: 3 }] });
+		await first;
+		await second;
+
+		expect(selectUserDecorationFrame(store.getState(), 'u')).toBe(14);
+		mockListUserDecorations.mockReset();
+	});
+
+	it('uses the roster passed by the caller for a recently fetched clan', async () => {
+		const store = configureStore({
+			reducer: {
+				[DECORATIONS_FEATURE_KEY]: decorationsReducer,
+				usersClan: (state = { byClans: { c9: { entities: { entities: { a: { id: 'a', user: { id: 'a', pro_plan: true } } } } } } }) => state
+			}
+		});
+		mockListUserDecorations.mockResolvedValueOnce({ decorations: [{ user_id: 'a', frame: 4 }] });
+		await store.dispatch(fetchClanUserDecorations('c9') as never);
+
+		mockListUserDecorations.mockResolvedValueOnce({ decorations: [{ user_id: 'u', frame: 6 }] });
+		await store.dispatch(
+			fetchClanUserDecorations({
+				clanId: 'c9',
+				members: [
+					{ id: 'a', user: { id: 'a', pro_plan: true } },
+					{ id: 'u', user: { id: 'u', pro_plan: true } }
+				]
+			}) as never
+		);
+		await new Promise((r) => setTimeout(r, 0));
+
+		expect(mockListUserDecorations).toHaveBeenLastCalledWith({ token: 't' }, ['u']);
+		expect(selectUserDecorationFrame(store.getState(), 'u')).toBe(6);
+	});
 });

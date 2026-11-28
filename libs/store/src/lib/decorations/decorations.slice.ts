@@ -37,21 +37,17 @@ let mutationSeq = 0;
 const userMutationSeq = new Map<string, number>();
 
 const recordUserMutation = (userId: string) => {
-	if (inFlightClans.size === 0 && inFlightIds.size === 0) {
-		return;
-	}
 	mutationSeq += 1;
 	userMutationSeq.set(userId, mutationSeq);
 };
 
-const releaseMutationTracking = () => {
-	if (inFlightClans.size === 0 && inFlightIds.size === 0) {
-		userMutationSeq.clear();
-	}
-};
-
-const collectUncachedClanProIds = (rootState: RootState, clanId: string, decoState: DecorationsState): string[] => {
-	const clanEntities = rootState.usersClan?.byClans?.[clanId]?.entities?.entities;
+const collectUncachedClanProIds = (
+	rootState: RootState,
+	clanId: string,
+	decoState: DecorationsState,
+	freshMembers?: Array<{ id?: string; user?: { id?: string; pro_plan?: boolean } }>
+): string[] => {
+	const clanEntities = freshMembers ?? rootState.usersClan?.byClans?.[clanId]?.entities?.entities;
 	if (!clanEntities) {
 		return [];
 	}
@@ -220,8 +216,10 @@ export const fetchClanUserDecorations = createAsyncThunk<
 		startEpoch: number;
 		startMutationSeq: number;
 	},
-	string
->('decorations/fetchClanUserDecorations', async (clanId, thunkAPI) => {
+	string | { clanId: string; members?: Array<{ id?: string; user?: { id?: string; pro_plan?: boolean } }> }
+>('decorations/fetchClanUserDecorations', async (arg, thunkAPI) => {
+	const clanId = typeof arg === 'string' ? arg : arg.clanId;
+	const freshMembers = typeof arg === 'string' ? undefined : arg.members;
 	const decoState = getDecorationsState(thunkAPI.getState() as DecorationsRootState);
 	const startGeneration = decoState.generation;
 	const startEpoch = staleEpoch;
@@ -235,7 +233,7 @@ export const fetchClanUserDecorations = createAsyncThunk<
 	const now = Date.now();
 	const lastFetchedAt = clanFetchedAt.get(clanId);
 	if (lastFetchedAt !== undefined && now >= lastFetchedAt && now - lastFetchedAt < DECORATIONS_CLAN_FRESHNESS_MS) {
-		const missingProIds = collectUncachedClanProIds(thunkAPI.getState() as RootState, clanId, decoState);
+		const missingProIds = collectUncachedClanProIds(thunkAPI.getState() as RootState, clanId, decoState, freshMembers);
 		if (missingProIds.length > 0) {
 			thunkAPI.dispatch(fetchUserDecorations(missingProIds));
 		}
@@ -393,7 +391,6 @@ export const decorationsSlice = createSlice({
 		builder
 			.addCase(fetchUserDecorations.fulfilled, (state, action) => {
 				if (action.payload.generation !== state.generation || action.payload.startEpoch !== staleEpoch) {
-					releaseMutationTracking();
 					return;
 				}
 				const { frames, startMutationSeq } = action.payload;
@@ -406,11 +403,9 @@ export const decorationsSlice = createSlice({
 					}
 					delete state.stale[userId];
 				}
-				releaseMutationTracking();
 			})
 			.addCase(fetchClanUserDecorations.fulfilled, (state, action) => {
 				if (action.payload.generation !== state.generation || action.payload.startEpoch !== staleEpoch) {
-					releaseMutationTracking();
 					return;
 				}
 				const { frames, absentZeroIds, startMutationSeq } = action.payload;
@@ -434,7 +429,6 @@ export const decorationsSlice = createSlice({
 					delete state.stale[userId];
 					failedUntilById.delete(userId);
 				}
-				releaseMutationTracking();
 			})
 			.addCase(updateUserDecoration.fulfilled, (state, action) => {
 				if (action.payload.generation !== state.generation) {
