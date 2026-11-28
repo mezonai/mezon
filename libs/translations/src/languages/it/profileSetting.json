@@ -72,5 +72,15 @@
 		"description": "Crea o unisciti a un clan per impostare il tuo profilo clan.",
 		"createClan": "Crea clan",
 		"joinClan": "Unisciti al clan"
+	},
+	"coverPhoto": {
+		"label": "IMMAGINE DI COPERTINA",
+		"change": "Cambia copertina",
+		"remove": "Rimuovi copertina",
+		"saving": "Salvataggio…",
+		"invalidType": "Scegli un’immagine JPG, PNG, GIF o WebP.",
+		"tooLarge": "Le immagini di copertina non devono superare i 10 MB.",
+		"invalidImage": "Impossibile aprire questa immagine. Scegline un’altra.",
+		"uploadFailed": "Impossibile caricare l’immagine di copertina. Riprova."
 	}
 }

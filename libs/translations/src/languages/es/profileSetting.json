@@ -72,5 +72,15 @@
 		"description": "¡Crea o únete a un clan para empezar!",
 		"createClan": "Crear un clan",
 		"joinClan": "Unirse a un clan"
+	},
+	"coverPhoto": {
+		"label": "FOTO DE PORTADA",
+		"change": "Cambiar portada",
+		"remove": "Eliminar portada",
+		"saving": "Guardando…",
+		"invalidType": "Elige una imagen JPG, PNG, GIF o WebP.",
+		"tooLarge": "Las fotos de portada deben tener un tamaño máximo de 10 MB.",
+		"invalidImage": "No se pudo abrir esta imagen. Elige otra imagen.",
+		"uploadFailed": "No se pudo subir la foto de portada. Inténtalo de nuevo."
 	}
 }

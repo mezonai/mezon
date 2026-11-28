@@ -16,6 +16,7 @@ import type { MezonValueContext } from '../helpers';
 import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { RootState } from '../store';
 import { walletActions } from '../wallet/wallet.slice';
+import { profileBannerUpdated } from './profileBanner.actions';
 export const ACCOUNT_FEATURE_KEY = 'account';
 export interface IAccount {
 	email: string;
@@ -79,6 +80,7 @@ export const getUserProfile = createAsyncThunk<IUserAccount & { fromCache?: bool
 	async (arg, thunkAPI) => {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const noCache = arg?.noCache ?? false;
+		const profileAtStart = (thunkAPI.getState() as RootState).account.userProfile;
 
 		const response = await fetchUserProfileCached(thunkAPI.getState as () => RootState, mezon, Boolean(noCache));
 		if (response?.user?.id && response?.user?.status) {
@@ -99,6 +101,15 @@ export const getUserProfile = createAsyncThunk<IUserAccount & { fromCache?: bool
 		}
 
 		const { fromCache, time, ...profileData } = response;
+		const currentProfile = (thunkAPI.getState() as RootState).account.userProfile;
+		if (
+			currentProfile?.user?.id === profileData.user?.id &&
+			(currentProfile?.banner ?? currentProfile?.user?.banner) !== (profileAtStart?.banner ?? profileAtStart?.user?.banner)
+		) {
+			// A cover saved/received while this request was in flight is newer than its snapshot.
+			profileData.banner = currentProfile?.banner ?? currentProfile?.user?.banner;
+			profileData.user = { ...profileData.user, banner: profileData.banner };
+		}
 		if (response?.user?.id) {
 			thunkAPI.dispatch(walletActions.fetchWalletDetail({ userId: response?.user?.id }));
 		}
@@ -376,6 +387,13 @@ export const accountSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder
+			.addCase(profileBannerUpdated, (state, action) => {
+				const { userId, banner } = action.payload;
+				if (banner && state.userProfile?.user?.id === userId) {
+					state.userProfile.banner = banner;
+					state.userProfile.user.banner = banner;
+				}
+			})
 			.addCase(getUserProfile.pending, (state: AccountState) => {
 				state.loadingStatus = 'loading';
 			})
@@ -413,6 +431,7 @@ export const accountActions = {
 	verifyPhone,
 	updateAccountStatus,
 	linkEmail,
+	profileBannerUpdated,
 	updateAccountUsername
 };
 
@@ -435,6 +454,34 @@ export const selectLogoCustom = createSelector(getAccountState, (state) => state
 export const selectAvatarVersion = createSelector(getAccountState, (state) => state.avatarVersion);
 
 export const selectCurrentUsername = createSelector(getAccountState, (state: AccountState) => state.userProfile?.user?.username || '');
+
+export const selectProfileBannerByUserId = createSelector(
+	[
+		selectAllAccount,
+		(state: RootState) => state.allUsersByAddChannel?.profileBanners,
+		(state: RootState) => state.usersClan?.byClans,
+		(state: RootState) => state.friends?.entities,
+		(state: RootState) => state.clans?.currentClanId,
+		(_: RootState, userId: string) => userId,
+		(_: RootState, __: string, profileUser?: { id?: string; banner?: string }) => profileUser
+	],
+	(account, profileBanners, clans, friends, currentClanId, userId, profileUser) => {
+		if (!userId || userId === '0') return undefined;
+		if (account?.user?.id === userId) return account.banner ?? account.user.banner;
+		if (profileBanners?.[userId] !== undefined) return profileBanners[userId];
+		const suppliedBanner = profileUser?.id === userId ? profileUser.banner : undefined;
+		if (suppliedBanner) return suppliedBanner;
+		const currentClanBanner = currentClanId ? clans?.[currentClanId]?.entities.entities[userId]?.user?.banner : undefined;
+		if (currentClanBanner !== undefined) return currentClanBanner;
+		const friendBanner = friends?.[userId]?.user?.banner;
+		if (friendBanner) return friendBanner;
+		for (const clan of Object.values(clans ?? {})) {
+			const banner = clan.entities.entities[userId]?.user?.banner;
+			if (banner !== undefined) return banner;
+		}
+		return friendBanner ?? suppliedBanner;
+	}
+);
 
 export const selectAccountProPlan = createSelector(getAccountState, (state: AccountState) =>
 	Boolean(

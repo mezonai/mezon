@@ -5,10 +5,12 @@ import { generateE2eId } from '@mezon/utils';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import AvatarProfile from '../ModalUserProfile/AvatarProfile';
+import ProfileCover from '../ProfileCover';
 import { getColorAverageFromURL } from './AverageColor';
 export type Profilesform = {
 	displayName: string;
 	urlImage: string;
+	banner?: string;
 };
 export type propProfilesform = {
 	profiles: Profilesform;
@@ -43,7 +45,12 @@ const SettingUserClanProfileCard = (props: propProfilesform) => {
 				</div>
 			)}
 
-			<div style={{ backgroundColor: color }} className="h-[105px] rounded-tr-[10px] rounded-tl-[10px] "></div>
+			<ProfileCover
+				data-e2e={generateE2eId('user_setting.profile.user_profile.preview.cover_photo')}
+				banner={profiles.banner ?? userProfile?.banner ?? userProfile?.user?.banner}
+				color={color}
+				className="h-[105px] rounded-tr-[10px] rounded-tl-[10px]"
+			/>
 			<AvatarProfile
 				avatar={profiles.urlImage || userProfile?.user?.avatar_url || ''}
 				username={userProfile?.user?.username}
@@ -56,7 +63,7 @@ const SettingUserClanProfileCard = (props: propProfilesform) => {
 
 			<div className="p-4 flex flex-col gap-4">
 				<div className="bg-theme-setting-primary text-theme-primary border-theme-primary shadow w-full p-4 rounded-[10px] flex flex-col gap-y-6 xl:gap-y-7">
-					<div className="w-[300px]">
+					<div className="w-full min-w-0">
 						<p
 							className="font-bold tracking-wider text-xl one-line"
 							data-e2e={generateE2eId('user_setting.profile.user_profile.preview.display_name')}
