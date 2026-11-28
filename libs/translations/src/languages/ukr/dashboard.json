@@ -50,7 +50,9 @@
 	"state": {
 		"loadingData": "Завантаження даних...",
 		"noDataFound": "Даних не знайдено",
-		"noDataDescription": "Немає даних використання за обраний період."
+		"noDataDescription": "Немає даних використання за обраний період.",
+		"loadFailed": "Не вдалося завантажити дані",
+		"loadFailedDescription": "Під час завантаження звіту сталася помилка. Спробуйте ще раз."
 	},
 	"reportControls": {
 		"timePeriod": "Період часу",

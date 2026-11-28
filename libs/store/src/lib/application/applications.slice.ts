@@ -163,7 +163,7 @@ export const getApplicationDetail = createAsyncThunk('adminApplication/getApplic
 	}
 });
 
-export const createChannelApp = createAsyncThunk('adminApplication/getApplicationDetail', async (body: ApiCreateChannelDescRequest, thunkAPI) => {
+export const createChannelApp = createAsyncThunk('adminApplication/createChannelApp', async (body: ApiCreateChannelDescRequest, thunkAPI) => {
 	try {
 		const state = thunkAPI.getState() as RootState;
 		if (!state.auth.session) {
@@ -178,7 +178,7 @@ export const createChannelApp = createAsyncThunk('adminApplication/getApplicatio
 
 		return response;
 	} catch (error) {
-		captureSentryError(error, 'adminApplication/getApplicationDetail');
+		captureSentryError(error, 'adminApplication/createChannelApp');
 		return thunkAPI.rejectWithValue(error);
 	}
 });

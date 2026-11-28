@@ -50,7 +50,9 @@
 	"state": {
 		"loadingData": "Daten werden geladen...",
 		"noDataFound": "Keine Daten gefunden",
-		"noDataDescription": "Keine Nutzungsdaten für den ausgewählten Zeitraum vorhanden."
+		"noDataDescription": "Keine Nutzungsdaten für den ausgewählten Zeitraum vorhanden.",
+		"loadFailed": "Daten konnten nicht geladen werden",
+		"loadFailedDescription": "Beim Laden dieses Berichts ist ein Fehler aufgetreten. Bitte versuche es erneut."
 	},
 	"reportControls": {
 		"timePeriod": "Zeitraum",

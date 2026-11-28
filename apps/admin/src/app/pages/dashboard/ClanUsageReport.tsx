@@ -35,19 +35,19 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 	const [isExportingCSV, setIsExportingCSV] = useState(false);
 	const [sortBy, setSortBy] = useState<string | undefined>(undefined);
 	const [sort, setSort] = useState<'asc' | 'desc'>('asc');
+	const [chartFailed, setChartFailed] = useState(false);
 
 	const tableRef = useRef<HTMLDivElement>(null);
 	const shouldScrollToTable = useRef(false);
 
-	const { page, setPage, limit, total, totalPages } = usePagination(
-		dateRange,
-		customStartDate,
-		customEndDate,
-		periodFilter,
-		refreshTrigger,
-		sortBy,
-		sort
-	);
+	const {
+		page,
+		setPage,
+		limit,
+		total,
+		totalPages,
+		failed: tableFailed
+	} = usePagination(dateRange, customStartDate, customEndDate, periodFilter, refreshTrigger, sortBy, sort);
 
 	const dispatch = useAppDispatch();
 	const chartData = useAppSelector(selectDashboardChartData);
@@ -57,6 +57,7 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 	const tableLoadingStore = useAppSelector(selectDashboardTableLoading);
 
 	const isLoading = showFullPageLoading && (chartLoadingStore || tableLoadingStore);
+	const loadFailed = chartFailed || tableFailed;
 	const showTableSkeleton = useTableSkeleton(tableLoadingStore);
 
 	const toggleColumn = (col: string) => {
@@ -75,7 +76,9 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 	// Fetch chart data when dependencies change
 	useEffect(() => {
 		const { startStr, endStr } = getDateRangeFromPreset(dateRange, customStartDate, customEndDate);
-		dispatch(fetchAllClansMetrics({ start: startStr, end: endStr, rangeType: periodFilter }));
+		dispatch(fetchAllClansMetrics({ start: startStr, end: endStr, rangeType: periodFilter })).then((action) =>
+			setChartFailed(fetchAllClansMetrics.rejected.match(action))
+		);
 	}, [refreshTrigger, dispatch]);
 
 	// Check for no data state
@@ -192,9 +195,10 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 			{isLoading && <LoadingState />}
 
 			{/* No Data State */}
-			{!isLoading && hasNoData && <NoDataState />}
+			{!isLoading && loadFailed && <NoDataState message={t('state.loadFailed')} description={t('state.loadFailedDescription')} />}
+			{!isLoading && !loadFailed && hasNoData && <NoDataState />}
 
-			{!showFullPageLoading && !hasNoData && (
+			{!showFullPageLoading && !hasNoData && !loadFailed && (
 				<>
 					{/* Chart Section */}
 					<ChartSection

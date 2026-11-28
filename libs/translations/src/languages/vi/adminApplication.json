@@ -190,6 +190,10 @@
 		}
 	},
 	"backToApps": "Quay lại Ứng dụng",
+	"appNotFound": {
+		"title": "Không tìm thấy ứng dụng",
+		"description": "Ứng dụng này không tồn tại hoặc bạn không có quyền truy cập."
+	},
 	"selectLabel": "CHỌN {{type}}",
 	"settings": "CÀI ĐẶT",
 	"flows": {

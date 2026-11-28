@@ -50,7 +50,9 @@
 	"state": {
 		"loadingData": "Đang tải dữ liệu...",
 		"noDataFound": "Không tìm thấy dữ liệu",
-		"noDataDescription": "Không có dữ liệu sử dụng cho khoảng thời gian đã chọn."
+		"noDataDescription": "Không có dữ liệu sử dụng cho khoảng thời gian đã chọn.",
+		"loadFailed": "Không tải được dữ liệu",
+		"loadFailedDescription": "Đã xảy ra lỗi khi tải báo cáo này. Vui lòng thử lại."
 	},
 	"reportControls": {
 		"timePeriod": "Khoảng thời gian",

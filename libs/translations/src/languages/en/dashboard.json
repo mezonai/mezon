@@ -50,7 +50,9 @@
 	"state": {
 		"loadingData": "Loading data...",
 		"noDataFound": "No data found",
-		"noDataDescription": "No usage data available for the selected period."
+		"noDataDescription": "No usage data available for the selected period.",
+		"loadFailed": "Failed to load data",
+		"loadFailedDescription": "Something went wrong while loading this report. Please try again."
 	},
 	"reportControls": {
 		"timePeriod": "Time Period",

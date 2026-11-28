@@ -50,6 +50,7 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 
 	const [refreshTrigger, setRefreshTrigger] = useState(0);
 	const [showFullPageLoading, setShowFullPageLoading] = useState(true);
+	const [loadFailed, setLoadFailed] = useState(false);
 
 	const clan = useSelector(selectClanById(clanId ?? ''));
 
@@ -77,7 +78,7 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 	);
 
 	const isLoading = showFullPageLoading && (chartLoadingStore || channelsLoadingStore || channelUsersLoadingStore);
-	const hasNoDataDerived = !chartLoadingStore && (chartData?.length || 0) === 0;
+	const hasNoDataDerived = loadFailed || (!chartLoadingStore && (chartData?.length || 0) === 0);
 
 	useEffect(() => {
 		if (showFullPageLoading && !chartLoadingStore && !channelsLoadingStore && !channelUsersLoadingStore) {
@@ -90,7 +91,9 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 		const { startStr, endStr } = getDateRangeFromPreset(dateRange, customStartDate, customEndDate);
 
 		if (clanId) {
-			dispatch(fetchClanMetrics({ clanId, start: startStr, end: endStr, rangeType: periodFilter }));
+			dispatch(fetchClanMetrics({ clanId, start: startStr, end: endStr, rangeType: periodFilter })).then((action) =>
+				setLoadFailed(fetchClanMetrics.rejected.match(action))
+			);
 			dispatch(
 				fetchClanChannels({
 					clanId,
@@ -286,7 +289,9 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 			{isLoading && <LoadingState />}
 
 			{/* No Data State */}
-			{!isLoading && hasNoDataDerived && <NoDataState />}
+			{!isLoading &&
+				hasNoDataDerived &&
+				(loadFailed ? <NoDataState message={t('state.loadFailed')} description={t('state.loadFailedDescription')} /> : <NoDataState />)}
 
 			{/* Activity Chart (tabs + reusable SingleLineChart) */}
 			{!showFullPageLoading && !hasNoDataDerived && (

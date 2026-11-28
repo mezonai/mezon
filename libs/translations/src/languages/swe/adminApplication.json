@@ -190,6 +190,10 @@
 		}
 	},
 	"backToApps": "Tillbaka till Applikationer",
+	"appNotFound": {
+		"title": "Applikationen hittades inte",
+		"description": "Den här applikationen finns inte eller så har du inte åtkomst till den."
+	},
 	"selectLabel": "VÄLJ {{type}}",
 	"settings": "INSTÄLLNINGAR",
 	"flows": {

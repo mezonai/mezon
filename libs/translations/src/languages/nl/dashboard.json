@@ -50,7 +50,9 @@
 	"state": {
 		"loadingData": "Gegevens laden...",
 		"noDataFound": "Geen gegevens gevonden",
-		"noDataDescription": "Geen gebruiksgegevens voor de geselecteerde periode."
+		"noDataDescription": "Geen gebruiksgegevens voor de geselecteerde periode.",
+		"loadFailed": "Gegevens konden niet worden geladen",
+		"loadFailedDescription": "Er is een fout opgetreden bij het laden van dit rapport. Probeer het opnieuw."
 	},
 	"reportControls": {
 		"timePeriod": "Tijdsperiode",
