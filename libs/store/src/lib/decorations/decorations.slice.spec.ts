@@ -586,4 +586,33 @@ describe('decorations.slice', () => {
 		expect(selectUserDecorationFrame(store.getState(), 'u-reset')).toBe(15);
 		nowSpy.mockRestore();
 	});
+
+	it('asks by id for Pro members missing from a clan that was fetched recently', async () => {
+		type Member = { id: string; user: { id: string; pro_plan?: boolean } };
+		const initialMembers: Record<string, Member> = { a: { id: 'a', user: { id: 'a', pro_plan: true } } };
+		const usersClan = (
+			state = { byClans: { c1: { entities: { entities: initialMembers } } } },
+			action: { type: string; payload?: Record<string, Member> }
+		) =>
+			action.type === 'test/addMembers'
+				? { byClans: { c1: { entities: { entities: { ...state.byClans.c1.entities.entities, ...action.payload } } } } }
+				: state;
+		const store = configureStore({ reducer: { [DECORATIONS_FEATURE_KEY]: decorationsReducer, usersClan } });
+		mockListUserDecorations.mockResolvedValueOnce({ decorations: [{ user_id: 'a', frame: 4 }] });
+		await store.dispatch(fetchClanUserDecorations('c1') as never);
+		expect(mockListUserDecorations).toHaveBeenLastCalledWith({ token: 't' }, [], 'c1');
+
+		store.dispatch({
+			type: 'test/addMembers',
+			payload: { u: { id: 'u', user: { id: 'u', pro_plan: true } }, n: { id: 'n', user: { id: 'n', pro_plan: false } } }
+		});
+		mockListUserDecorations.mockResolvedValueOnce({ decorations: [{ user_id: 'u', frame: 7 }] });
+		await store.dispatch(fetchClanUserDecorations('c1') as never);
+		await new Promise((r) => setTimeout(r, 0));
+
+		expect(mockListUserDecorations).toHaveBeenCalledTimes(2);
+		expect(mockListUserDecorations).toHaveBeenLastCalledWith({ token: 't' }, ['u']);
+		expect(selectUserDecorationFrame(store.getState(), 'u')).toBe(7);
+		expect(selectUserDecorationFrame(store.getState(), 'n')).toBeUndefined();
+	});
 });
