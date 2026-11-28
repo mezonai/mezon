@@ -84,6 +84,7 @@ import {
 	selectFriendById,
 	selectIsInCall,
 	selectIsLiveActive,
+	selectIsProUser,
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
 	selectLastMessageByChannelId,
@@ -1483,6 +1484,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						clanId: userJoinClan.clan_id
 					} as any)
 				);
+				const joinedUserId = userJoinClan.user.user_id;
+				const joinedUserIsPro = Boolean(
+					(userJoinClan.user as { pro_plan?: boolean }).pro_plan || selectIsProUser(store.getState() as unknown as RootState, joinedUserId)
+				);
+				if (joinedUserId && joinedUserIsPro) {
+					dispatch(decorationsActions.fetchUserDecorations([joinedUserId]));
+				}
 			}
 		},
 		[userId]
@@ -2961,7 +2969,12 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		dispatch(toastActions.removeToast('SOCKET_RECONNECTING_ERROR'));
 		dispatch(toastActions.removeToast('SOCKET_CONNECTION_ERROR'));
 		dispatch(decorationsActions.markAllStale());
-		const shownDecorationIds = collectShownDecorationUserIds(getStore().getState() as unknown as RootState);
+		const rootState = getStore().getState() as unknown as RootState;
+		const currentClanId = rootState.clans?.currentClanId;
+		if (currentClanId && currentClanId !== '0') {
+			dispatch(decorationsActions.fetchClanUserDecorations(currentClanId));
+		}
+		const shownDecorationIds = collectShownDecorationUserIds(rootState);
 		if (shownDecorationIds.length > 0) {
 			dispatch(decorationsActions.fetchUserDecorations(shownDecorationIds));
 		}

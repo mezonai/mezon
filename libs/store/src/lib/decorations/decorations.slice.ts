@@ -8,6 +8,7 @@ import type { RootState } from '../store';
 export const DECORATIONS_FEATURE_KEY = 'decorations';
 export const DECORATIONS_CHUNK_SIZE = 500;
 export const DECORATIONS_RETRY_PAUSE_MS = 10_000;
+export const DECORATIONS_CLAN_FRESHNESS_MS = 5 * 60 * 1000;
 
 export interface DecorationsState {
 	frames: Record<string, number>;
@@ -29,10 +30,24 @@ const inFlightIds = new Map<string, number>();
 let fetchSeq = 0;
 let staleEpoch = 0;
 const failedUntilById = new Map<string, number>();
+const inFlightClans = new Map<string, number>();
+const clanFetchedAt = new Map<string, number>();
+const failedUntilByClan = new Map<string, number>();
+let mutationSeq = 0;
+const userMutationSeq = new Map<string, number>();
+
+const recordUserMutation = (userId: string) => {
+	mutationSeq += 1;
+	userMutationSeq.set(userId, mutationSeq);
+};
 
 const resetTracking = () => {
 	inFlightIds.clear();
 	failedUntilById.clear();
+	inFlightClans.clear();
+	clanFetchedAt.clear();
+	failedUntilByClan.clear();
+	userMutationSeq.clear();
 };
 
 const mapHttpOrEnvelopeCode = (code: number): DecorationSaveErrorReason | undefined => {
@@ -74,96 +89,198 @@ export const classifyDecorationSaveError = (error: unknown): DecorationSaveError
 export const getDecorationsState = (rootState: DecorationsRootState): DecorationsState =>
 	rootState[DECORATIONS_FEATURE_KEY] ?? initialDecorationsState;
 
-export const fetchUserDecorations = createAsyncThunk<{ frames: Record<string, number>; generation: number }, string[]>(
-	'decorations/fetchUserDecorations',
-	async (rawIds, thunkAPI) => {
-		const decoState = getDecorationsState(thunkAPI.getState() as DecorationsRootState);
-		const startGeneration = decoState.generation;
-		const startEpoch = staleEpoch;
-		const fetchToken = ++fetchSeq;
-		const now = Date.now();
-		const seen = new Set<string>();
-		const idsToFetch: string[] = [];
+export const fetchUserDecorations = createAsyncThunk<
+	{ frames: Record<string, number>; generation: number; startEpoch: number; startMutationSeq: number },
+	string[]
+>('decorations/fetchUserDecorations', async (rawIds, thunkAPI) => {
+	const decoState = getDecorationsState(thunkAPI.getState() as DecorationsRootState);
+	const startGeneration = decoState.generation;
+	const startEpoch = staleEpoch;
+	const startMutationSeq = mutationSeq;
+	const fetchToken = ++fetchSeq;
+	const now = Date.now();
+	const seen = new Set<string>();
+	const idsToFetch: string[] = [];
 
-		for (const id of rawIds) {
-			if (!id || id === '0' || seen.has(id)) {
-				continue;
-			}
-			seen.add(id);
-			if (Object.prototype.hasOwnProperty.call(decoState.frames, id) && !decoState.stale[id]) {
-				continue;
-			}
-			if (inFlightIds.has(id)) {
-				continue;
-			}
-			if ((failedUntilById.get(id) ?? 0) > now) {
-				continue;
-			}
-			idsToFetch.push(id);
+	for (const id of rawIds) {
+		if (!id || id === '0' || seen.has(id)) {
+			continue;
 		}
-
-		if (idsToFetch.length === 0) {
-			return { frames: {}, generation: startGeneration };
+		seen.add(id);
+		if (Object.prototype.hasOwnProperty.call(decoState.frames, id) && !decoState.stale[id]) {
+			continue;
 		}
-
-		for (const id of idsToFetch) {
-			inFlightIds.set(id, fetchToken);
+		if (inFlightIds.has(id)) {
+			continue;
 		}
-
-		const fetchedFrames: Record<string, number> = {};
-
-		try {
-			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-
-			for (let offset = 0; offset < idsToFetch.length; offset += DECORATIONS_CHUNK_SIZE) {
-				if (getDecorationsState(thunkAPI.getState() as DecorationsRootState).generation !== startGeneration || staleEpoch !== startEpoch) {
-					break;
-				}
-				const chunk = idsToFetch.slice(offset, offset + DECORATIONS_CHUNK_SIZE);
-				try {
-					const response = await mezon.client.listUserDecorations(mezon.session, chunk);
-					for (const id of chunk) {
-						fetchedFrames[id] = 0;
-						failedUntilById.delete(id);
-					}
-					for (const item of response?.decorations ?? []) {
-						if (item?.user_id) {
-							fetchedFrames[item.user_id] = typeof item.frame === 'number' ? item.frame : 0;
-						}
-					}
-				} catch {
-					if (
-						getDecorationsState(thunkAPI.getState() as DecorationsRootState).generation === startGeneration &&
-						staleEpoch === startEpoch
-					) {
-						const retryAt = Date.now() + DECORATIONS_RETRY_PAUSE_MS;
-						for (const id of chunk) {
-							failedUntilById.set(id, retryAt);
-						}
-					}
-				}
-			}
-		} catch {
-			if (getDecorationsState(thunkAPI.getState() as DecorationsRootState).generation === startGeneration && staleEpoch === startEpoch) {
-				const retryAt = Date.now() + DECORATIONS_RETRY_PAUSE_MS;
-				for (const id of idsToFetch) {
-					failedUntilById.set(id, retryAt);
-				}
-			}
-		} finally {
-			for (const id of idsToFetch) {
-				if (inFlightIds.get(id) === fetchToken) {
-					inFlightIds.delete(id);
-				}
-			}
+		if ((failedUntilById.get(id) ?? 0) > now) {
+			continue;
 		}
-
-		if (staleEpoch !== startEpoch) {
-			return { frames: {}, generation: startGeneration };
-		}
-		return { frames: fetchedFrames, generation: startGeneration };
+		idsToFetch.push(id);
 	}
-);
+
+	if (idsToFetch.length === 0) {
+		return { frames: {}, generation: startGeneration, startEpoch, startMutationSeq };
+	}
+
+	for (const id of idsToFetch) {
+		inFlightIds.set(id, fetchToken);
+	}
+
+	const fetchedFrames: Record<string, number> = {};
+
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+
+		for (let offset = 0; offset < idsToFetch.length; offset += DECORATIONS_CHUNK_SIZE) {
+			if (getDecorationsState(thunkAPI.getState() as DecorationsRootState).generation !== startGeneration || staleEpoch !== startEpoch) {
+				break;
+			}
+			const chunk = idsToFetch.slice(offset, offset + DECORATIONS_CHUNK_SIZE);
+			try {
+				const response = await mezon.client.listUserDecorations(mezon.session, chunk);
+				for (const id of chunk) {
+					fetchedFrames[id] = 0;
+					failedUntilById.delete(id);
+				}
+				for (const item of response?.decorations ?? []) {
+					if (item?.user_id) {
+						fetchedFrames[item.user_id] = typeof item.frame === 'number' ? item.frame : 0;
+					}
+				}
+			} catch {
+				if (getDecorationsState(thunkAPI.getState() as DecorationsRootState).generation === startGeneration && staleEpoch === startEpoch) {
+					const retryAt = Date.now() + DECORATIONS_RETRY_PAUSE_MS;
+					for (const id of chunk) {
+						failedUntilById.set(id, retryAt);
+					}
+				}
+			}
+		}
+	} catch {
+		if (getDecorationsState(thunkAPI.getState() as DecorationsRootState).generation === startGeneration && staleEpoch === startEpoch) {
+			const retryAt = Date.now() + DECORATIONS_RETRY_PAUSE_MS;
+			for (const id of idsToFetch) {
+				failedUntilById.set(id, retryAt);
+			}
+		}
+	} finally {
+		for (const id of idsToFetch) {
+			if (inFlightIds.get(id) === fetchToken) {
+				inFlightIds.delete(id);
+			}
+		}
+	}
+
+	if (staleEpoch !== startEpoch) {
+		return { frames: {}, generation: startGeneration, startEpoch, startMutationSeq };
+	}
+	return { frames: fetchedFrames, generation: startGeneration, startEpoch, startMutationSeq };
+});
+
+export const fetchClanUserDecorations = createAsyncThunk<
+	{
+		clanId: string;
+		frames: Record<string, number>;
+		absentZeroIds: string[];
+		generation: number;
+		startEpoch: number;
+		startMutationSeq: number;
+	},
+	string
+>('decorations/fetchClanUserDecorations', async (clanId, thunkAPI) => {
+	const decoState = getDecorationsState(thunkAPI.getState() as DecorationsRootState);
+	const startGeneration = decoState.generation;
+	const startEpoch = staleEpoch;
+	const startMutationSeq = mutationSeq;
+	const emptyResult = { clanId, frames: {}, absentZeroIds: [], generation: startGeneration, startEpoch, startMutationSeq };
+
+	if (!clanId || clanId === '0') {
+		return emptyResult;
+	}
+
+	const now = Date.now();
+	const lastFetchedAt = clanFetchedAt.get(clanId);
+	if (lastFetchedAt !== undefined && now >= lastFetchedAt && now - lastFetchedAt < DECORATIONS_CLAN_FRESHNESS_MS) {
+		return emptyResult;
+	}
+	if (inFlightClans.has(clanId)) {
+		return emptyResult;
+	}
+	if ((failedUntilByClan.get(clanId) ?? 0) > now) {
+		return emptyResult;
+	}
+
+	const fetchToken = ++fetchSeq;
+	inFlightClans.set(clanId, fetchToken);
+
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		if (getDecorationsState(thunkAPI.getState() as DecorationsRootState).generation !== startGeneration || staleEpoch !== startEpoch) {
+			return emptyResult;
+		}
+		const response = await mezon.client.listUserDecorations(mezon.session, [], clanId);
+		const rootState = thunkAPI.getState() as RootState;
+		const currentDecoState = getDecorationsState(rootState as DecorationsRootState);
+		if (currentDecoState.generation !== startGeneration || staleEpoch !== startEpoch) {
+			return emptyResult;
+		}
+
+		clanFetchedAt.set(clanId, Date.now());
+		failedUntilByClan.delete(clanId);
+
+		const returnedFrames: Record<string, number> = {};
+		for (const item of response?.decorations ?? []) {
+			if (item?.user_id && item.user_id !== '0') {
+				returnedFrames[item.user_id] = typeof item.frame === 'number' ? item.frame : 0;
+			}
+		}
+
+		const absentZeroIds: string[] = [];
+		const accountProfile = rootState.account?.userProfile as
+			| { pro_plan?: boolean; user?: { id?: string; pro_plan?: boolean } }
+			| null
+			| undefined;
+		const ownUserId = accountProfile?.user?.id;
+		const ownIsPro = Boolean(accountProfile?.pro_plan || accountProfile?.user?.pro_plan);
+		const clanEntities = rootState.usersClan?.byClans?.[clanId]?.entities?.entities;
+		if (clanEntities) {
+			for (const member of Object.values(clanEntities)) {
+				const memberUser = member?.user as { id?: string; pro_plan?: boolean } | undefined;
+				const memberId = memberUser?.id || member?.id;
+				if (!memberId || memberId === '0') {
+					continue;
+				}
+				if (Object.prototype.hasOwnProperty.call(returnedFrames, memberId)) {
+					continue;
+				}
+				const isPro = memberId === ownUserId && accountProfile ? ownIsPro : Boolean(memberUser?.pro_plan);
+				const hasExistingEntry = Object.prototype.hasOwnProperty.call(currentDecoState.frames, memberId);
+				if (isPro || hasExistingEntry) {
+					absentZeroIds.push(memberId);
+				}
+			}
+		}
+
+		return {
+			clanId,
+			frames: returnedFrames,
+			absentZeroIds,
+			generation: startGeneration,
+			startEpoch,
+			startMutationSeq
+		};
+	} catch {
+		if (getDecorationsState(thunkAPI.getState() as DecorationsRootState).generation === startGeneration && staleEpoch === startEpoch) {
+			failedUntilByClan.set(clanId, Date.now() + DECORATIONS_RETRY_PAUSE_MS);
+		}
+		return emptyResult;
+	} finally {
+		if (inFlightClans.get(clanId) === fetchToken) {
+			inFlightClans.delete(clanId);
+		}
+	}
+});
 
 export const updateUserDecoration = createAsyncThunk<{ userId: string; frame: number; generation: number }, number, ThunkConfigWithError>(
 	'decorations/updateUserDecoration',
@@ -207,6 +324,7 @@ export const decorationsSlice = createSlice({
 			if (!userId || typeof frame !== 'number') {
 				return;
 			}
+			recordUserMutation(userId);
 			if (state.frames[userId] === frame && !state.stale[userId]) {
 				return;
 			}
@@ -217,6 +335,9 @@ export const decorationsSlice = createSlice({
 		markAllStale(state) {
 			failedUntilById.clear();
 			inFlightIds.clear();
+			failedUntilByClan.clear();
+			inFlightClans.clear();
+			clanFetchedAt.clear();
 			staleEpoch += 1;
 			const nextStale: Record<string, true> = {};
 			for (const userId of Object.keys(state.frames)) {
@@ -234,14 +355,44 @@ export const decorationsSlice = createSlice({
 	extraReducers: (builder) => {
 		builder
 			.addCase(fetchUserDecorations.fulfilled, (state, action) => {
-				if (action.payload.generation !== state.generation) {
+				if (action.payload.generation !== state.generation || action.payload.startEpoch !== staleEpoch) {
 					return;
 				}
-				for (const [userId, frame] of Object.entries(action.payload.frames)) {
+				const { frames, startMutationSeq } = action.payload;
+				for (const [userId, frame] of Object.entries(frames)) {
+					if ((userMutationSeq.get(userId) ?? 0) > startMutationSeq) {
+						continue;
+					}
 					if (state.frames[userId] !== frame) {
 						state.frames[userId] = frame;
 					}
 					delete state.stale[userId];
+				}
+			})
+			.addCase(fetchClanUserDecorations.fulfilled, (state, action) => {
+				if (action.payload.generation !== state.generation || action.payload.startEpoch !== staleEpoch) {
+					return;
+				}
+				const { frames, absentZeroIds, startMutationSeq } = action.payload;
+				for (const [userId, frame] of Object.entries(frames)) {
+					if ((userMutationSeq.get(userId) ?? 0) > startMutationSeq) {
+						continue;
+					}
+					if (state.frames[userId] !== frame) {
+						state.frames[userId] = frame;
+					}
+					delete state.stale[userId];
+					failedUntilById.delete(userId);
+				}
+				for (const userId of absentZeroIds) {
+					if ((userMutationSeq.get(userId) ?? 0) > startMutationSeq) {
+						continue;
+					}
+					if (state.frames[userId] !== 0) {
+						state.frames[userId] = 0;
+					}
+					delete state.stale[userId];
+					failedUntilById.delete(userId);
 				}
 			})
 			.addCase(updateUserDecoration.fulfilled, (state, action) => {
@@ -252,6 +403,7 @@ export const decorationsSlice = createSlice({
 				if (!userId) {
 					return;
 				}
+				recordUserMutation(userId);
 				if (state.frames[userId] !== frame) {
 					state.frames[userId] = frame;
 				}
@@ -278,6 +430,7 @@ export const decorationsReducer = decorationsSlice.reducer;
 export const decorationsActions = {
 	...decorationsSlice.actions,
 	fetchUserDecorations,
+	fetchClanUserDecorations,
 	updateUserDecoration
 };
 
@@ -292,22 +445,6 @@ export const collectShownDecorationUserIds = (state: RootState): string[] => {
 		ids.add(ownUserId);
 	}
 
-	const currentClanId = state.clans?.currentClanId;
-	if (currentClanId && currentClanId !== '0') {
-		const clanEntities = state.usersClan?.byClans?.[currentClanId]?.entities?.entities;
-		if (clanEntities) {
-			for (const member of Object.values(clanEntities)) {
-				const memberUser = member?.user as { id?: string; pro_plan?: boolean } | undefined;
-				if (memberUser?.pro_plan) {
-					const memberId = memberUser.id || member?.id;
-					if (memberId) {
-						ids.add(memberId);
-					}
-				}
-			}
-		}
-	}
-
 	const currentDmId = state.direct?.currentDirectMessageId;
 	if (currentDmId) {
 		const groupUserIds = state.allUsersByAddChannel?.entities?.[currentDmId]?.user_ids;
@@ -320,6 +457,23 @@ export const collectShownDecorationUserIds = (state: RootState): string[] => {
 		if (dmUserIds) {
 			for (const id of dmUserIds) {
 				if (id) ids.add(id);
+			}
+		}
+	}
+
+	const currentClanId = state.clans?.currentClanId;
+	if (currentClanId && currentClanId !== '0') {
+		const clanEntities = state.usersClan?.byClans?.[currentClanId]?.entities?.entities;
+		if (clanEntities) {
+			for (const [entityKey, member] of Object.entries(clanEntities)) {
+				const memberUser = member?.user as { id?: string } | undefined;
+				const memberId = memberUser?.id || member?.id || entityKey;
+				if (memberId) {
+					ids.delete(memberId);
+				}
+				if (entityKey) {
+					ids.delete(entityKey);
+				}
 			}
 		}
 	}

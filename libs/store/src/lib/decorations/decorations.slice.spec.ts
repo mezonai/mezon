@@ -3,12 +3,14 @@ import { configureStore } from '@reduxjs/toolkit';
 import { ensureSession } from '../helpers';
 import {
 	DECORATIONS_CHUNK_SIZE,
+	DECORATIONS_CLAN_FRESHNESS_MS,
 	DECORATIONS_FEATURE_KEY,
 	DECORATIONS_RETRY_PAUSE_MS,
 	classifyDecorationSaveError,
 	collectShownDecorationUserIds,
 	decorationsActions,
 	decorationsReducer,
+	fetchClanUserDecorations,
 	fetchUserDecorations,
 	selectUserDecorationFrame,
 	updateUserDecoration
@@ -26,11 +28,32 @@ const createStore = (preloadedDecorations?: ReturnType<typeof decorationsReducer
 		...(preloadedDecorations ? { preloadedState: { [DECORATIONS_FEATURE_KEY]: preloadedDecorations } } : {})
 	});
 
+const createClanStore = (options?: {
+	decorations?: ReturnType<typeof decorationsReducer>;
+	usersClan?: unknown;
+	account?: unknown;
+	clans?: unknown;
+	direct?: unknown;
+	allUsersByAddChannel?: unknown;
+}) =>
+	configureStore({
+		reducer: {
+			[DECORATIONS_FEATURE_KEY]: decorationsReducer,
+			usersClan: (state = options?.usersClan ?? { byClans: {} }) => state,
+			account: (state = options?.account ?? {}) => state,
+			clans: (state = options?.clans ?? {}) => state,
+			direct: (state = options?.direct ?? {}) => state,
+			allUsersByAddChannel: (state = options?.allUsersByAddChannel ?? {}) => state
+		},
+		...(options?.decorations ? { preloadedState: { [DECORATIONS_FEATURE_KEY]: options.decorations } } : {})
+	});
+
 describe('decorations.slice', () => {
 	const mockListUserDecorations = jest.fn();
 	const mockUpdateUserDecoration = jest.fn();
 
 	beforeEach(() => {
+		decorationsReducer(undefined, decorationsActions.reset());
 		mockListUserDecorations.mockReset();
 		mockUpdateUserDecoration.mockReset();
 		jest.mocked(ensureSession).mockResolvedValue({
@@ -211,8 +234,8 @@ describe('decorations.slice', () => {
 		expect(classifyDecorationSaveError(new Error('network'))).toBe('failed');
 	});
 
-	it('collects shown decoration user ids from own Pro account, current clan Pro members, and active DM/group', () => {
-		const ids = collectShownDecorationUserIds({
+	it('collects shown decoration user ids from own Pro account and active DM/group while excluding current clan members', () => {
+		const baseState = {
 			account: { userProfile: { pro_plan: true, user: { id: 'me' } } },
 			clans: { currentClanId: 'clan-1' },
 			usersClan: {
@@ -238,9 +261,34 @@ describe('decorations.slice', () => {
 					'dm-1': { user_ids: ['grp-1', 'p1'] }
 				}
 			}
-		} as never);
+		};
 
-		expect(ids).toEqual(['me', 'p1', 'grp-1', 'dm-peer-1']);
+		expect(collectShownDecorationUserIds(baseState as never)).toEqual(['me', 'grp-1', 'dm-peer-1']);
+
+		expect(
+			collectShownDecorationUserIds({
+				...baseState,
+				usersClan: {
+					byClans: {
+						'clan-1': {
+							entities: {
+								entities: {
+									...baseState.usersClan.byClans['clan-1'].entities.entities,
+									me: { id: 'me', user: { id: 'me', pro_plan: true } }
+								}
+							}
+						}
+					}
+				}
+			} as never)
+		).toEqual(['grp-1', 'dm-peer-1']);
+
+		expect(
+			collectShownDecorationUserIds({
+				...baseState,
+				clans: { currentClanId: '0' }
+			} as never)
+		).toEqual(['me', 'grp-1', 'p1', 'dm-peer-1']);
 	});
 
 	it('reconnect frees in-flight ids for a refetch and drops the older in-flight answer', async () => {
@@ -279,5 +327,263 @@ describe('decorations.slice', () => {
 		expect(classifyDecorationSaveError(action.payload)).toBe('unsupported');
 		expect(selectUserDecorationFrame(store.getState(), 'self-1')).toBe(3);
 		expect(selectUserDecorationFrame(store.getState(), '0')).toBeUndefined();
+	});
+
+	it('fetches clan decorations in clan mode and skips fresh clans until the freshness window expires', async () => {
+		const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(1_000_000);
+		const store = createClanStore({
+			usersClan: {
+				byClans: {
+					'clan-1': {
+						entities: {
+							entities: {
+								'u-pro': { id: 'u-pro', user: { id: 'u-pro', pro_plan: true } }
+							}
+						}
+					}
+				}
+			}
+		});
+
+		mockListUserDecorations.mockResolvedValueOnce({ decorations: [{ user_id: 'u-pro', frame: 7 }] });
+		await store.dispatch(fetchClanUserDecorations('clan-1'));
+
+		expect(mockListUserDecorations).toHaveBeenCalledTimes(1);
+		expect(mockListUserDecorations).toHaveBeenCalledWith({ token: 't' }, [], 'clan-1');
+		expect(selectUserDecorationFrame(store.getState(), 'u-pro')).toBe(7);
+
+		nowSpy.mockReturnValue(1_000_000 + DECORATIONS_CLAN_FRESHNESS_MS - 1);
+		await store.dispatch(fetchClanUserDecorations('clan-1'));
+		expect(mockListUserDecorations).toHaveBeenCalledTimes(1);
+
+		nowSpy.mockReturnValue(1_000_000 + DECORATIONS_CLAN_FRESHNESS_MS);
+		mockListUserDecorations.mockResolvedValueOnce({ decorations: [{ user_id: 'u-pro', frame: 11 }] });
+		await store.dispatch(fetchClanUserDecorations('clan-1'));
+		expect(mockListUserDecorations).toHaveBeenCalledTimes(2);
+		expect(selectUserDecorationFrame(store.getState(), 'u-pro')).toBe(11);
+	});
+
+	it('leaves absent non-Pro members unfetched while zeroing absent Pro and existing entries', async () => {
+		const store = createClanStore({
+			decorations: {
+				frames: { 'u-existing-free': 5, 'u-pro-absent': 9 },
+				stale: { 'u-existing-free': true, 'u-pro-absent': true },
+				generation: 0
+			},
+			usersClan: {
+				byClans: {
+					'clan-1': {
+						entities: {
+							entities: {
+								'u-pro-returned': { id: 'u-pro-returned', user: { id: 'u-pro-returned', pro_plan: true } },
+								'u-pro-absent': { id: 'u-pro-absent', user: { id: 'u-pro-absent', pro_plan: true } },
+								'u-free-absent': { id: 'u-free-absent', user: { id: 'u-free-absent', pro_plan: false } },
+								'u-existing-free': { id: 'u-existing-free', user: { id: 'u-existing-free', pro_plan: false } },
+								'u-free-returned': { id: 'u-free-returned', user: { id: 'u-free-returned', pro_plan: false } }
+							}
+						}
+					}
+				}
+			}
+		});
+
+		mockListUserDecorations.mockResolvedValueOnce({
+			decorations: [
+				{ user_id: 'u-pro-returned', frame: -1 },
+				{ user_id: 'u-free-returned', frame: 4 }
+			]
+		});
+		await store.dispatch(fetchClanUserDecorations('clan-1'));
+
+		expect(selectUserDecorationFrame(store.getState(), 'u-pro-returned')).toBe(-1);
+		expect(selectUserDecorationFrame(store.getState(), 'u-free-returned')).toBe(4);
+		expect(selectUserDecorationFrame(store.getState(), 'u-pro-absent')).toBe(0);
+		expect(selectUserDecorationFrame(store.getState(), 'u-existing-free')).toBe(0);
+		expect(selectUserDecorationFrame(store.getState(), 'u-free-absent')).toBeUndefined();
+		expect(store.getState()[DECORATIONS_FEATURE_KEY].stale['u-pro-absent']).toBeUndefined();
+		expect(store.getState()[DECORATIONS_FEATURE_KEY].stale['u-existing-free']).toBeUndefined();
+	});
+
+	it('keeps in-flight receiveDecorationUpdated and updateUserDecoration values over an older clan response', async () => {
+		const store = createClanStore({
+			usersClan: {
+				byClans: {
+					'clan-1': {
+						entities: {
+							entities: {
+								'u-rt': { id: 'u-rt', user: { id: 'u-rt', pro_plan: true } },
+								'u-own': { id: 'u-own', user: { id: 'u-own', pro_plan: true } },
+								'u-other': { id: 'u-other', user: { id: 'u-other', pro_plan: true } }
+							}
+						}
+					}
+				}
+			}
+		});
+
+		let resolveClan!: (value: unknown) => void;
+		mockListUserDecorations.mockImplementationOnce(
+			() =>
+				new Promise((resolve) => {
+					resolveClan = resolve;
+				})
+		);
+
+		const clanFetchPromise = store.dispatch(fetchClanUserDecorations('clan-1'));
+		for (let i = 0; i < 5; i += 1) {
+			await Promise.resolve();
+		}
+
+		store.dispatch(decorationsActions.receiveDecorationUpdated({ userId: 'u-rt', frame: 14 }));
+		mockUpdateUserDecoration.mockResolvedValueOnce({ user_id: 'u-own', frame: 9 });
+		await store.dispatch(updateUserDecoration(9));
+
+		resolveClan({
+			decorations: [
+				{ user_id: 'u-rt', frame: 2 },
+				{ user_id: 'u-other', frame: 8 }
+			]
+		});
+		await clanFetchPromise;
+
+		expect(selectUserDecorationFrame(store.getState(), 'u-rt')).toBe(14);
+		expect(selectUserDecorationFrame(store.getState(), 'u-own')).toBe(9);
+		expect(selectUserDecorationFrame(store.getState(), 'u-other')).toBe(8);
+	});
+
+	it('deduplicates in-flight clan fetches and applies retry pause per clan', async () => {
+		const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(2_000_000);
+		const store = createClanStore();
+
+		let rejectClan1!: (err: unknown) => void;
+		mockListUserDecorations
+			.mockImplementationOnce(
+				() =>
+					new Promise((_resolve, reject) => {
+						rejectClan1 = reject;
+					})
+			)
+			.mockResolvedValueOnce({ decorations: [{ user_id: 'u-c2', frame: 6 }] });
+
+		const clan1Promise = store.dispatch(fetchClanUserDecorations('clan-1'));
+		await Promise.resolve();
+		await store.dispatch(fetchClanUserDecorations('clan-1'));
+		expect(mockListUserDecorations).toHaveBeenCalledTimes(1);
+
+		await store.dispatch(fetchClanUserDecorations('clan-2'));
+		expect(mockListUserDecorations).toHaveBeenCalledTimes(2);
+		expect(mockListUserDecorations).toHaveBeenNthCalledWith(2, { token: 't' }, [], 'clan-2');
+		expect(selectUserDecorationFrame(store.getState(), 'u-c2')).toBe(6);
+
+		rejectClan1({ code: 0, error: { code: 500, message: 'err' } });
+		await clan1Promise;
+
+		await store.dispatch(fetchClanUserDecorations('clan-1'));
+		expect(mockListUserDecorations).toHaveBeenCalledTimes(2);
+
+		nowSpy.mockReturnValue(2_000_000 + DECORATIONS_RETRY_PAUSE_MS + 1);
+		mockListUserDecorations.mockResolvedValueOnce({ decorations: [{ user_id: 'u-c1', frame: 3 }] });
+		await store.dispatch(fetchClanUserDecorations('clan-1'));
+		expect(mockListUserDecorations).toHaveBeenCalledTimes(3);
+		expect(selectUserDecorationFrame(store.getState(), 'u-c1')).toBe(3);
+	});
+
+	it('refetches current clan on reconnect without duplicating current clan ids and drops pre-reconnect clan answers', async () => {
+		const store = createClanStore({
+			account: { userProfile: { pro_plan: true, user: { id: 'me' } } },
+			clans: { currentClanId: 'clan-1' },
+			usersClan: {
+				byClans: {
+					'clan-1': {
+						entities: {
+							entities: {
+								me: { id: 'me', user: { id: 'me', pro_plan: true } },
+								'u-clan-pro': { id: 'u-clan-pro', user: { id: 'u-clan-pro', pro_plan: true } }
+							}
+						}
+					}
+				}
+			},
+			direct: {
+				currentDirectMessageId: 'dm-1',
+				entities: {
+					'dm-1': { user_ids: ['u-dm'] }
+				}
+			}
+		});
+
+		let resolvePreReconnect!: (value: unknown) => void;
+		mockListUserDecorations.mockImplementationOnce(
+			() =>
+				new Promise((resolve) => {
+					resolvePreReconnect = resolve;
+				})
+		);
+
+		const preReconnectPromise = store.dispatch(fetchClanUserDecorations('clan-1'));
+		for (let i = 0; i < 5; i += 1) {
+			await Promise.resolve();
+		}
+
+		store.dispatch(decorationsActions.markAllStale());
+		mockListUserDecorations
+			.mockResolvedValueOnce({ decorations: [{ user_id: 'u-clan-pro', frame: 10 }] })
+			.mockResolvedValueOnce({ decorations: [{ user_id: 'u-dm', frame: 12 }] });
+
+		await store.dispatch(fetchClanUserDecorations('clan-1'));
+		const shownIds = collectShownDecorationUserIds(store.getState() as never);
+		expect(shownIds).toEqual(['u-dm']);
+		await store.dispatch(fetchUserDecorations(shownIds));
+
+		expect(mockListUserDecorations).toHaveBeenCalledTimes(3);
+		expect(mockListUserDecorations).toHaveBeenNthCalledWith(2, { token: 't' }, [], 'clan-1');
+		expect(mockListUserDecorations).toHaveBeenNthCalledWith(3, { token: 't' }, ['u-dm']);
+		expect(selectUserDecorationFrame(store.getState(), 'u-clan-pro')).toBe(10);
+		expect(selectUserDecorationFrame(store.getState(), 'u-dm')).toBe(12);
+
+		resolvePreReconnect({ decorations: [{ user_id: 'u-clan-pro', frame: 2 }] });
+		await preReconnectPromise;
+		expect(selectUserDecorationFrame(store.getState(), 'u-clan-pro')).toBe(10);
+	});
+
+	it('clears clan freshness and retry pause on logout and ignores pre-logout clan answers', async () => {
+		const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(3_000_000);
+		const store = createClanStore();
+
+		let resolvePending!: (value: unknown) => void;
+		mockListUserDecorations.mockImplementationOnce(
+			() =>
+				new Promise((resolve) => {
+					resolvePending = resolve;
+				})
+		);
+
+		const pendingPromise = store.dispatch(fetchClanUserDecorations('clan-1'));
+		await Promise.resolve();
+
+		store.dispatch({ type: 'auth/setLogout' });
+		resolvePending({ decorations: [{ user_id: 'u-stale', frame: 4 }] });
+		await pendingPromise;
+		expect(selectUserDecorationFrame(store.getState(), 'u-stale')).toBeUndefined();
+
+		mockListUserDecorations.mockResolvedValueOnce({ decorations: [{ user_id: 'u-fresh', frame: 9 }] });
+		await store.dispatch(fetchClanUserDecorations('clan-1'));
+		expect(mockListUserDecorations).toHaveBeenCalledTimes(2);
+		expect(selectUserDecorationFrame(store.getState(), 'u-fresh')).toBe(9);
+
+		store.dispatch({ type: 'auth/resetSession' });
+		mockListUserDecorations.mockRejectedValueOnce({ code: 0, error: { code: 500 } });
+		await store.dispatch(fetchClanUserDecorations('clan-2'));
+		expect(mockListUserDecorations).toHaveBeenCalledTimes(3);
+
+		await store.dispatch(fetchClanUserDecorations('clan-2'));
+		expect(mockListUserDecorations).toHaveBeenCalledTimes(3);
+
+		store.dispatch(decorationsActions.reset());
+		mockListUserDecorations.mockResolvedValueOnce({ decorations: [{ user_id: 'u-reset', frame: 15 }] });
+		await store.dispatch(fetchClanUserDecorations('clan-2'));
+		expect(mockListUserDecorations).toHaveBeenCalledTimes(4);
+		expect(selectUserDecorationFrame(store.getState(), 'u-reset')).toBe(15);
+		nowSpy.mockRestore();
 	});
 });

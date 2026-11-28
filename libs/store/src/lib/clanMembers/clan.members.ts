@@ -8,7 +8,7 @@ import { batch } from 'react-redux';
 import { ACCOUNT_FEATURE_KEY, selectAllAccount, selectCurrentUserId, type AccountState } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
-import { fetchUserDecorations } from '../decorations/decorations.slice';
+import { fetchClanUserDecorations } from '../decorations/decorations.slice';
 import { convertStatusClan, selectStatusEntities, statusActions } from '../direct/status.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
@@ -37,20 +37,6 @@ export const buildPeerClanProfileUpdate = (event: {
 	...(event.display_name ? { display_name: event.display_name } : {}),
 	...(event.about_me ? { about_me: event.about_me } : {})
 });
-
-const collectProClanMemberIds = (users?: UsersClanEntity[]): string[] => {
-	if (!users?.length) return [];
-	const proIds: string[] = [];
-	for (const member of users) {
-		if (readProPlan(member.user)) {
-			const memberId = member.user?.id || member.id;
-			if (memberId) {
-				proIds.push(memberId);
-			}
-		}
-	}
-	return proIds;
-};
 
 export const CLAN_USERS_LIST_LIMIT = 1000;
 
@@ -137,9 +123,8 @@ export const fetchUsersClan = createAsyncThunk('UsersClan/fetchUsersClan', async
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await fetchUsersClanCached(thunkAPI.getState as () => RootState, mezon, clanId, noCache);
-		const proUserIds = collectProClanMemberIds(response?.users);
-		if (proUserIds.length > 0) {
-			thunkAPI.dispatch(fetchUserDecorations(proUserIds));
+		if (clanId && clanId !== '0') {
+			thunkAPI.dispatch(fetchClanUserDecorations(clanId));
 		}
 		return { users: response?.users, fromCache: response.fromCache, clanId };
 	} catch (error) {
@@ -270,9 +255,8 @@ export const fetchClanMembersWithStatus = createAsyncThunk(
 					thunkAPI.dispatch(statusActions.updateBulkStatus(statusData));
 				}
 			});
-			const proUserIds = collectProClanMemberIds(membersResponse?.users);
-			if (proUserIds.length > 0) {
-				thunkAPI.dispatch(fetchUserDecorations(proUserIds));
+			if (membersResponse && clanId && clanId !== '0') {
+				thunkAPI.dispatch(fetchClanUserDecorations(clanId));
 			}
 		} catch (error) {
 			captureSentryError(error, 'UsersClan/fetchClanMembersWithStatus');
