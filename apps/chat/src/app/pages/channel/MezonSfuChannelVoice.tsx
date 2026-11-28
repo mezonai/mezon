@@ -10,6 +10,7 @@ import {
 } from '@mezon/components';
 import { EmojiSuggestionProvider } from '@mezon/core';
 import {
+	VOICE_JOIN_WAITING_TIMEOUT_MS,
 	appActions,
 	channelAppActions,
 	generateMeetToken,
@@ -475,7 +476,8 @@ const MezonSfuChannelVoiceInner = () => {
 						channelLabel: (currentChannelLabel as string) || '',
 						channelPrivate: (currentChannelPrivate as number) ?? 0,
 						joinRole: role,
-						url: result.url || ''
+						url: result.url || '',
+						startedAt: Date.now()
 					})
 				);
 				setRejoinTarget(null);
@@ -557,6 +559,23 @@ const MezonSfuChannelVoiceInner = () => {
 
 		isDisconnectingRef.current = false;
 	});
+
+	useEffect(() => {
+		if (!voiceJoinWaiting) return;
+		const startedAt = voiceJoinWaiting.startedAt ?? Date.now();
+		const remainingMs = Math.max(0, VOICE_JOIN_WAITING_TIMEOUT_MS - (Date.now() - startedAt));
+		const timer = window.setTimeout(() => {
+			dispatch(voiceActions.clearVoiceJoinWaiting());
+			dispatch(
+				toastActions.addToast({
+					message: t('voiceWaiting.timedOutToast', 'Your request to join the voice channel timed out. Please try again.'),
+					type: 'info',
+					autoClose: 4000
+				})
+			);
+		}, remainingMs);
+		return () => window.clearTimeout(timer);
+	}, [dispatch, t, voiceJoinWaiting]);
 
 	useEffect(() => {
 		if (!voiceJoinRejected) return;

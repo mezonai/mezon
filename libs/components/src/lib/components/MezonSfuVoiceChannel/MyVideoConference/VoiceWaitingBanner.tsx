@@ -1,6 +1,14 @@
-import { selectVoiceWaitingUsersByChannelId, toastActions, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store';
+import {
+	VOICE_JOIN_WAITING_TIMEOUT_MS,
+	isVoiceJoinNotFoundError,
+	selectVoiceWaitingUsersByChannelId,
+	toastActions,
+	useAppDispatch,
+	useAppSelector,
+	voiceActions
+} from '@mezon/store';
 import { createImgproxyUrl } from '@mezon/utils';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
 
@@ -15,6 +23,27 @@ export const VoiceWaitingBanner = ({ channelId, enabled }: VoiceWaitingBannerPro
 	const waitingUsers = useAppSelector((state) => selectVoiceWaitingUsersByChannelId(state, channelId));
 	const [busyUserId, setBusyUserId] = useState<string | null>(null);
 
+	useEffect(() => {
+		if (!enabled || waitingUsers.length === 0) return;
+		const now = Date.now();
+		let earliestDelay = Number.POSITIVE_INFINITY;
+		for (const user of waitingUsers) {
+			if (!user.receivedAt) continue;
+			const remaining = user.receivedAt + VOICE_JOIN_WAITING_TIMEOUT_MS - now;
+			if (remaining < earliestDelay) {
+				earliestDelay = remaining;
+			}
+		}
+		if (!Number.isFinite(earliestDelay)) return;
+		const timer = window.setTimeout(
+			() => {
+				dispatch(voiceActions.pruneExpiredVoiceWaitingUsers({ channelId, now: Date.now() }));
+			},
+			Math.max(0, earliestDelay)
+		);
+		return () => window.clearTimeout(timer);
+	}, [channelId, dispatch, enabled, waitingUsers]);
+
 	if (!enabled || waitingUsers.length === 0) {
 		return null;
 	}
@@ -25,6 +54,16 @@ export const VoiceWaitingBanner = ({ channelId, enabled }: VoiceWaitingBannerPro
 		try {
 			await dispatch(voiceActions.reviewVoiceJoin({ channelId, userId, approve })).unwrap();
 		} catch (error) {
+			if (isVoiceJoinNotFoundError(error)) {
+				dispatch(
+					toastActions.addToast({
+						message: t('voiceWaiting.requestExpired', 'This join request has expired or was already handled.'),
+						type: 'info',
+						autoClose: 3000
+					})
+				);
+				return;
+			}
 			console.error('Failed to review voice join request:', error);
 			dispatch(
 				toastActions.addToast({

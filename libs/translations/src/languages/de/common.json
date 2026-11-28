@@ -571,6 +571,8 @@
 		"admit": "Admit",
 		"decline": "Decline",
 		"declinedToast": "Your request to join the voice channel was declined.",
-		"reviewError": "Failed to review voice join request."
+		"reviewError": "Failed to review voice join request.",
+		"timedOutToast": "Your request to join the voice channel timed out. Please try again.",
+		"requestExpired": "This join request has expired or was already handled."
 	}
 }

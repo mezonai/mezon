@@ -113,12 +113,32 @@ export interface VoiceRecordingState {
 	error: string | null;
 }
 
+export const VOICE_JOIN_WAITING_TIMEOUT_MS = 600_000;
+
+export const isVoiceJoinNotFoundError = (error: unknown): boolean => {
+	if (!error || typeof error !== 'object') return false;
+	const err = error as {
+		code?: number;
+		status?: number;
+		error?: { code?: number; status?: number };
+	};
+	return (
+		err.code === 404 ||
+		err.code === API_NOT_FOUND ||
+		err.status === 404 ||
+		err.error?.code === 404 ||
+		err.error?.code === API_NOT_FOUND ||
+		err.error?.status === 404
+	);
+};
+
 export interface VoiceWaitingUser {
 	user_id: string;
 	username?: string;
 	display_name?: string;
 	avatar?: string;
 	create_time_seconds?: string;
+	receivedAt?: number;
 }
 
 export interface VoiceJoinWaitingState {
@@ -129,6 +149,7 @@ export interface VoiceJoinWaitingState {
 	channelPrivate: number;
 	joinRole: 'speaker' | 'audience';
 	url?: string;
+	startedAt?: number;
 }
 
 export interface VoiceState {
@@ -702,7 +723,9 @@ export const reviewVoiceJoin = createAsyncThunk(
 			});
 			return { channelId, userId, approved: res?.approved ?? approve };
 		} catch (error) {
-			captureSentryError(error, 'voice/reviewVoiceJoin');
+			if (!isVoiceJoinNotFoundError(error)) {
+				captureSentryError(error, 'voice/reviewVoiceJoin');
+			}
 			return thunkAPI.rejectWithValue(error);
 		}
 	}
@@ -807,6 +830,7 @@ export const voiceSlice = createSlice({
 		},
 		voiceEnded: (state, action: PayloadAction<{ channelId: string; clanId: string }>) => {
 			const { channelId, clanId } = action.payload;
+			delete state.waitingUsersByChannel[channelId];
 			state.presenceRevisionByClan[clanId] = (state.presenceRevisionByClan[clanId] ?? 0) + 1;
 			for (const [userId, status] of Object.entries(state.listInVoiceStatus)) {
 				if (status.clanId === clanId && status.channelId === channelId) delete state.listInVoiceStatus[userId];
@@ -838,6 +862,9 @@ export const voiceSlice = createSlice({
 		},
 		setVoiceInfo: (state, action: PayloadAction<IvoiceInfo>) => {
 			if (state.voiceInfo?.channelId !== action.payload.channelId) {
+				if (state.voiceInfo?.channelId) {
+					delete state.waitingUsersByChannel[state.voiceInfo.channelId];
+				}
 				if (state.breakoutRoom && state.breakoutRoom.roomId !== action.payload.channelId) {
 					state.breakoutRoom = null;
 					state.breakoutParents = [];
@@ -921,6 +948,7 @@ export const voiceSlice = createSlice({
 			state.stream = null;
 			state.openPopOut = false;
 			state.recordingUserIds = [];
+			state.waitingUsersByChannel = {};
 			if (action.payload?.keepBreakout) {
 				return;
 			}
@@ -931,7 +959,12 @@ export const voiceSlice = createSlice({
 			state.voiceJoinWaiting = null;
 		},
 		setVoiceJoinWaiting: (state, action: PayloadAction<VoiceJoinWaitingState | null>) => {
-			state.voiceJoinWaiting = action.payload;
+			state.voiceJoinWaiting = action.payload
+				? {
+						...action.payload,
+						startedAt: action.payload.startedAt ?? Date.now()
+					}
+				: null;
 			state.voiceJoinRejected = false;
 		},
 		clearVoiceJoinWaiting: (state) => {
@@ -940,18 +973,39 @@ export const voiceSlice = createSlice({
 		clearVoiceJoinRejected: (state) => {
 			state.voiceJoinRejected = false;
 		},
+		pruneExpiredVoiceWaitingUsers: (state, action: PayloadAction<{ channelId: string; now?: number }>) => {
+			const { channelId, now = Date.now() } = action.payload;
+			const existing = state.waitingUsersByChannel[channelId];
+			if (!existing?.length) return;
+			const remaining = existing.filter((u) => !u.receivedAt || now - u.receivedAt < VOICE_JOIN_WAITING_TIMEOUT_MS);
+			if (remaining.length === 0) {
+				delete state.waitingUsersByChannel[channelId];
+			} else if (remaining.length !== existing.length) {
+				state.waitingUsersByChannel[channelId] = remaining;
+			}
+		},
 		receiveVoiceJoinWaitingEvent: (state, action: PayloadAction<VoiceJoinWaitingEvent>) => {
 			const evt = action.payload;
 			const channelId = evt.channel_id ? String(evt.channel_id) : '';
 			const userId = evt.user_id ? String(evt.user_id) : '';
 			if (!channelId || !userId) return;
 			const existing = state.waitingUsersByChannel[channelId] ?? [];
+			if (evt.action === 1) {
+				const remaining = existing.filter((u) => String(u.user_id) !== userId);
+				if (remaining.length === 0) {
+					delete state.waitingUsersByChannel[channelId];
+				} else {
+					state.waitingUsersByChannel[channelId] = remaining;
+				}
+				return;
+			}
 			const nextUser: VoiceWaitingUser = {
 				user_id: userId,
 				username: evt.username ?? '',
 				display_name: evt.display_name ?? '',
 				avatar: evt.avatar ?? '',
-				create_time_seconds: evt.create_time_seconds ?? ''
+				create_time_seconds: evt.create_time_seconds ?? '',
+				receivedAt: Date.now()
 			};
 			state.waitingUsersByChannel[channelId] = [...existing.filter((u) => String(u.user_id) !== userId), nextUser];
 		},
@@ -960,7 +1014,12 @@ export const voiceSlice = createSlice({
 			const channelId = event.channel_id ? String(event.channel_id) : '';
 			const userId = event.user_id ? String(event.user_id) : '';
 			if (channelId && userId && state.waitingUsersByChannel[channelId]) {
-				state.waitingUsersByChannel[channelId] = state.waitingUsersByChannel[channelId].filter((u) => String(u.user_id) !== userId);
+				const remaining = state.waitingUsersByChannel[channelId].filter((u) => String(u.user_id) !== userId);
+				if (remaining.length === 0) {
+					delete state.waitingUsersByChannel[channelId];
+				} else {
+					state.waitingUsersByChannel[channelId] = remaining;
+				}
 			}
 			if (selfUserId && userId === String(selfUserId) && state.voiceJoinWaiting?.channelId === channelId) {
 				const waitingTarget = state.voiceJoinWaiting;
@@ -1079,6 +1138,9 @@ export const voiceSlice = createSlice({
 				state.sfuUrl = sfuUrl;
 			}
 			if (state.voiceInfo) {
+				if (state.voiceInfo.channelId && state.voiceInfo.channelId !== channelId) {
+					delete state.waitingUsersByChannel[state.voiceInfo.channelId];
+				}
 				state.voiceInfo = {
 					...state.voiceInfo,
 					channelId,
@@ -1123,6 +1185,7 @@ export const voiceSlice = createSlice({
 		},
 		removeInVoiceInChannel: (state, action: PayloadAction<string>) => {
 			const channelId = action.payload;
+			delete state.waitingUsersByChannel[channelId];
 			for (const [clanId, rooms] of Object.entries(state.listVoiceMemberByClan)) {
 				if (!rooms[channelId]) continue;
 				state.presenceRevisionByClan[clanId] = (state.presenceRevisionByClan[clanId] ?? 0) + 1;
@@ -1296,12 +1359,30 @@ export const voiceSlice = createSlice({
 			.addCase(autoCloseHostedBreakout.rejected, (state: VoiceState, action) => {
 				state.closingBreakoutIds = state.closingBreakoutIds.filter((id) => id !== action.meta.arg.breakoutId);
 			});
-		builder.addCase(reviewVoiceJoin.fulfilled, (state: VoiceState, action) => {
-			const { channelId, userId } = action.payload;
-			if (state.waitingUsersByChannel[channelId]) {
-				state.waitingUsersByChannel[channelId] = state.waitingUsersByChannel[channelId].filter((u) => String(u.user_id) !== String(userId));
-			}
-		});
+		builder
+			.addCase(reviewVoiceJoin.fulfilled, (state: VoiceState, action) => {
+				const { channelId, userId } = action.payload;
+				if (state.waitingUsersByChannel[channelId]) {
+					const remaining = state.waitingUsersByChannel[channelId].filter((u) => String(u.user_id) !== String(userId));
+					if (remaining.length === 0) {
+						delete state.waitingUsersByChannel[channelId];
+					} else {
+						state.waitingUsersByChannel[channelId] = remaining;
+					}
+				}
+			})
+			.addCase(reviewVoiceJoin.rejected, (state: VoiceState, action) => {
+				if (!isVoiceJoinNotFoundError(action.payload)) return;
+				const { channelId, userId } = action.meta.arg;
+				if (state.waitingUsersByChannel[channelId]) {
+					const remaining = state.waitingUsersByChannel[channelId].filter((u) => String(u.user_id) !== String(userId));
+					if (remaining.length === 0) {
+						delete state.waitingUsersByChannel[channelId];
+					} else {
+						state.waitingUsersByChannel[channelId] = remaining;
+					}
+				}
+			});
 	}
 });
 

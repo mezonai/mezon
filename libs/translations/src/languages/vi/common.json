@@ -571,6 +571,8 @@
 		"admit": "Chấp nhận",
 		"decline": "Từ chối",
 		"declinedToast": "Yêu cầu tham gia kênh thoại của bạn đã bị từ chối.",
-		"reviewError": "Không thể xử lý yêu cầu tham gia kênh thoại."
+		"reviewError": "Không thể xử lý yêu cầu tham gia kênh thoại.",
+		"timedOutToast": "Yêu cầu tham gia kênh thoại của bạn đã hết thời gian chờ. Vui lòng thử lại.",
+		"requestExpired": "Yêu cầu tham gia này đã hết hạn hoặc đã được xử lý."
 	}
 }
