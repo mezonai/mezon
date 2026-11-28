@@ -356,7 +356,7 @@ function MessageWithUser({
 						/>
 					)}
 					<div
-						className={`pl-[72px] justify-start inline-flex flex-wrap w-full mb-1 relative h-fit overflow-visible ${isSearchMessage ? '' : 'pr-12'}`}
+						className={`pl-[72px] justify-start inline-flex flex-wrap w-full mb-1 relative h-fit overflow-visible ${isSearchMessage ? 'pr-4 [&>*]:min-w-0' : 'pr-12'}`}
 						data-e2e={generateE2eId('base_profile.anonymous')}
 					>
 						{showMessageHead && (
@@ -592,7 +592,7 @@ const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({
 			className={classNames(
 				'message-list-item relative message-container bg-item-hover transition-colors duration-150',
 				{
-					'w-full': isSearchMessage
+					'w-full min-w-0': isSearchMessage
 				},
 				className
 			)}

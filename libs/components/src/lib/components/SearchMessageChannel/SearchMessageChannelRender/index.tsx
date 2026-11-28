@@ -14,7 +14,7 @@ import {
 } from '@mezon/store';
 import { Pagination } from '@mezon/ui';
 import type { IMessageWithUser, UsersClanEntity } from '@mezon/utils';
-import { SIZE_PAGE_SEARCH, isRealClanId } from '@mezon/utils';
+import { SIZE_PAGE_SEARCH, TypeMessage, isRealClanId, withoutPresignMarkers } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -186,8 +186,13 @@ const SearchedItem = ({ searchMessage, searchChannel, user, isDm }: ISearchedIte
 		!isDm && isRealClanId(clanId) ? selectMemberByIdAndClanId(state, clanId, searchMessage.sender_id || '') : null
 	);
 
+	const content = searchMessage.content ? withoutPresignMarkers(searchMessage.content) : searchMessage.content;
+	const isPoll = !!content && ('poll_id' in content || 'question' in content || 'answer_counts' in content);
+
 	const convertedMessage = {
 		...searchMessage,
+		content,
+		code: isPoll ? TypeMessage.Poll : undefined,
 		clan_avatar: sender?.clan_avatar,
 		clan_nick: sender?.clan_nick,
 		user: {
