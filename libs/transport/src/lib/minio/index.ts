@@ -321,9 +321,43 @@ export function createUploadFilePath(filename: string, index?: number): { filePa
 	return { filePath, originalFilename };
 }
 
-export async function uploadFileToPath(uploadPath: string, file: Blob, size: number) {
+function putBlobWithProgress(url: string, body: Blob, onProgress: (fraction: number) => void): Promise<Response> {
+	return new Promise<Response>((resolve, reject) => {
+		const xhr = new XMLHttpRequest();
+		let lastPercent = -1;
+		xhr.open('PUT', url);
+		xhr.upload.onprogress = (event) => {
+			if (!event.lengthComputable || event.total <= 0) {
+				return;
+			}
+			const fraction = Math.min(1, Math.max(0, event.loaded / event.total));
+			const percent = Math.floor(fraction * 100);
+			if (percent !== lastPercent) {
+				lastPercent = percent;
+				onProgress(fraction);
+			}
+		};
+		xhr.onload = () => {
+			if (xhr.status < 200 || xhr.status > 599) {
+				reject(new Error(`Upload failed with status ${xhr.status}`));
+				return;
+			}
+			if (xhr.status < 300 && lastPercent < 100) {
+				lastPercent = 100;
+				onProgress(1);
+			}
+			resolve(new Response(null, { status: xhr.status }));
+		};
+		xhr.onerror = () => reject(new Error('Upload network error'));
+		xhr.onabort = () => reject(new Error('Upload aborted'));
+		xhr.ontimeout = () => reject(new Error('Upload timed out'));
+		xhr.send(minioPresignedPutBody(body));
+	});
+}
+
+export async function uploadFileToPath(uploadPath: string, file: Blob, size: number, onProgress?: (fraction: number) => void) {
 	try {
-		const res = await uploadImageToMinIO(uploadPath, file, size);
+		const res = onProgress ? await putBlobWithProgress(uploadPath, file, onProgress) : await uploadImageToMinIO(uploadPath, file, size);
 		// fetch only rejects on a network-level failure — an expired presign (403)
 		// or a bucket 5xx resolves like a success. The caller publishes the object
 		// key on the strength of this return value, so a non-2xx has to read as a

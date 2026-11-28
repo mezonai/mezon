@@ -314,7 +314,7 @@ describe('uploadToFileIngest', () => {
 		await run(uploadToFileIngest(file, PRESIGNED, INGEST));
 
 		expect(log).toHaveLength(1);
-		expect(uploadFileToPath).toHaveBeenCalledWith(PRESIGNED, file, file.size);
+		expect(uploadFileToPath).toHaveBeenCalledWith(PRESIGNED, file, file.size, undefined);
 	});
 
 	it('fails when the direct PUT after a full ingest fails too', async () => {
@@ -328,7 +328,36 @@ describe('uploadToFileIngest', () => {
 		jest.mocked(uploadFileToPath).mockResolvedValue(new Response(null, { status: 200 }));
 		serve(answer(403));
 		await run(uploadToFileIngest(file, PRESIGNED, INGEST));
-		expect(uploadFileToPath).toHaveBeenCalledWith(PRESIGNED, file, file.size);
+		expect(uploadFileToPath).toHaveBeenCalledWith(PRESIGNED, file, file.size, undefined);
+	});
+
+	it("reports the direct PUT's progress after a 403", async () => {
+		const file = flat(MiB);
+		const progress: number[] = [];
+		jest.mocked(uploadFileToPath).mockImplementation(async (_url, _file, _size, onProgress) => {
+			onProgress?.(0.25);
+			onProgress?.(1);
+			return new Response(null, { status: 200 });
+		});
+		serve(answer(403));
+
+		await run(uploadToFileIngest(file, PRESIGNED, INGEST, (fraction) => progress.push(fraction)));
+
+		expect(progress).toEqual([0.25, 1]);
+	});
+
+	it('counts up from 0 again after the ingest refuses a file it already holds', async () => {
+		const size = MiB;
+		const progress: number[] = [];
+		jest.mocked(uploadFileToPath).mockImplementation(async (_url, _file, _size, onProgress) => {
+			onProgress?.(0.5);
+			return new Response(null, { status: 200 });
+		});
+		serve(status(size, [[0, size - 1]]), answer(404), answer(403));
+
+		await run(uploadToFileIngest(flat(size), PRESIGNED, INGEST, (fraction) => progress.push(fraction)));
+
+		expect(progress).toEqual([1, 0, 0.5]);
 	});
 
 	it('reports a 409 as a failure', async () => {

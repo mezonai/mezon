@@ -150,7 +150,7 @@ export async function uploadToFileIngest(
 			continue;
 		}
 		if (chunk && (response?.status === 403 || (!status && (response?.status === 503 || response?.status === 413)))) {
-			if (!(await uploadFileToPath(presignedUrl, file, size))) throw new Error('The direct upload failed');
+			if (!(await uploadFileToPath(presignedUrl, file, size, onProgress))) throw new Error('The direct upload failed');
 			return;
 		}
 		if (!chunk && response?.status === 404) {
