@@ -1,6 +1,5 @@
-import type { ClansEntity } from '@mezon/store';
+import type { ClanUpdateDescRequest, ClansEntity } from '@mezon/store';
 import { clansActions, selectAllClans, selectCurrentClanId, useAppDispatch, userClanProfileActions } from '@mezon/store';
-import type { MezonUpdateClanDescBody } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -58,7 +57,7 @@ export function useClans() {
 	);
 
 	const updateClan = React.useCallback(
-		async ({ clan_id, request }: { clan_id: string; request: MezonUpdateClanDescBody }) => {
+		async ({ clan_id, request }: { clan_id: string; request: ClanUpdateDescRequest }) => {
 			await dispatch(
 				clansActions.updateClan({
 					clan_id,

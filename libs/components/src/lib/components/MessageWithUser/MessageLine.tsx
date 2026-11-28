@@ -148,6 +148,7 @@ const InvitePreviewCard = ({ element, url, quickReaction }: InvitePreviewCardPro
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 	const [joining, setJoining] = useState(false);
+	const [joinPending, setJoinPending] = useState(false);
 	const [error, setError] = useState('');
 	const inviteId = url.slice(-19);
 	const joinedClan = useSelector(selectClanById(element?.clanId || ''));
@@ -165,10 +166,15 @@ const InvitePreviewCard = ({ element, url, quickReaction }: InvitePreviewCardPro
 			navigate(`/chat/clans/${element?.clanId}/member-safety`);
 			return;
 		}
+		if (joinPending) return;
 		try {
 			setJoining(true);
 			setError('');
 			const res = await dispatch(inviteActions.inviteUser({ inviteId })).unwrap();
+			if (res?.join_pending) {
+				setJoinPending(true);
+				return;
+			}
 			if (res?.clan_id) {
 				dispatch(clansActions.fetchClans({ noCache: true }));
 				navigate(`/chat/clans/${res.clan_id}/member-safety`);
@@ -243,13 +249,16 @@ const InvitePreviewCard = ({ element, url, quickReaction }: InvitePreviewCardPro
 						</span>
 					</div>
 					{error ? <p className="mt-2 text-xs text-red-300">{error}</p> : null}
+					{joinPending && !isJoined ? <p className="mt-2 text-xs text-indigo-400">{t('requestSentDesc')}</p> : null}
 					<button
-						className="mt-4 w-full h-10 rounded-lg bg-[#0a9f59] text-white font-semibold text-base hover:bg-[#0b8a4f] disabled:opacity-60"
+						className={`mt-4 w-full h-10 rounded-lg text-white font-semibold text-base disabled:opacity-60 ${
+							joinPending && !isJoined ? 'bg-indigo-600 cursor-not-allowed' : 'bg-[#0a9f59] hover:bg-[#0b8a4f]'
+						}`}
 						onClick={handleJoinOrGoTo}
-						disabled={joining}
+						disabled={joining || (joinPending && !isJoined)}
 						data-e2e={generateE2eId('invite_card.button.goto_clan')}
 					>
-						{joining ? t('joining') : isJoined ? t('goToClan') : t('join')}
+						{joining ? t('joining') : isJoined ? t('goToClan') : joinPending ? t('requestSent') : t('join')}
 					</button>
 				</div>
 			</div>

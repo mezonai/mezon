@@ -372,7 +372,10 @@
 		"clanSettings": "Cài đặt Clan",
 		"customizeAnytime": "Bạn có thể tùy chỉnh những cài đặt này bất cứ lúc nào",
 		"joining": "Đang tham gia...",
-		"acceptInvite": "Chấp nhận lời mời"
+		"acceptInvite": "Chấp nhận lời mời",
+		"requestSentTitle": "Đã gửi yêu cầu tham gia",
+		"requestSentDesc": "Yêu cầu tham gia clan của bạn đang chờ chủ sở hữu clan phê duyệt.",
+		"backToMezon": "Quay lại Mezon"
 	},
 	"guide": {
 		"clan": "clan",

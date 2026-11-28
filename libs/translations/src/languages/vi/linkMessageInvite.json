@@ -15,5 +15,7 @@
 	"invalidInvite": {
 		"title": "Lời mời không hợp lệ",
 		"message": "Hãy thử gửi một lời mời khác!"
-	}
+	},
+	"requestSent": "Đã gửi yêu cầu",
+	"requestSentDesc": "Yêu cầu tham gia của bạn đang chờ chủ sở hữu clan phê duyệt."
 }

@@ -491,7 +491,8 @@ export const DATA_E2E_IDENTIFIER = {
 					},
 					message_management: ''
 				},
-				prevent_anonymous: ''
+				prevent_anonymous: '',
+				join_mode: ''
 			},
 			upload: {
 				clan_logo_input: '',

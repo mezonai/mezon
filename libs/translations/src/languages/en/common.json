@@ -372,7 +372,10 @@
 		"clanSettings": "Clan Settings",
 		"customizeAnytime": "You can customize these at any time",
 		"joining": "Joining...",
-		"acceptInvite": "Accept Invite"
+		"acceptInvite": "Accept Invite",
+		"requestSentTitle": "Join request sent",
+		"requestSentDesc": "Your request to join this clan is waiting for approval from the clan owner.",
+		"backToMezon": "Back to Mezon"
 	},
 	"guide": {
 		"clan": "clan",

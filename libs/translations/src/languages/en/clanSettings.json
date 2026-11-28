@@ -18,7 +18,8 @@
 			"auditLog": "Audit Log",
 			"onboarding": "Onboarding",
 			"enableCommunity": "Enable Community",
-			"archivedChannels": "Archived Channels"
+			"archivedChannels": "Archived Channels",
+			"joinRequests": "Join Requests"
 		}
 	},
 	"clanLogo": {
@@ -103,5 +104,28 @@
 	"toast": {
 		"clanDeletedSuccess": "Clan is deleted successfully",
 		"clanCreatedSuccess": "Clan is created successfully"
+	},
+	"joinMode": {
+		"title": "Join mode",
+		"instantTitle": "Join instantly with invite",
+		"instantDesc": "Anyone with a valid invite link joins the clan immediately.",
+		"requestTitle": "Request to join, owner approves",
+		"requestDesc": "Users with an invite link submit a pending join request for the clan owner to approve.",
+		"communityNote": "Note: If this clan is a Community clan, Join mode is ignored and anyone can join immediately."
+	},
+	"joinRequests": {
+		"description": "Review pending requests from users who tried to join this clan via an invite link.",
+		"emptyState": "No pending join requests.",
+		"fetchError": "Failed to load pending join requests.",
+		"retry": "Retry",
+		"refresh": "Refresh",
+		"loadMore": "Load more",
+		"loading": "Loading...",
+		"requested": "Requested",
+		"approve": "Approve",
+		"reject": "Reject",
+		"approveSuccess": "Member approved and added to the clan.",
+		"rejectSuccess": "Join request rejected.",
+		"reviewError": "Failed to update join request."
 	}
 }

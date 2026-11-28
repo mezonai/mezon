@@ -372,7 +372,10 @@
 		"clanSettings": "Claninstellingen",
 		"customizeAnytime": "Je kunt deze instellingen op elk moment aanpassen",
 		"joining": "Aan het joinen...",
-		"acceptInvite": "Uitnodiging accepteren"
+		"acceptInvite": "Uitnodiging accepteren",
+		"requestSentTitle": "Join request sent",
+		"requestSentDesc": "Your request to join this clan is waiting for approval from the clan owner.",
+		"backToMezon": "Back to Mezon"
 	},
 	"guide": {
 		"clan": "clan",

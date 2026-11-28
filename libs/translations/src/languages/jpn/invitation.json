@@ -63,6 +63,9 @@
 		"joining": "参加中...",
 		"toast": {
 			"alreadyMember": "すでにメンバーです!"
-		}
+		},
+		"requestSentTitle": "Join request sent",
+		"requestSentDesc": "Your request to join this clan is waiting for approval from the clan owner.",
+		"close": "Close"
 	}
 }

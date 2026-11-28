@@ -9,6 +9,11 @@ import type {
 	ApiCheckDuplicateNameResponse,
 	ApiClanDesc,
 	ApiClanDescList,
+	ApiJoinPendingItem,
+	ApiListJoinPendingRequest,
+	ApiListJoinPendingResponse,
+	ApiReviewJoinPendingRequest,
+	ApiReviewJoinPendingResponse,
 	ApiUpdateAccountRequest,
 	ClanUpdatedEvent,
 	MezonUpdateClanDescBody
@@ -488,9 +493,19 @@ export const removeClanUsers = createAsyncThunk('clans/removeClanUsers', async (
 	}
 });
 
+export const CLAN_JOIN_MODE_INSTANT = 0;
+export const CLAN_JOIN_MODE_REQUEST_APPROVAL = 1;
+
+export type ClanUpdateDescRequest = MezonUpdateClanDescBody;
+export type JoinPendingItem = ApiJoinPendingItem;
+export type ListJoinPendingRequest = ApiListJoinPendingRequest;
+export type ListJoinPendingResponse = ApiListJoinPendingResponse;
+export type ReviewJoinPendingRequest = ApiReviewJoinPendingRequest;
+export type ReviewJoinPendingResponse = ApiReviewJoinPendingResponse;
+
 export const updateClan = createAsyncThunk(
 	'clans/updateClans',
-	async ({ clan_id, request }: { clan_id: string; request: MezonUpdateClanDescBody }, thunkAPI) => {
+	async ({ clan_id, request }: { clan_id: string; request: ClanUpdateDescRequest }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
@@ -502,6 +517,32 @@ export const updateClan = createAsyncThunk(
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'clans/updateClans');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
+export const listJoinPending = createAsyncThunk<ListJoinPendingResponse, ListJoinPendingRequest>(
+	'clans/listJoinPending',
+	async (request, thunkAPI) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			return await mezon.client.listJoinPending(mezon.session, request);
+		} catch (error) {
+			captureSentryError(error, 'clans/listJoinPending');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
+export const reviewJoinPending = createAsyncThunk<ReviewJoinPendingResponse, ReviewJoinPendingRequest>(
+	'clans/reviewJoinPending',
+	async (request, thunkAPI) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			return await mezon.client.reviewJoinPending(mezon.session, request);
+		} catch (error) {
+			captureSentryError(error, 'clans/reviewJoinPending');
 			return thunkAPI.rejectWithValue(error);
 		}
 	}
@@ -866,7 +907,8 @@ export const clansSlice = createSlice({
 					is_community: rawData.is_community ?? currentClanData?.is_community,
 					community_banner: rawData.community_banner ?? currentClanData?.community_banner,
 					short_url: rawData.short_url ?? currentClanData?.short_url,
-					hashtags: rawData.hashtags ?? currentClanData?.hashtags
+					hashtags: rawData.hashtags ?? currentClanData?.hashtags,
+					join_mode: dataUpdate.join_mode ?? currentClanData?.join_mode
 				}
 			});
 		},
@@ -1002,6 +1044,8 @@ export const clansActions = {
 	fetchClans,
 	createClan,
 	updateClan,
+	listJoinPending,
+	reviewJoinPending,
 	removeClanUsers,
 	changeCurrentClan,
 	updateUser,
@@ -1059,6 +1103,7 @@ export const selectCurrentClanIsOnboarding = createSelector(selectCurrentClan, (
 export const selectCurrentClanWelcomeChannelId = createSelector(selectCurrentClan, (clan) => clan?.welcome_channel_id);
 export const selectCurrentClanIsCommunity = createSelector(selectCurrentClan, (clan) => clan?.is_community);
 export const selectCurrentClanPreventAnonymous = createSelector(selectCurrentClan, (clan) => clan?.prevent_anonymous ?? false);
+export const selectCurrentClanJoinMode = createSelector(selectCurrentClan, (clan) => clan?.join_mode ?? CLAN_JOIN_MODE_INSTANT);
 
 export const selectBadgeCountAllClan = createSelector(getClansState, (state) => {
 	return selectAllBadgeClan(state.clanUnreadStates).reduce((total, count) => total + (isRealClanId(count.clan_id) ? (count.badge ?? 0) : 0), 0);

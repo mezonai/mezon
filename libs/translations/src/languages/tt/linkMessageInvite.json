@@ -15,5 +15,7 @@
 	"invalidInvite": {
 		"title": "Ярамаган чакыру",
 		"message": "Яңа чакыру җибәреп карагыз!"
-	}
+	},
+	"requestSent": "Request Sent",
+	"requestSentDesc": "Your join request is waiting for approval from the clan owner."
 }

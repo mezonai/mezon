@@ -12024,21 +12024,21 @@ metro@0.80.12:
     ws "^7.5.10"
     yargs "^17.6.2"
 
-mezon-js-protobuf@1.10.92, mezon-js-protobuf@^1.10.92:
-  version "1.10.92"
-  resolved "https://registry.yarnpkg.com/mezon-js-protobuf/-/mezon-js-protobuf-1.10.92.tgz#efbc96b5c03fe371388a6fed5b9d49248a641829"
-  integrity sha512-ubzx1y1vN7u7pgG0+WFR3KgqKUuExmQfVYtLcmgfYQolNo7f3LoLmuDOu4JFEbmrVFUTcUrh8BNFMha49TPBCw==
+mezon-js-protobuf@1.10.94, mezon-js-protobuf@^1.10.94:
+  version "1.10.94"
+  resolved "https://registry.yarnpkg.com/mezon-js-protobuf/-/mezon-js-protobuf-1.10.94.tgz#1418855b8653aa7a75ef3cd734902c3899488c5e"
+  integrity sha512-WPFDlqCxxOHI+AoTemtWnLgNTKc9a4U70vJ+8JyFTlF51hBNIuTVqLOA2AWbJU+CdP6SuYMAOUaqXmTH27Vlgg==
   dependencies:
     protobufjs "^7.2.4"
 
-mezon-js@2.16.30:
-  version "2.16.30"
-  resolved "https://registry.yarnpkg.com/mezon-js/-/mezon-js-2.16.30.tgz#14fd2af854b85313315addb843b44c6a323c2097"
-  integrity sha512-u88jB/r7MfqyHwEn84UdUq+ShVVk0BXlUG4mRpTBYHpJGlRvybclfZussTxe8ClTTNxzHFpblYzh/TmLOniCQQ==
+mezon-js@2.16.32:
+  version "2.16.32"
+  resolved "https://registry.yarnpkg.com/mezon-js/-/mezon-js-2.16.32.tgz#08881486911faa794adaca87ccc88245f5d79de8"
+  integrity sha512-fFYuaTzOLLP2wKZQ0vO79Pw/xp6hUmrFPgrWGOhU3hVc9pIGlIgqziBB6wvv/D9+enOsVtrhrxhXxF7Rixn3cA==
   dependencies:
     base64-arraybuffer "^1.0.2"
     js-base64 "^3.7.8"
-    mezon-js-protobuf "^1.10.92"
+    mezon-js-protobuf "^1.10.94"
     whatwg-fetch "^3.6.2"
 
 micromatch@^4.0.2, micromatch@^4.0.4, micromatch@^4.0.5, micromatch@^4.0.8:

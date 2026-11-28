@@ -2,7 +2,7 @@ import { useInvite } from '@mezon/core';
 import { clansActions, inviteActions, selectClanById, selectInviteById, useAppDispatch } from '@mezon/store';
 import { Modal } from '@mezon/ui';
 import { createImgproxyUrl } from '@mezon/utils';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -22,6 +22,11 @@ export default function InviteAcceptModal({ inviteId, onClose, showModal }: Invi
 	const dispatch = useAppDispatch();
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [joinPending, setJoinPending] = useState(Boolean(selectInvite?.join_pending));
+
+	useEffect(() => {
+		setJoinPending(Boolean(selectInvite?.join_pending));
+	}, [inviteId, selectInvite?.join_pending, showModal]);
 
 	const clanId = selectInvite?.clan_id || '0';
 
@@ -32,18 +37,25 @@ export default function InviteAcceptModal({ inviteId, onClose, showModal }: Invi
 		if (inviteId) {
 			setLoading(true);
 			setError(null);
+			let isPending = false;
 			try {
-				await inviteUser(inviteId).then(async (res) => {
-					if (res?.channel_id && res?.clan_id) {
-						await new Promise((resolve) => setTimeout(resolve, 1000));
-						navigate(`/chat/clans/${res?.clan_id}/member-safety`);
-						onClose();
-					}
-				});
-				dispatch(clansActions.fetchClans({ noCache: true }));
+				const res = await inviteUser(inviteId);
+				if (res?.join_pending) {
+					isPending = true;
+					setJoinPending(true);
+					return;
+				}
+				if (res?.channel_id && res?.clan_id) {
+					await new Promise((resolve) => setTimeout(resolve, 1000));
+					navigate(`/chat/clans/${res?.clan_id}/member-safety`);
+					dispatch(clansActions.fetchClans({ noCache: true }));
+					onClose();
+				}
 			} finally {
 				setLoading(false);
-				onClose();
+				if (!isPending) {
+					onClose();
+				}
 			}
 		}
 	};
@@ -102,23 +114,39 @@ export default function InviteAcceptModal({ inviteId, onClose, showModal }: Invi
 
 				{error && <div className="w-full text-center text-red-400 text-sm mb-2">{error}</div>}
 
-				<div className="flex w-full gap-3">
-					<button
-						onClick={handleClose}
-						className="text-theme-primary w-full py-[10px] text-base font-medium rounded-md border border-theme-primary hover:bg-theme-input-hover"
-					>
-						{t('acceptModal.noThanks')}
-					</button>
-					<button
-						onClick={handleJoinChannel}
-						disabled={loading}
-						className={`text-white w-full py-[10px] text-base font-medium rounded-md ${
-							loading ? 'bg-gray-500 cursor-not-allowed' : 'btn-primary btn-primary-hover'
-						}`}
-					>
-						{loading ? t('acceptModal.joining') : t('acceptModal.acceptInvite')}
-					</button>
-				</div>
+				{joinPending ? (
+					<div className="w-full flex flex-col items-center gap-3">
+						<div className="w-full rounded-md border border-indigo-500/40 bg-indigo-500/10 px-4 py-3 text-center">
+							<p className="text-sm font-semibold text-theme-primary-active">{t('acceptModal.requestSentTitle')}</p>
+							<p className="text-xs text-theme-primary mt-1">{t('acceptModal.requestSentDesc')}</p>
+						</div>
+						<button
+							type="button"
+							onClick={handleClose}
+							className="text-theme-primary w-full py-[10px] text-base font-medium rounded-md border border-theme-primary hover:bg-theme-input-hover"
+						>
+							{t('acceptModal.close')}
+						</button>
+					</div>
+				) : (
+					<div className="flex w-full gap-3">
+						<button
+							onClick={handleClose}
+							className="text-theme-primary w-full py-[10px] text-base font-medium rounded-md border border-theme-primary hover:bg-theme-input-hover"
+						>
+							{t('acceptModal.noThanks')}
+						</button>
+						<button
+							onClick={handleJoinChannel}
+							disabled={loading}
+							className={`text-white w-full py-[10px] text-base font-medium rounded-md ${
+								loading ? 'bg-gray-500 cursor-not-allowed' : 'btn-primary btn-primary-hover'
+							}`}
+						>
+							{loading ? t('acceptModal.joining') : t('acceptModal.acceptInvite')}
+						</button>
+					</div>
+				)}
 			</div>
 		</Modal>
 	);

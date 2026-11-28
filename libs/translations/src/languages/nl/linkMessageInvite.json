@@ -15,5 +15,7 @@
 	"invalidInvite": {
 		"title": "Ongeldige uitnodiging",
 		"message": "Probeer een andere uitnodiging te sturen!"
-	}
+	},
+	"requestSent": "Request Sent",
+	"requestSentDesc": "Your join request is waiting for approval from the clan owner."
 }

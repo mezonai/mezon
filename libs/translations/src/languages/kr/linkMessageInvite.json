@@ -15,5 +15,7 @@
 	"invalidInvite": {
 		"title": "유효하지 않은 초대",
 		"message": "다른 초대를 보내보세요!"
-	}
+	},
+	"requestSent": "Request Sent",
+	"requestSentDesc": "Your join request is waiting for approval from the clan owner."
 }

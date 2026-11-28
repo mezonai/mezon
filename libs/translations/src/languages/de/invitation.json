@@ -63,6 +63,9 @@
 		"joining": "Tritt bei...",
 		"toast": {
 			"alreadyMember": "Du bist bereits Mitglied!"
-		}
+		},
+		"requestSentTitle": "Join request sent",
+		"requestSentDesc": "Your request to join this clan is waiting for approval from the clan owner.",
+		"close": "Close"
 	}
 }

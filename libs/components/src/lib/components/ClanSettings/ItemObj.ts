@@ -10,6 +10,7 @@ export const ITEM_TRANSLATION_KEYS = {
 	CATEGORY_ORDER: 'categoryOrder',
 	INTEGRATIONS: 'integrations',
 	AUDIT_LOG: 'auditLog',
+	JOIN_REQUESTS: 'joinRequests',
 	ON_BOARDING: 'onboarding',
 	ON_COMUNITY: 'enableCommunity',
 	EMOJI: 'emoji',
@@ -37,6 +38,7 @@ export const ItemSetting = {
 	CATEGORY_ORDER: 'category-order',
 	ARCHIVED_CHANNELS: 'archived-channels',
 	AUDIT_LOG: 'audit-log',
+	JOIN_REQUESTS: 'join-requests',
 	ON_BOARDING: 'on-boarding',
 	ON_COMUNITY: 'on-comunity'
 };
@@ -65,6 +67,7 @@ export const getTranslatedItemName = (id: string, t: (key: string) => string): s
 		[ItemSetting.ARCHIVED_CHANNELS]: t('sidebar.items.archivedChannels'),
 		[ItemSetting.INTEGRATIONS]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.INTEGRATIONS}`),
 		[ItemSetting.AUDIT_LOG]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.AUDIT_LOG}`),
+		[ItemSetting.JOIN_REQUESTS]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.JOIN_REQUESTS}`),
 		[ItemSetting.ON_BOARDING]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.ON_BOARDING}`),
 		[ItemSetting.ON_COMUNITY]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.ON_COMUNITY}`),
 		[ItemSetting.EMOJI]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.EMOJI}`),
@@ -85,7 +88,10 @@ export const getTranslatedTitle = (title: string, t: (key: string) => string): s
 
 export const listItemSettingApp: ItemObjProps[] = [{ id: ItemSetting.INTEGRATIONS, name: 'Integrations' }];
 
-export const listItemSettingModeration: ItemObjProps[] = [{ id: ItemSetting.AUDIT_LOG, name: 'Audit Log' }];
+export const listItemSettingModeration: ItemObjProps[] = [
+	{ id: ItemSetting.AUDIT_LOG, name: 'Audit Log' },
+	{ id: ItemSetting.JOIN_REQUESTS, name: 'Join Requests' }
+];
 export const communitySettingsList: ItemObjProps[] = [
 	{ id: ItemSetting.ON_BOARDING, name: 'Onboarding' },
 	{ id: ItemSetting.ON_COMUNITY, name: 'Enable Community' }

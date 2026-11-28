@@ -372,7 +372,10 @@
 		"clanSettings": "Clan Inställningar",
 		"customizeAnytime": "Du kan anpassa dessa när som helst",
 		"joining": "Ansluter...",
-		"acceptInvite": "Acceptera inbjudan"
+		"acceptInvite": "Acceptera inbjudan",
+		"requestSentTitle": "Join request sent",
+		"requestSentDesc": "Your request to join this clan is waiting for approval from the clan owner.",
+		"backToMezon": "Back to Mezon"
 	},
 	"guide": {
 		"clan": "clan",

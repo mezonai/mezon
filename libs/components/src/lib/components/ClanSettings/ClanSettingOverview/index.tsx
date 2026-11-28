@@ -1,4 +1,5 @@
 import { useClans } from '@mezon/core';
+import type { ClanUpdateDescRequest } from '@mezon/store';
 import {
 	checkDuplicateNameApi,
 	fetchSystemMessageByClanId,
@@ -9,7 +10,7 @@ import {
 } from '@mezon/store';
 import { TypeCheck, generateE2eId } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
-import type { ApiSystemMessage, ApiSystemMessageRequest, MezonUpdateClanDescBody, MezonUpdateSystemMessageBody } from 'mezon-js';
+import type { ApiSystemMessage, ApiSystemMessageRequest, MezonUpdateSystemMessageBody } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -22,7 +23,7 @@ const ClanSettingOverview = () => {
 	const { updateClan } = useClans();
 	const currentClan = useSelector(selectCurrentClan);
 
-	const [clanRequest, setClanRequest] = useState<MezonUpdateClanDescBody>({
+	const [clanRequest, setClanRequest] = useState<ClanUpdateDescRequest>({
 		banner: currentClan?.banner ?? '',
 		clan_name: currentClan?.clan_name ?? '',
 		creator_id: currentClan?.creator_id ?? '',
@@ -89,6 +90,7 @@ const ClanSettingOverview = () => {
 				) {
 					return clanRequest[typedKey] !== currentClan[typedKey];
 				}
+				return false;
 			});
 			if (hasChanges) {
 				return true;

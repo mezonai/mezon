@@ -63,6 +63,9 @@
 		"joining": "Приєднання...",
 		"toast": {
 			"alreadyMember": "Ви вже учасник!"
-		}
+		},
+		"requestSentTitle": "Join request sent",
+		"requestSentDesc": "Your request to join this clan is waiting for approval from the clan owner.",
+		"close": "Close"
 	}
 }
