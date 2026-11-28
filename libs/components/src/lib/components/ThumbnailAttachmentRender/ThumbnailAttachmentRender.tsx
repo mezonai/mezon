@@ -67,30 +67,30 @@ export const RenderAttachmentThumbnail = ({ attachment, size, pos, isFileList, i
 			{isAudioFile && <AudioAttachment attachment={attachment} size={size} isFileList={isFileList} />}
 
 			{hasFileImage && isPresignPending && (
-				<div key="image-thumbnail-pending" className="w-[174px] aspect-square bg-bgLightSecondary dark:bg-bgSecondary" />
+				<div key="image-thumbnail-pending" className="w-[80px] aspect-square bg-bgLightSecondary dark:bg-bgSecondary" />
 			)}
 
 			{hasFileImage && !isPresignPending && (
 				<img
 					key="image-thumbnail"
-					src={createImgproxyUrl(attachment.url ?? '', { width: 174, height: 174, resizeType: 'fill' })}
+					src={createImgproxyUrl(attachment.url ?? '', { width: 80, height: 80, resizeType: 'fill' })}
 					role="presentation"
-					className="w-[174px] aspect-square object-cover"
+					className="w-[80px] aspect-square object-cover"
 					alt={attachment.url}
 				/>
 			)}
 
 			{hasFileVideo && (
-				<div className="relative w-[174px] aspect-square overflow-hidden rounded-md bg-bgLightSecondary dark:bg-bgSecondary">
+				<div className="relative w-[80px] aspect-square overflow-hidden rounded-md bg-bgLightSecondary dark:bg-bgSecondary">
 					{attachment.thumbnail && !isPresignPending && (
 						<img
 							src={
 								attachment.thumbnail.startsWith('blob:')
 									? attachment.thumbnail
-									: createImgproxyUrl(attachment.thumbnail, { width: 174, height: 174, resizeType: 'fill' })
+									: createImgproxyUrl(attachment.thumbnail, { width: 80, height: 80, resizeType: 'fill' })
 							}
 							role="presentation"
-							className="w-full h-full object-cover"
+							className="w-full h-full object-contain"
 							alt=""
 						/>
 					)}
