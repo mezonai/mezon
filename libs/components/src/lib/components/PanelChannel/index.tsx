@@ -1,11 +1,12 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import { toMembersPage, useMarkAsRead, usePermissionChecker } from '@mezon/core';
+import { toMembersPage, useAppNavigation, useMarkAsRead, usePermissionChecker, useReference } from '@mezon/core';
 import type { MuteChannelPayload } from '@mezon/store';
 import {
 	FAVORITE_CATEGORY_ID,
 	channelsActions,
 	clansActions,
 	notificationSettingActions,
+	searchMessagesActions,
 	selectAllChannelsFavorite,
 	selectCategoryById,
 	selectChannelById,
@@ -19,6 +20,7 @@ import {
 	stickerSettingActions,
 	threadsActions,
 	toastActions,
+	topicsActions,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
@@ -148,7 +150,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 	const currentUserId = useSelector(selectCurrentUserId);
 	const [hasClanOwnerPermission, hasAdminPermission, canManageClan, canManageThread, canManageChannel] = usePermissionChecker(
 		[EPermission.clanOwner, EPermission.administrator, EPermission.manageClan, EOverriddenPermission.manageThread, EPermission.manageChannel],
-		channel?.channel_id ?? ''
+		channelId
 	);
 	const isChannelCreator = !!currentUserId && channel.creator_id === currentUserId;
 	const hasArchiveChannelPermission = hasClanOwnerPermission || hasAdminPermission || canManageClan || canManageChannel || isChannelCreator;
@@ -157,6 +159,8 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 	const favoriteChannel = useSelector(selectAllChannelsFavorite);
 	const [isFavorite, setIsFavorite] = useState<boolean>(false);
 	const navigate = useNavigate();
+	const { toChannelPage } = useAppNavigation();
+	const { setOpenThreadMessageState } = useReference();
 
 	useEffect(() => {
 		if (favoriteChannel && favoriteChannel.length > 0) {
@@ -347,6 +351,19 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 		setIsShowPanelChannel(false);
 	}, []);
 
+	const handleCreateThread = () => {
+		handleClosePanel();
+		if (channel.id !== currentChannelId) {
+			navigate(toChannelPage(channel.id, channel.clan_id || currentClanId || ''));
+		}
+		dispatch(topicsActions.setIsShowCreateTopic(false));
+		dispatch(searchMessagesActions.setIsSearchMessage({ channelId: channel.id, isSearchMessage: false }));
+		dispatch(threadsActions.setNameThreadError(''));
+		dispatch(threadsActions.setMessageThreadError(''));
+		setOpenThreadMessageState(false);
+		dispatch(threadsActions.setIsShowCreateThread({ channelId: channel.id, isShowCreateThread: true }));
+	};
+
 	const menuOpenMute = useRef(false);
 	const menuOpenNoti = useRef(false);
 	const shouldKeepPanelOpen = useCallback(() => menuOpenMute.current || menuOpenNoti.current, []);
@@ -521,6 +538,12 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 						)}
 					</GroupPanels>
 
+					{channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && !isThread && canManageThread && (
+						<GroupPanels>
+							<ItemPanel children={t('menu.organizationMenu.createThread')} onClick={handleCreateThread} />
+						</GroupPanels>
+					)}
+
 					{canManageChannel && (
 						<GroupPanels>
 							<ItemPanel onClick={handleEditChannel} children={t('menu.organizationMenu.edit')} />
@@ -595,7 +618,6 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 					{hasManageThreadPermission && (
 						<GroupPanels>
 							<ItemPanel onClick={handleEditChannel} children={t('menu.manageThreadMenu.editThread')} />
-							{!isThread && <ItemPanel children={t('menu.organizationMenu.createThread')} />}
 							<ItemPanel onClick={handleDeleteChannel} children={t('menu.manageThreadMenu.deleteThread')} danger />
 						</GroupPanels>
 					)}
