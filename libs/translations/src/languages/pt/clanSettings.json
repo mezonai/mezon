@@ -19,7 +19,8 @@
 			"onboarding": "Guia",
 			"enableCommunity": "Ativar comunidade",
 			"archivedChannels": "Canais arquivados",
-			"joinRequests": "Join Requests"
+			"joinRequests": "Join Requests",
+			"voiceAccess": "Acesso de voz"
 		}
 	},
 	"clanLogo": {
@@ -127,5 +128,10 @@
 		"approveSuccess": "Member approved and added to the clan.",
 		"rejectSuccess": "Join request rejected.",
 		"reviewError": "Failed to update join request."
+	},
+	"voiceAccess": {
+		"directVoiceAccessTitle": "Acesso direto à voz",
+		"directVoiceAccessDesc": "Permite que membros do clã entrem diretamente nos canais de voz sem esperar. Quando desativado, quem entra em um canal ativo precisa aguardar um participante admiti-lo. A primeira pessoa entra imediatamente.",
+		"updateError": "Falha ao atualizar a configuração de acesso direto à voz."
 	}
 }

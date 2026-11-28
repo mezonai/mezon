@@ -64,7 +64,7 @@ export const generateMeetToken = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 			const response = await generateMeetTokenCached(mezon, channelId, roomName || '0', metadata, avoidingSfuUrl);
-			return { token: response?.token, url: normalizeSfuWsUrl(response?.url) };
+			return { token: response?.token ?? '', url: normalizeSfuWsUrl(response?.url) };
 		} catch (error) {
 			captureSentryError(error, 'meet/generateMeetToken');
 			return thunkAPI.rejectWithValue(error);

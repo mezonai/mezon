@@ -19,7 +19,8 @@
 			"onboarding": "Leitfaden",
 			"enableCommunity": "Community aktivieren",
 			"archivedChannels": "Archivierte Kanäle",
-			"joinRequests": "Join Requests"
+			"joinRequests": "Join Requests",
+			"voiceAccess": "Sprachzugang"
 		}
 	},
 	"clanLogo": {
@@ -127,5 +128,10 @@
 		"approveSuccess": "Member approved and added to the clan.",
 		"rejectSuccess": "Join request rejected.",
 		"reviewError": "Failed to update join request."
+	},
+	"voiceAccess": {
+		"directVoiceAccessTitle": "Direkter Sprachzugang",
+		"directVoiceAccessDesc": "Erlaubt Clan-Mitgliedern, Sprachkanälen direkt ohne Wartezeit beizutreten. Wenn deaktiviert, müssen Nutzer warten, bis ein Teilnehmer sie einlässt. Die erste Person tritt sofort bei.",
+		"updateError": "Einstellung für direkten Sprachzugang konnte nicht aktualisiert werden."
 	}
 }

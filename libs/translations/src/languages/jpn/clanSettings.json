@@ -19,7 +19,8 @@
 			"onboarding": "オンボーディング",
 			"enableCommunity": "コミュニティを有効化",
 			"archivedChannels": "アーカイブ済みチャンネル",
-			"joinRequests": "Join Requests"
+			"joinRequests": "Join Requests",
+			"voiceAccess": "ボイスアクセス"
 		}
 	},
 	"clanLogo": {
@@ -127,5 +128,10 @@
 		"approveSuccess": "Member approved and added to the clan.",
 		"rejectSuccess": "Join request rejected.",
 		"reviewError": "Failed to update join request."
+	},
+	"voiceAccess": {
+		"directVoiceAccessTitle": "ダイレクトボイスアクセス",
+		"directVoiceAccessDesc": "クランメンバーが待機なしで直接ボイスチャンネルに参加できるようにします。オフにすると、参加者がいるチャンネルに入る際に既存の参加者からの承認が必要になります。最初の参加者はすぐに入室できます。",
+		"updateError": "ダイレクトボイスアクセス設定の更新に失敗しました。"
 	}
 }

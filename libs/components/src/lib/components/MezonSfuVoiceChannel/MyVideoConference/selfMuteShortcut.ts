@@ -11,11 +11,7 @@ export type SelfMuteShortcutEvent = {
 export const isSelfMuteShortcut = (event: SelfMuteShortcutEvent): boolean =>
 	(event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === 'd';
 
-export const runSelfMuteShortcut = (
-	microphoneEnabled: boolean,
-	onMute: () => void,
-	onRequestMicrophonePermission: () => void
-): void => {
+export const runSelfMuteShortcut = (microphoneEnabled: boolean, onMute: () => void, onRequestMicrophonePermission: () => void): void => {
 	if (microphoneEnabled) onMute();
 	else onRequestMicrophonePermission();
 };

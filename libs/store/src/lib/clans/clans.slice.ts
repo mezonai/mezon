@@ -908,7 +908,8 @@ export const clansSlice = createSlice({
 					community_banner: rawData.community_banner ?? currentClanData?.community_banner,
 					short_url: rawData.short_url ?? currentClanData?.short_url,
 					hashtags: rawData.hashtags ?? currentClanData?.hashtags,
-					join_mode: dataUpdate.join_mode ?? currentClanData?.join_mode
+					join_mode: dataUpdate.join_mode ?? currentClanData?.join_mode,
+					direct_voice_access: dataUpdate.direct_voice_access ?? currentClanData?.direct_voice_access
 				}
 			});
 		},
@@ -1104,6 +1105,7 @@ export const selectCurrentClanWelcomeChannelId = createSelector(selectCurrentCla
 export const selectCurrentClanIsCommunity = createSelector(selectCurrentClan, (clan) => clan?.is_community);
 export const selectCurrentClanPreventAnonymous = createSelector(selectCurrentClan, (clan) => clan?.prevent_anonymous ?? false);
 export const selectCurrentClanJoinMode = createSelector(selectCurrentClan, (clan) => clan?.join_mode ?? CLAN_JOIN_MODE_INSTANT);
+export const selectCurrentClanDirectVoiceAccess = createSelector(selectCurrentClan, (clan) => clan?.direct_voice_access ?? true);
 
 export const selectBadgeCountAllClan = createSelector(getClansState, (state) => {
 	return selectAllBadgeClan(state.clanUnreadStates).reduce((total, count) => total + (isRealClanId(count.clan_id) ? (count.badge ?? 0) : 0), 0);

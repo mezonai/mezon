@@ -11,6 +11,7 @@ export const ITEM_TRANSLATION_KEYS = {
 	INTEGRATIONS: 'integrations',
 	AUDIT_LOG: 'auditLog',
 	JOIN_REQUESTS: 'joinRequests',
+	VOICE_ACCESS: 'voiceAccess',
 	ON_BOARDING: 'onboarding',
 	ON_COMUNITY: 'enableCommunity',
 	EMOJI: 'emoji',
@@ -39,6 +40,7 @@ export const ItemSetting = {
 	ARCHIVED_CHANNELS: 'archived-channels',
 	AUDIT_LOG: 'audit-log',
 	JOIN_REQUESTS: 'join-requests',
+	VOICE_ACCESS: 'voice-access',
 	ON_BOARDING: 'on-boarding',
 	ON_COMUNITY: 'on-comunity'
 };
@@ -68,6 +70,7 @@ export const getTranslatedItemName = (id: string, t: (key: string) => string): s
 		[ItemSetting.INTEGRATIONS]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.INTEGRATIONS}`),
 		[ItemSetting.AUDIT_LOG]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.AUDIT_LOG}`),
 		[ItemSetting.JOIN_REQUESTS]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.JOIN_REQUESTS}`),
+		[ItemSetting.VOICE_ACCESS]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.VOICE_ACCESS}`),
 		[ItemSetting.ON_BOARDING]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.ON_BOARDING}`),
 		[ItemSetting.ON_COMUNITY]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.ON_COMUNITY}`),
 		[ItemSetting.EMOJI]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.EMOJI}`),
@@ -90,7 +93,8 @@ export const listItemSettingApp: ItemObjProps[] = [{ id: ItemSetting.INTEGRATION
 
 export const listItemSettingModeration: ItemObjProps[] = [
 	{ id: ItemSetting.AUDIT_LOG, name: 'Audit Log' },
-	{ id: ItemSetting.JOIN_REQUESTS, name: 'Join Requests' }
+	{ id: ItemSetting.JOIN_REQUESTS, name: 'Join Requests' },
+	{ id: ItemSetting.VOICE_ACCESS, name: 'Voice Access' }
 ];
 export const communitySettingsList: ItemObjProps[] = [
 	{ id: ItemSetting.ON_BOARDING, name: 'Onboarding' },

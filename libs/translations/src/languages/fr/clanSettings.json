@@ -19,7 +19,8 @@
 			"onboarding": "Initialisation",
 			"enableCommunity": "Activer la communauté",
 			"archivedChannels": "Canaux archivés",
-			"joinRequests": "Join Requests"
+			"joinRequests": "Join Requests",
+			"voiceAccess": "Accès vocal"
 		}
 	},
 	"clanLogo": {
@@ -127,5 +128,10 @@
 		"approveSuccess": "Member approved and added to the clan.",
 		"rejectSuccess": "Join request rejected.",
 		"reviewError": "Failed to update join request."
+	},
+	"voiceAccess": {
+		"directVoiceAccessTitle": "Accès vocal direct",
+		"directVoiceAccessDesc": "Autoriser les membres du clan à rejoindre directement les salons vocaux sans attente. Lorsqu’il est désactivé, les utilisateurs doivent attendre qu’un participant les admette. La première personne entre immédiatement.",
+		"updateError": "Impossible de mettre à jour le paramètre d’accès vocal direct."
 	}
 }
