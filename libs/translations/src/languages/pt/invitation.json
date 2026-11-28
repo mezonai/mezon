@@ -53,8 +53,9 @@
 	"acceptModal": {
 		"title": "Participar do Clã",
 		"invitedToJoin": "Você foi convidado para participar",
-		"memberCount": "{{count}} Membro",
-		"memberCount_plural": "{{count}} Membros",
+		"memberCount": "{{count}} Membros",
+		"memberCount_one": "{{count}} Membro",
+		"memberCount_other": "{{count}} Membros",
 		"clanSettings": "Configurações do Clã",
 		"customizeAnytime": "Você pode personalizar isso a qualquer momento",
 		"noThanks": "Não, obrigado",

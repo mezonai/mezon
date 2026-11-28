@@ -8,14 +8,37 @@ type generateMeetTokenPayload = {
 	channelId: string;
 	roomName: string;
 	metadata?: string;
+	avoidingSfuUrl?: string;
 };
 
-const generateMeetTokenCached = async (mezon: MezonValueContext, channelId: string, roomName: string, metadata?: string) => {
-	const body: ApiGenerateMeetTokenRequest = {
+type GenerateMeetTokenBody = ApiGenerateMeetTokenRequest & { current_endpoint_id?: number };
+
+const SFU_CLUSTER_HOST_PATTERN = /^(?:test-)?sfu(\d*)(?:-test)?\.(?:mezon|nccsoft)\.vn$/;
+const MAX_SFU_CLUSTER_NUMBER = 0x7fffffff;
+
+const sfuClusterIndex = (sfuUrl: string): number | undefined => {
+	const value = sfuUrl.trim();
+	let host: string;
+	try {
+		host = new URL(value.includes('://') ? value : `wss://${value}`).hostname.toLowerCase();
+	} catch {
+		return undefined;
+	}
+	const match = SFU_CLUSTER_HOST_PATTERN.exec(host);
+	if (!match) return undefined;
+	if (!match[1]) return 0;
+	const sfuNumber = Number(match[1]);
+	return sfuNumber >= 1 && sfuNumber <= MAX_SFU_CLUSTER_NUMBER ? sfuNumber - 1 : undefined;
+};
+
+const generateMeetTokenCached = async (mezon: MezonValueContext, channelId: string, roomName: string, metadata?: string, avoidingSfuUrl?: string) => {
+	const body: GenerateMeetTokenBody = {
 		channel_id: channelId,
 		room_name: roomName,
 		metadata
 	};
+	const currentEndpointId = avoidingSfuUrl ? sfuClusterIndex(avoidingSfuUrl) : undefined;
+	if (currentEndpointId !== undefined) body.current_endpoint_id = currentEndpointId;
 	return await mezon.client.generateMeetToken(mezon.session, body);
 };
 
@@ -36,11 +59,11 @@ const normalizeSfuWsUrl = (raw?: string): string => {
 
 export const generateMeetToken = createAsyncThunk(
 	'meet/generateMeetToken',
-	async ({ channelId, roomName, metadata }: generateMeetTokenPayload, thunkAPI) => {
+	async ({ channelId, roomName, metadata, avoidingSfuUrl }: generateMeetTokenPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-			const response = await generateMeetTokenCached(mezon, channelId, roomName || '0', metadata);
+			const response = await generateMeetTokenCached(mezon, channelId, roomName || '0', metadata, avoidingSfuUrl);
 			return { token: response?.token ?? '', url: normalizeSfuWsUrl(response?.url) };
 		} catch (error) {
 			captureSentryError(error, 'meet/generateMeetToken');

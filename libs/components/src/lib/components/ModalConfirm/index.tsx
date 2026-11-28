@@ -14,6 +14,7 @@ interface ModalConfirmProps {
 	message?: string;
 	customModalName?: string;
 	customTitle?: string;
+	disableEnterKey?: boolean;
 }
 
 const ModalConfirm = ({
@@ -25,7 +26,8 @@ const ModalConfirm = ({
 	buttonColor = 'bg-red-600 hover:bg-red-700',
 	message,
 	customModalName,
-	customTitle = ''
+	customTitle = '',
+	disableEnterKey = false
 }: ModalConfirmProps) => {
 	const { t } = useTranslation('common');
 
@@ -33,6 +35,8 @@ const ModalConfirm = ({
 	const defaultButtonName = buttonName || t('modalConfirm.defaultButtonName');
 	const defaultMessage = message || t('modalConfirm.defaultMessage');
 	useEffect(() => {
+		if (disableEnterKey) return;
+
 		const handleEnterKey = (event: KeyboardEvent) => {
 			if (event.key === 'Enter') {
 				handleConfirm();
@@ -43,7 +47,7 @@ const ModalConfirm = ({
 		return () => {
 			document.removeEventListener('keydown', handleEnterKey);
 		};
-	}, [handleConfirm]);
+	}, [disableEnterKey, handleConfirm]);
 
 	const modalRef = useRef<HTMLDivElement>(null);
 	useEscapeKeyClose(modalRef, handleCancel);
@@ -51,7 +55,7 @@ const ModalConfirm = ({
 	return (
 		<div ref={modalRef} tabIndex={-1} className="fixed inset-0 flex items-center justify-center z-50" onClick={handleCancel}>
 			<div className="fixed inset-0 bg-black opacity-80 " />
-			<div className="relative z-10 w-[440px] px-4 md:px-0" onClick={(e) => e.stopPropagation()}>
+			<div className="relative z-10 w-[440px] max-w-full px-4 md:px-0" onClick={(e) => e.stopPropagation()}>
 				<div className="bg-theme-setting-primary pt-[16px] px-[16px] rounded-t-md">
 					<div className=" text-theme-primary-active text-[20px] font-semibold pb-[16px] break-words">
 						<span className="capitalize mr-1">{defaultTitle}</span>
@@ -61,7 +65,7 @@ const ModalConfirm = ({
 						{customTitle !== '' ? <span>{customTitle}</span> : <span>{defaultMessage && ` ${defaultMessage}`}</span>}
 					</div>
 				</div>
-				<div className="bg-theme-setting-nav  flex justify-end items-center gap-4 p-[16px] text-[14px] font-medium rounded-b-md">
+				<div className="bg-theme-setting-nav flex justify-end items-center gap-4 rounded-b-md p-[16px] text-[14px] font-medium">
 					<div
 						onClick={handleCancel}
 						className="hover:underline px-4 rounded-lg text-theme-primary text-theme-primary-hover  cursor-pointer"

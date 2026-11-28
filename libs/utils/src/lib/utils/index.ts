@@ -57,6 +57,7 @@ export * from './clanChannel';
 export * from './convertMessageToHtml';
 export * from './dateI18n';
 export * from './detectTokenMessage';
+export * from './developerPortalRedirect';
 export * from './embed-social';
 export * from './file';
 export * from './forceReflow';

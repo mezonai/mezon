@@ -53,8 +53,9 @@
 	"acceptModal": {
 		"title": "Приєднатися до клану",
 		"invitedToJoin": "Ви запрошені приєднатися до",
-		"memberCount": "{{count}} Учасник",
-		"memberCount_plural": "{{count}} Учасників",
+		"memberCount": "{{count}} Учасників",
+		"memberCount_one": "{{count}} Учасник",
+		"memberCount_other": "{{count}} Учасників",
 		"clanSettings": "Налаштування клану",
 		"customizeAnytime": "Ви можете налаштувати це будь-коли",
 		"noThanks": "Ні, дякую",

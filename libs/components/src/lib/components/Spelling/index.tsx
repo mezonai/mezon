@@ -8,11 +8,13 @@ const DEBOUNCE_DELAY = 120;
 const Spelling = ({
 	channelId,
 	updateDraft,
-	isQuickReply
+	isQuickReply,
+	wrap = false
 }: {
 	channelId: string;
 	isQuickReply?: boolean;
 	updateDraft: React.MutableRefObject<((input: RequestInput) => void) | null>;
+	wrap?: boolean;
 }) => {
 	const draftRequest = useAppSelector((state) => selectComposeInputByChannelId(state, channelId));
 	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
@@ -69,7 +71,13 @@ const Spelling = ({
 
 	if (replies?.length && isQuickReply) {
 		return (
-			<div className="w-full h-10 px-4 pb-2 flex items-center justify-end gap-2 overflow-x-auto scrollbar-none">
+			<div
+				className={
+					wrap
+						? 'w-full min-h-10 px-4 pb-2 flex flex-wrap items-center justify-end gap-2'
+						: 'w-full h-10 px-4 pb-2 flex items-center justify-end gap-2 overflow-x-auto scrollbar-none'
+				}
+			>
 				{replies.map((reply) => (
 					<button
 						onClick={() => handleQuickReply(reply)}

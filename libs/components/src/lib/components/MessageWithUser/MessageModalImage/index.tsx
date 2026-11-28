@@ -30,6 +30,7 @@ import {
 	createImgproxyUrl,
 	formatDateI18n,
 	handleSaveImage,
+	hasVideoExtension,
 	isAttachmentPresignPendingForMessage,
 	normalizeClanId
 } from '@mezon/utils';
@@ -69,21 +70,14 @@ const MessageModalImage = () => {
 	const skeletonTimerRef = useRef<NodeJS.Timeout | null>(null);
 
 	const isVideo = useMemo(() => {
-		if (currentAttachment?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX)) {
+		if (
+			currentAttachment?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) &&
+			!currentAttachment?.filetype?.endsWith(ETypeLinkMedia.VIDEO_TS_FILE)
+		) {
 			return true;
 		}
 
-		if (urlImg) {
-			const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi', '.mkv', '.m4v'];
-			const imgExtensionSpecial = '.avif';
-			const lowerUrl = urlImg.toLowerCase();
-			if (lowerUrl.includes(imgExtensionSpecial)) {
-				return false;
-			}
-			return videoExtensions.some((ext) => lowerUrl.includes(ext));
-		}
-
-		return false;
+		return hasVideoExtension(urlImg);
 	}, [currentAttachment?.filetype, urlImg]);
 
 	const mode = useAppSelector(selectModeAttachment);

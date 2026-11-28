@@ -55,6 +55,7 @@ beforeEach(() => {
 
 afterEach(() => {
 	delete process.env.NX_CHAT_APP_FILE_INGEST;
+	delete process.env.NX_MEZON_CDN_URL;
 });
 
 describe('generatePathAttachments', () => {
@@ -77,6 +78,64 @@ describe('generatePathAttachments', () => {
 		expect((await prepare([clip], true)).requests[0].transcode_hls).toBe(true);
 		process.env.NX_CHAT_APP_FILE_INGEST = 'cdn-api-dev.nccsoft.vn=https://streaming.nccsoft.vn';
 		expect((await prepare([{ ...clip, size: 1024 * MiB + 1 }], true)).requests[0].transcode_hls).toBe(true);
+	});
+
+	const withPoster = {
+		...clip,
+		thumbnail: 'blob:https://mezon.ai/poster',
+		_thumbnailBlob: new Blob([new Uint8Array(4)], { type: 'image/jpeg' })
+	};
+
+	it('sends the uploaded poster url, and never the local blob poster when its upload fails', async () => {
+		process.env.NX_MEZON_CDN_URL = 'https://cdn-dev.nccsoft.vn';
+
+		const uploaded = (await prepare([withPoster])).result[0].thumbnail;
+		expect(uploaded).toMatch(/^https:\/\/cdn-dev\.nccsoft\.vn\/0000000000031031\/1846031000000002001_\d+_thumbnail\.jpg$/);
+
+		jest.mocked(uploadFileToPath).mockResolvedValueOnce(false);
+		expect((await prepare([withPoster])).result[0].thumbnail).toBeUndefined();
+	});
+
+	it('still prepares the video, without a poster, when the poster presign is refused', async () => {
+		const client = {
+			uploadAttachmentFile: jest.fn(async (_session: ApiSession, request: { filename: string }) => {
+				if (request.filename.includes('_thumbnail')) throw new Error('presign refused');
+				return { filename: `0000000000031031/1846031000000002001_${request.filename}`, url: presigned(request.filename), type_cdn: 1 };
+			})
+		};
+
+		const [video] = await generatePathAttachments(
+			client as unknown as Client,
+			{} as ApiSession,
+			[{ ...withPoster, url: 'blob:https://mezon.ai/1' }],
+			'channel'
+		);
+
+		expect(video.uploadPath).toBe(presigned('clip.mp4'));
+		expect(video.thumbnail).toBeUndefined();
+		expect(uploadFileToPath).not.toHaveBeenCalled();
+	});
+	it('keeps TypeScript files as doc even with Windows mpeg-tts MIME and routes m2ts/mts videos to ingest', async () => {
+		const { result, requests } = await prepare(
+			[
+				{ filename: 'example.ts', filetype: 'video/vnd.dlna.mpeg-tts', size: 1024 },
+				{ filename: 'clip.m2ts', filetype: 'video/vnd.dlna.mpeg-tts', size: 20 * MiB },
+				{ filename: 'clip.mts', filetype: '', size: 20 * MiB }
+			],
+			true
+		);
+
+		expect(result[0].filetype).toBe('doc');
+		expect(result[0].ingestUrl).toBeUndefined();
+		expect(requests[0].transcode_hls).toBe(false);
+
+		expect(result[1].filetype).toBe('video');
+		expect(result[1].ingestUrl).toBe(`https://streaming.nccsoft.vn/dev-mezon/0000000000031031/clip.m2ts?${QUERY}`);
+		expect(requests[1].transcode_hls).toBe(false);
+
+		expect(result[2].filetype).toBe('video');
+		expect(result[2].ingestUrl).toBe(`https://streaming.nccsoft.vn/dev-mezon/0000000000031031/clip.mts?${QUERY}`);
+		expect(requests[2].transcode_hls).toBe(false);
 	});
 });
 

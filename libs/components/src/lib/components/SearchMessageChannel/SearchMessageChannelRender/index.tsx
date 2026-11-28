@@ -154,7 +154,7 @@ const SearchMessageChannelRender = ({ searchMessages, currentPage, totalResult, 
 							{totalResult > 25 && (
 								<div className="mt-4 h-10">
 									<Pagination
-										totalPages={Math.floor(totalResult / SIZE_PAGE_SEARCH)}
+										totalPages={Math.ceil(totalResult / SIZE_PAGE_SEARCH)}
 										currentPage={currentPage}
 										onPageChange={onPageChange}
 									/>

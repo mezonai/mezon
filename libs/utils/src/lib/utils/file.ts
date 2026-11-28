@@ -12,6 +12,7 @@ import type {
 	PreSendMediaAttachment,
 	RequestInput
 } from '../types';
+import { ETypeLinkMedia } from '../types';
 import { isTranscodedVideoContainer } from './videoSource';
 
 export const VIDEO_PROCESS_CONCURRENCY = 2;
@@ -265,7 +266,11 @@ function processImageFile<T>(file: File): Promise<T> {
 }
 
 export function processFile<T>(file: File): Promise<T> {
-	if (file.type.endsWith('adobe.photoshop') || (!file.type.startsWith('image/') && !file.type.startsWith('video/'))) {
+	if (
+		file.type.endsWith('adobe.photoshop') ||
+		file.type.endsWith(ETypeLinkMedia.VIDEO_TS_FILE) ||
+		(!file.type.startsWith('image/') && !file.type.startsWith('video/'))
+	) {
 		return processNonMediaFile(file);
 	}
 
@@ -286,7 +291,7 @@ export async function processFilesForAttachment(files: File[]): Promise<ApiMessa
 	const lightweightIndexes: number[] = [];
 
 	files.forEach((file, index) => {
-		if (file.type.startsWith('video/')) {
+		if (file.type.startsWith('video/') && !file.type.endsWith(ETypeLinkMedia.VIDEO_TS_FILE)) {
 			videoIndexes.push(index);
 		} else {
 			lightweightIndexes.push(index);
@@ -324,7 +329,7 @@ const UNSUPPORTED_MEDIA_TYPES = new Set([
 ]);
 
 /** Extensions of the types above, for senders that give us no usable MIME. */
-const UNSUPPORTED_MEDIA_EXTENSIONS = new Set(['wmv', 'avi', 'flv', 'mkv', 'rmvb', 'wma', 'ra', 'tiff', 'tif', 'bmp', 'psd']);
+const UNSUPPORTED_MEDIA_EXTENSIONS = new Set(['wmv', 'avi', 'flv', 'mkv', 'm2ts', 'mts', 'rmvb', 'wma', 'ra', 'tiff', 'tif', 'bmp', 'psd']);
 
 export function isMediaTypeNotSupported(mediaType?: string, url?: string) {
 	if (isTranscodedVideoContainer(url)) {

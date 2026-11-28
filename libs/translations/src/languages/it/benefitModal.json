@@ -1,0 +1,42 @@
+{
+	"popular": "IL PIÙ SCELTO",
+	"vipBadge": "VIP",
+	"close": "Chiudi",
+	"membershipLabel": "ABBONAMENTO MEZON",
+	"heading": "Migliora la tua esperienza",
+	"productName": "Mezon Workplace & Clan",
+	"description": "Aumenta il limite di membri, organizza webinar, fai chiamate senza limiti e usa le funzioni premium.",
+	"coupon": { "label": "CODICE COUPON", "placeholder": "Inserisci il codice coupon", "processing": "Elaborazione…", "apply": "Applica", "applied": "Coupon applicato correttamente.", "invalid": "Questo coupon non è valido.", "unavailable": "La gestione dei coupon non è configurata.", "processingFailed": "Impossibile elaborare il coupon. Riprova." },
+	"plans": {
+		"standard": {
+			"name": "Standard", "label": "PIANO ATTUALE", "category": "PIANO STANDARD", "description": "Per singoli utenti e chi inizia", "price": "0 VND", "period": "/ Gratis", "featuresTitle": "FUNZIONI E LIMITI", "buttonText": "Piano attuale",
+			"features": {
+				"voice": { "title": "Canali vocali:", "description": "Fino a 100 utenti in un canale" },
+				"livestream": { "title": "Dirette streaming:", "description": "Fino a 1 ora e 100 utenti in un canale" },
+				"soundEffects": { "title": "Effetti sonori:", "description": "Durata limitata per ogni effetto sonoro" },
+				"storage": { "title": "Archiviazione:", "description": "Spazio limitato per immagini, video e file" }
+			}
+		},
+		"user": {
+			"name": "User Pro", "label": "PER SINGOLI UTENTI", "category": "PROFILO / UPGRADE ACCOUNT", "description": "Funzioni premium per utenti esperti", "price": "500.000 VND", "period": "/ anno", "priceNote": "Circa 41.600 VND / mese · Fatturazione annuale", "featuresTitle": "TUTTO LO STANDARD, PIÙ ALTRO", "buttonText": "Passa a User Pro",
+			"features": {
+				"meetings": { "title": "Riunioni esterne:", "description": "Fino a 500 utenti senza limiti di durata" },
+				"soundEffects": { "title": "Effetti sonori avanzati:", "description": "Crea effetti più lunghi e personalizzali" },
+				"storage": { "title": "Archiviazione:", "description": "Molto più spazio per allegati e cronologia" },
+				"badge": { "title": "Badge PRO esclusivo:", "description": "Un badge scintillante sul tuo avatar e profilo" },
+				"bandwidth": { "title": "Banda prioritaria:", "description": "Audio e video di qualità da studio con latenza minima" }
+			}
+		},
+		"clan": {
+			"name": "Clan Pro", "label": "PER LE COMMUNITY", "category": "IMPOSTAZIONI CLAN / UPGRADE A CLAN PRO", "description": "Espandi al massimo la capacità del tuo Clan e della community", "price": "2.000.000 VND", "period": "/ anno", "priceNote": "Circa 166.000 VND / mese", "featuresTitle": "UPGRADE COMPLETO PER IL TUO CLAN", "buttonText": "Passa a Clan Pro",
+			"features": {
+				"livestream": { "title": "Dirette streaming:", "description": "Dirette più lunghe con fino a 500 partecipanti" },
+				"events": { "title": "Eventi esterni:", "description": "Eventi per fino a 500 utenti senza limiti di durata" },
+				"webinar": { "title": "Webinar:", "description": "Webinar con fino a 500 partecipanti" },
+				"storage": { "title": "Archiviazione:", "description": "Più spazio per il Clan e caricamenti fino a 10 GB" },
+				"soundboard": { "title": "Soundboard del Clan:", "description": "Crea effetti sonori più lunghi per tutti i membri" },
+				"customization": { "title": "Personalizzazione Clan:", "description": "Personalizza ruoli, icone animate e tema del Clan" }
+			}
+		}
+	}
+}

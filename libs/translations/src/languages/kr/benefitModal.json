@@ -1,0 +1,42 @@
+{
+	"popular": "가장 인기",
+	"vipBadge": "VIP",
+	"close": "닫기",
+	"membershipLabel": "MEZON 멤버십",
+	"heading": "Mezon을 더 풍성하게 이용하세요",
+	"productName": "Mezon Workplace & Clan",
+	"description": "멤버 한도를 늘리고, 웨비나를 진행하고, 무제한 통화를 이용하며 프리미엄 기능을 사용하세요.",
+	"coupon": { "label": "쿠폰 코드", "placeholder": "쿠폰 코드를 입력하세요", "processing": "처리 중…", "apply": "적용", "applied": "쿠폰이 적용되었습니다.", "invalid": "유효하지 않은 쿠폰입니다.", "unavailable": "쿠폰 처리가 설정되지 않았습니다.", "processingFailed": "쿠폰을 처리할 수 없습니다. 다시 시도해 주세요." },
+	"plans": {
+		"standard": {
+			"name": "스탠다드", "label": "현재 요금제", "category": "스탠다드 요금제", "description": "개인 및 신규 사용자용", "price": "0 VND", "period": "/ 무료", "featuresTitle": "기능 및 제한", "buttonText": "현재 요금제",
+			"features": {
+				"voice": { "title": "음성 채널:", "description": "채널 하나에 최대 100명 참여 가능" },
+				"livestream": { "title": "라이브 스트리밍:", "description": "최대 1시간, 채널 하나에 최대 100명 참여 가능" },
+				"soundEffects": { "title": "음향 효과:", "description": "각 음향 효과의 길이에 제한이 있습니다" },
+				"storage": { "title": "저장 공간:", "description": "이미지, 동영상, 파일 저장 공간이 제한됩니다" }
+			}
+		},
+		"user": {
+			"name": "User Pro", "label": "개인용", "category": "프로필 / 계정 업그레이드", "description": "고급 사용자를 위한 프리미엄 기능", "price": "500,000 VND", "period": "/ 년", "priceNote": "월 약 41,600 VND · 연간 결제", "featuresTitle": "스탠다드의 모든 기능과 추가 혜택", "buttonText": "User Pro로 업그레이드",
+			"features": {
+				"meetings": { "title": "외부 회의:", "description": "시간 제한 없이 최대 500명 참여 가능" },
+				"soundEffects": { "title": "고급 음향 효과:", "description": "더 긴 효과를 만들고 다양하게 맞춤 설정 가능" },
+				"storage": { "title": "저장 공간:", "description": "첨부 파일과 기록을 위한 공간이 크게 늘어납니다" },
+				"badge": { "title": "독점 PRO 배지:", "description": "아바타와 프로필에 반짝이는 배지를 표시합니다" },
+				"bandwidth": { "title": "우선 대역폭:", "description": "지연이 매우 낮은 스튜디오급 음성 및 영상" }
+			}
+		},
+		"clan": {
+			"name": "Clan Pro", "label": "커뮤니티용", "category": "CLAN 설정 / CLAN PRO 업그레이드", "description": "Clan과 커뮤니티의 수용 인원을 크게 늘리세요", "price": "2,000,000 VND", "period": "/ 년", "priceNote": "월 약 166,000 VND", "featuresTitle": "Clan을 위한 종합 업그레이드", "buttonText": "Clan Pro로 업그레이드",
+			"features": {
+				"livestream": { "title": "라이브 스트리밍:", "description": "최대 500명이 참여할 수 있는 더 긴 스트리밍" },
+				"events": { "title": "외부 이벤트:", "description": "시간 제한 없이 최대 500명을 위한 이벤트 진행" },
+				"webinar": { "title": "웨비나:", "description": "최대 500명이 참여하는 웨비나 진행" },
+				"storage": { "title": "저장 공간:", "description": "Clan 저장 공간 확장 및 최대 10 GB 파일 업로드" },
+				"soundboard": { "title": "Clan 사운드보드:", "description": "모든 멤버를 위한 더 긴 음향 효과 제작" },
+				"customization": { "title": "Clan 맞춤 설정:", "description": "역할, 애니메이션 아이콘, Clan 테마를 맞춤 설정" }
+			}
+		}
+	}
+}

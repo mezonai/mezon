@@ -80,7 +80,7 @@ export const SideBarMezon = memo((props: SideBarProps) => {
 					{t('header.home')}
 				</Link>
 				<a
-					href={'developers/'}
+					href={'/developers/'}
 					target="_blank"
 					rel="noopener noreferrer"
 					className="text-center px-[16px] py-[10px] text-[#F4F7F9] font-semibold text-[16px] leading-[24px] hover:bg-[#0C1AB2] hover:rounded-[8px] focus:rounded-[8px] focus:bg-[#281FB5]"
@@ -96,7 +96,7 @@ export const SideBarMezon = memo((props: SideBarProps) => {
 					{t('header.botsApps')}
 				</a>
 				<a
-					href={'docs/'}
+					href={'/docs/'}
 					target="_blank"
 					rel="noopener noreferrer"
 					className="text-center px-[16px] py-[10px] text-[#F4F7F9] font-semibold text-[16px] leading-[24px] hover:bg-[#0C1AB2] hover:rounded-[8px] focus:rounded-[8px] focus:bg-[#281FB5]"
@@ -104,7 +104,7 @@ export const SideBarMezon = memo((props: SideBarProps) => {
 					{t('header.documents')}
 				</a>
 				<a
-					href={'clans/'}
+					href={'/clans/'}
 					target="_blank"
 					rel="noopener noreferrer"
 					className="text-center px-[16px] py-[10px] text-[#F4F7F9] font-semibold text-[16px] leading-[24px] hover:bg-[#0C1AB2] hover:rounded-[8px] focus:rounded-[8px] focus:bg-[#281FB5]"
@@ -112,7 +112,7 @@ export const SideBarMezon = memo((props: SideBarProps) => {
 					{t('header.discover')}
 				</a>
 				<a
-					href={'blogs/'}
+					href={'/blogs/'}
 					target="_blank"
 					rel="noopener noreferrer"
 					className="text-center px-[16px] py-[10px] text-[#F4F7F9] font-semibold text-[16px] leading-[24px] hover:bg-[#0C1AB2] hover:rounded-[8px] focus:rounded-[8px] focus:bg-[#281FB5]"

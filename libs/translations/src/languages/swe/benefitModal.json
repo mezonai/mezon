@@ -1,0 +1,42 @@
+{
+	"popular": "POPULÄRAST",
+	"vipBadge": "VIP",
+	"close": "Stäng",
+	"membershipLabel": "MEZON-MEDLEMSKAP",
+	"heading": "Få ut mer av Mezon",
+	"productName": "Mezon Workplace & Clan",
+	"description": "Höj medlemsgränsen, håll webbinarier, ring obegränsat och få tillgång till premiumfunktioner.",
+	"coupon": { "label": "RABATTKOD", "placeholder": "Ange rabattkod", "processing": "Bearbetar…", "apply": "Använd", "applied": "Rabattkoden har använts.", "invalid": "Rabattkoden är ogiltig.", "unavailable": "Hantering av rabattkoder är inte konfigurerad.", "processingFailed": "Det gick inte att behandla rabattkoden. Försök igen." },
+	"plans": {
+		"standard": {
+			"name": "Standard", "label": "NUVARANDE PLAN", "category": "STANDARDPLAN", "description": "För privatpersoner och nya användare", "price": "0 VND", "period": "/ Gratis", "featuresTitle": "FUNKTIONER OCH GRÄNSER", "buttonText": "Nuvarande plan",
+			"features": {
+				"voice": { "title": "Röstkanaler:", "description": "Upp till 100 användare i en kanal" },
+				"livestream": { "title": "Livesändningar:", "description": "Upp till 1 timme och 100 användare i en kanal" },
+				"soundEffects": { "title": "Ljudeffekter:", "description": "Begränsad längd för varje ljudeffekt" },
+				"storage": { "title": "Lagring:", "description": "Begränsat utrymme för bilder, videor och filer" }
+			}
+		},
+		"user": {
+			"name": "User Pro", "label": "FÖR PRIVATPERSONER", "category": "PROFIL / KONTOUPPGRADERING", "description": "Premiumfunktioner för avancerade användare", "price": "500 000 VND", "period": "/ år", "priceNote": "Cirka 41 600 VND / månad · Betalas årsvis", "featuresTitle": "ALLT I STANDARD OCH MER", "buttonText": "Uppgradera till User Pro",
+			"features": {
+				"meetings": { "title": "Externa möten:", "description": "Upp till 500 användare utan tidsgräns" },
+				"soundEffects": { "title": "Avancerade ljudeffekter:", "description": "Skapa längre effekter med fler anpassningsalternativ" },
+				"storage": { "title": "Lagring:", "description": "Mycket mer utrymme för bilagor och historik" },
+				"badge": { "title": "Exklusivt PRO-märke:", "description": "Ett glittrande märke på din avatar och profil" },
+				"bandwidth": { "title": "Prioriterad bandbredd:", "description": "Ljud och video i studiokvalitet med mycket låg fördröjning" }
+			}
+		},
+		"clan": {
+			"name": "Clan Pro", "label": "FÖR GEMENSKAPER", "category": "CLAN-INSTÄLLNINGAR / UPPGRADERA TILL CLAN PRO", "description": "Utöka kapaciteten för din Clan och gemenskap", "price": "2 000 000 VND", "period": "/ år", "priceNote": "Cirka 166 000 VND / månad", "featuresTitle": "EN HELHETSUPPGRADERING FÖR DIN CLAN", "buttonText": "Uppgradera till Clan Pro",
+			"features": {
+				"livestream": { "title": "Livesändningar:", "description": "Längre sändningar med upp till 500 deltagare" },
+				"events": { "title": "Externa evenemang:", "description": "Evenemang för upp till 500 användare utan tidsgräns" },
+				"webinar": { "title": "Webbinarier:", "description": "Webbinarier med upp till 500 deltagare" },
+				"storage": { "title": "Lagring:", "description": "Mer Clan-lagring och uppladdningar på upp till 10 GB" },
+				"soundboard": { "title": "Clan-ljudpanel:", "description": "Skapa längre ljudeffekter för alla medlemmar" },
+				"customization": { "title": "Anpassa Clan:", "description": "Anpassa roller, animerade ikoner och Clan-tema" }
+			}
+		}
+	}
+}

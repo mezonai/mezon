@@ -100,6 +100,7 @@ import {
 	updateScreenShareQuality,
 	type ScreenShareMode
 } from './screenShareQuality';
+import { isSelfMuteShortcut, runSelfMuteShortcut } from './selfMuteShortcut';
 
 import { SfuCameraUplinkQuality, SfuMediaHealth, SfuNetworkQuality } from './sfuMediaHealth';
 import { SFU_DUPLICATE_SESSION_CLOSE_CODE, SfuMuteSync, sfuCloseAction, sfuReconnectDelay, withSfuTimeout } from './sfuReconnect';
@@ -492,6 +493,7 @@ export interface MezonSfuVoiceRoomProps {
 	isFullScreen: boolean;
 	isExternalCalling?: boolean;
 	onRefreshToken?: () => Promise<string | undefined>;
+	onSfuFailover?: (failedServerUrl: string) => Promise<{ token?: string; url?: string } | undefined>;
 	onLeaveRoom: () => void;
 	onReconnectRequired?: (networkLost: boolean) => void;
 	onFullScreen: () => void;
@@ -522,6 +524,7 @@ export function MezonSfuVoiceRoom({
 	isFullScreen,
 	isExternalCalling,
 	onRefreshToken,
+	onSfuFailover,
 	onLeaveRoom,
 	onReconnectRequired,
 	onFullScreen,
@@ -645,6 +648,8 @@ export function MezonSfuVoiceRoom({
 		if (pc?.getReceivers().some((receiver) => receiver.track === track)) requestManualRejoinRef.current();
 	}, []);
 	const onRefreshTokenRef = useRef(onRefreshToken);
+	const onSfuFailoverRef = useRef(onSfuFailover);
+	onSfuFailoverRef.current = onSfuFailover;
 	const tRef = useRef(t);
 	const muteSyncRef = useRef(new SfuMuteSync());
 	const connectionEpochRef = useRef(0);
@@ -748,7 +753,6 @@ export function MezonSfuVoiceRoom({
 	const [showFocusThumbnails, setShowFocusThumbnails] = useState(true);
 	const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 	const [showSoundPanel, setShowSoundPanel] = useState(false);
-	const [showVoiceInteractivePanel, setShowVoiceInteractivePanel] = useState(false);
 	const [showBreakoutModal, setShowBreakoutModal] = useState(false);
 	const [showCommentInput, setShowCommentInput] = useState(false);
 	const {
@@ -1632,6 +1636,8 @@ export function MezonSfuVoiceRoom({
 		setLocalMediaPrepared(false);
 		let reconnectAllowed = true;
 		let sessionToken = signalingTokenRef.current;
+		let sessionServerUrl = serverUrl;
+		let sfuFailoverAttempted = false;
 		let tokenRejected = false;
 		let everJoined = false;
 		let serverRestarting = false;
@@ -2153,7 +2159,9 @@ export function MezonSfuVoiceRoom({
 			}
 			resetAndCreatePeerConnection();
 			const secureServerUrl =
-				window.location.protocol === 'https:' && serverUrl.startsWith('ws://') ? `wss://${serverUrl.slice(5)}` : serverUrl;
+				window.location.protocol === 'https:' && sessionServerUrl.startsWith('ws://')
+					? `wss://${sessionServerUrl.slice(5)}`
+					: sessionServerUrl;
 			const wsUrl = new URL(secureServerUrl);
 			wsUrl.searchParams.set('access_token', sessionToken);
 			const ws = new WebSocket(wsUrl.toString());
@@ -2487,6 +2495,39 @@ export function MezonSfuVoiceRoom({
 			openSignaling();
 		};
 
+		const failOverToAnotherSfuOrFail = () => {
+			const provideSfuFailover = onSfuFailoverRef.current;
+			if (sfuFailoverAttempted || !provideSfuFailover) {
+				endCallAfterReconnectFailure();
+				return;
+			}
+			sfuFailoverAttempted = true;
+			const failedServerUrl = sessionServerUrl;
+			refreshingTokenRef.current = true;
+			void withSfuTimeout(
+				Promise.resolve().then(() => provideSfuFailover(failedServerUrl)),
+				10_000
+			)
+				.catch(() => undefined)
+				.then((next) => {
+					if (disposed || !reconnectAllowed) return;
+					refreshingTokenRef.current = false;
+					const nextToken = next?.token;
+					const nextServerUrl = next?.url;
+					if (!nextToken || !nextServerUrl || nextServerUrl === failedServerUrl) {
+						endCallAfterReconnectFailure();
+						return;
+					}
+					sessionServerUrl = nextServerUrl;
+					sessionToken = nextToken;
+					signalingTokenRef.current = nextToken;
+					tokenRejected = false;
+					reconnectAttempts = 0;
+					dispatch(voiceActions.setToken(nextToken));
+					reconnect();
+				});
+		};
+
 		requestReconnect = () => {
 			if (disposed || !reconnectAllowed || refreshingTokenRef.current || (wsRef.current && wsRef.current.readyState !== WebSocket.CLOSED))
 				return;
@@ -2500,7 +2541,7 @@ export function MezonSfuVoiceRoom({
 				return;
 			}
 			if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-				endCallAfterReconnectFailure();
+				failOverToAnotherSfuOrFail();
 				return;
 			}
 			const delayMs = sfuReconnectDelay(reconnectAttempts);
@@ -2863,6 +2904,18 @@ export function MezonSfuVoiceRoom({
 			return el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable;
 		};
 		const onKeyDown = (event: KeyboardEvent) => {
+			if (isSelfMuteShortcut(event)) {
+				if (isTyping(event.target) || isTyping(document.activeElement)) return;
+				if (event.repeat || joinRole === 'audience') return;
+				event.preventDefault();
+				holdToTalkRef.current = false;
+				runSelfMuteShortcut(
+					microphoneEnabledRef.current,
+					() => dispatch(voiceActions.setShowMicrophone(false)),
+					() => void handleRequestMicrophonePermission()
+				);
+				return;
+			}
 			if (event.code !== 'Space' || event.repeat || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
 			if (isTyping(event.target) || isTyping(document.activeElement)) return;
 			if ((event.target as HTMLElement | null)?.closest?.('[role="dialog"]')) return;
@@ -2904,7 +2957,7 @@ export function MezonSfuVoiceRoom({
 			window.removeEventListener('blur', onBlur);
 			releaseHoldToTalk();
 		};
-	}, [dispatch, joinRole, releaseHoldToTalk]);
+	}, [dispatch, handleRequestMicrophonePermission, joinRole, releaseHoldToTalk]);
 
 	useEffect(() => {
 		if (joinRole === 'audience' && hasMicrophoneAccess === false) {
@@ -3734,7 +3787,6 @@ export function MezonSfuVoiceRoom({
 					isGridView={isGridView}
 					showEmojiPanel={showEmojiPanel}
 					showSoundPanel={showSoundPanel}
-					showVoiceInteractivePanel={showVoiceInteractivePanel}
 					microphones={microphones}
 					cameras={cameras}
 					speakers={speakers}
@@ -3746,7 +3798,6 @@ export function MezonSfuVoiceRoom({
 					isExternalCalling={isExternalCalling}
 					onEmojiPanelChange={setShowEmojiPanel}
 					onSoundPanelChange={setShowSoundPanel}
-					onVoiceInteractivePanelChange={setShowVoiceInteractivePanel}
 					onEmojiSelect={sendEmojiReaction}
 					onSoundSelect={sendSoundReaction}
 					onPushToTalk={(active) => void setPushToTalk(active)}

@@ -92,8 +92,12 @@ export default function DiscoverPage() {
 	const activeFilterCount = selectedHashtags.length + Number(verifiedOnly);
 
 	useEffect(() => {
+		const prevTitle = document.title;
 		document.title = `${t('title')} | Mezon`;
 		trackDiscoverEvent('clan_discover_view');
+		return () => {
+			document.title = prevTitle;
+		};
 	}, [t]);
 
 	useEffect(() => {
@@ -105,12 +109,23 @@ export default function DiscoverPage() {
 	useEffect(() => {
 		const shouldNoIndex = committedQuery.trim().length >= 2 || selectedHashtags.length > 0 || verifiedOnly;
 		let robots = document.querySelector('meta[name="robots"]');
+		const created = !robots;
+		const prevContent = robots?.getAttribute('content') ?? null;
 		if (!robots) {
 			robots = document.createElement('meta');
 			robots.setAttribute('name', 'robots');
 			document.head.appendChild(robots);
 		}
 		robots.setAttribute('content', shouldNoIndex ? 'noindex,follow' : 'index,follow');
+		return () => {
+			if (created) {
+				robots?.remove();
+			} else if (prevContent !== null) {
+				robots?.setAttribute('content', prevContent);
+			} else {
+				robots?.removeAttribute('content');
+			}
+		};
 	}, [committedQuery, selectedHashtags, verifiedOnly]);
 
 	useEffect(() => {

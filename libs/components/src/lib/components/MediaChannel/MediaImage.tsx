@@ -1,14 +1,7 @@
 import { useCdnUrlSigner } from '@mezon/core';
 import { MezonIcon, MzIcons20 } from '@mezon/ui';
-import { createImgproxyUrl } from '@mezon/utils';
+import { createImgproxyUrl, hasVideoExtension } from '@mezon/utils';
 import { useEffect, useState } from 'react';
-
-const VIDEO_EXTENSIONS = ['.mp4', '.webm', '.ogg', '.mov', '.avi', '.mkv', '.m4v'];
-
-const isVideoUrl = (url?: string) => {
-	const path = url?.split('?')[0].toLowerCase() ?? '';
-	return VIDEO_EXTENSIONS.some((ext) => path.endsWith(ext));
-};
 
 interface ImgProxyOptions {
 	width?: number;
@@ -31,7 +24,7 @@ export function MediaImage({ src, alt = '', className = '', loading = 'lazy', im
 
 	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner([src]);
 	const signedSrc = signCdnUrl(src);
-	const isVideo = isVideoUrl(src);
+	const isVideo = hasVideoExtension(src);
 	const processedSrc = signedSrc && imgProxyOptions && !isVideo ? (createImgproxyUrl(signedSrc, imgProxyOptions) as string) : signedSrc;
 	const handleLoaded = () => setIsLoading(false);
 	const handleError = () => {

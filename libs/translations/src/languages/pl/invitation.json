@@ -53,8 +53,9 @@
 	"acceptModal": {
 		"title": "Dołącz do Clanu",
 		"invitedToJoin": "Zostałeś zaproszony do dołączenia",
-		"memberCount": "{{count}} Członek",
-		"memberCount_plural": "{{count}} Członków",
+		"memberCount": "{{count}} Członków",
+		"memberCount_one": "{{count}} Członek",
+		"memberCount_other": "{{count}} Członków",
 		"clanSettings": "Ustawienia Clanu",
 		"customizeAnytime": "Możesz dostosować te rzeczy w dowolnym momencie",
 		"noThanks": "Nie, dziękuję",

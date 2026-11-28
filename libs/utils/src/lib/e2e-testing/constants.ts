@@ -620,12 +620,7 @@ export const DATA_E2E_IDENTIFIER = {
 					kick: '',
 					mute_mic: '',
 					record: '',
-					open_context: '',
-					open_interactive_apps: ''
-				},
-				interactive_apps: {
-					item: '',
-					window: ''
+					open_context: ''
 				},
 				time_record: '',
 				username: ''

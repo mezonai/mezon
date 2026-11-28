@@ -105,11 +105,11 @@ const HeaderMezon = memo((props: HeaderProps) => {
 						<NavItem to="/" section="home" label={t('header.home')} onClick={handleHomeClick} />
 
 						{[
-							{ href: 'developers/', label: t('header.developers') },
+							{ href: '/developers/', label: t('header.developers') },
 							{ href: 'https://top.mezon.ai', label: t('header.botsApps') },
-							{ href: 'docs/', label: t('header.documents') },
-							{ href: 'clans/', label: t('header.discover') },
-							{ href: 'blogs/', label: t('header.blogs') }
+							{ href: '/docs/', label: t('header.documents') },
+							{ href: '/clans/', label: t('header.discover') },
+							{ href: '/blogs/', label: t('header.blogs') }
 						].map((link) => (
 							<a
 								key={link.href}
