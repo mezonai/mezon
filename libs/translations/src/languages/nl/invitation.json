@@ -62,6 +62,9 @@
 		"joining": "Aan het joinen...",
 		"toast": {
 			"alreadyMember": "Je bent al lid!"
-		}
+		},
+		"requestSentTitle": "Join request sent",
+		"requestSentDesc": "Your request to join this clan is waiting for approval from the clan owner.",
+		"close": "Close"
 	}
 }

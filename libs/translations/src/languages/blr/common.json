@@ -20,7 +20,7 @@
   "newMessage": "Новае паведамленне",
   "newMention": "Новае згадванне",
   "newMentionsInTopic": "Новыя згадванні ў тэме",
-	"clanRailNew": "Новае",
+  "clanRailNew": "Новае",
   "discover": "Адкрыць",
   "createClan": "Стварыць клан",
   "closePreviewMode": "Зачыніць рэжым папярэдняга прагляду",
@@ -220,7 +220,7 @@
     "mentions": "Згадванні",
     "unreadChannels": "Непрачытаныя каналы",
     "noResults": "Падобна, не знойдзена тое, што вы шукаеце?",
-		"search": "Пошук каналаў"
+    "search": "Пошук каналаў"
   },
   "userProfile": {
     "aboutMe": "Пра мяне",
@@ -300,8 +300,8 @@
     "qr": {
       "signIn": "Увайсці праз QR-код",
       "useMobile": "Выкарыстоўвайце Mezon на мабільным для сканавання QR",
-			"openToConfirm": "Адкрыйце Mezon на тэлефоне, каб пацвердзіць уваход",
-			"openApp": "Адкрыць праграму"
+      "openToConfirm": "Адкрыйце Mezon на тэлефоне, каб пацвердзіць уваход",
+      "openApp": "Адкрыць праграму"
     },
     "loginToMezon": "Увайдзіце ў акаўнт Mezon",
     "emailAddress": "Адрас электроннай пошты",
@@ -371,7 +371,10 @@
     "clanSettings": "Налады клана",
     "customizeAnytime": "Вы можаце наладзіць гэтыя параметры ў любы час",
     "joining": "Далучэнне...",
-    "acceptInvite": "Прыняць запрашэнне"
+    "acceptInvite": "Прыняць запрашэнне",
+    "requestSentTitle": "Join request sent",
+    "requestSentDesc": "Your request to join this clan is waiting for approval from the clan owner.",
+    "backToMezon": "Back to Mezon"
   },
   "guide": {
     "clan": "клан",
@@ -384,7 +387,7 @@
     "noQuestions": "У вас яшчэ няма пытанняў. Наладзьце пытанні для гэтага клана!",
     "noRules": "У вас яшчэ няма правілаў. Наладзьце правілы для гэтага клана!",
     "noMissions": "У вас яшчэ няма заданняў. Наладзьце заданні для гэтага клана!",
-		"emptyGuideLine": "Інструкцыі пакуль не дададзены!"
+    "emptyGuideLine": "Інструкцыі пакуль не дададзены!"
   },
   "updateUsername": {
     "enterUsername": "Увядзіце імя Mezon",
@@ -536,7 +539,7 @@
     "accessDenied": "Доступ забаронены",
     "accessDeniedDesc": "У вас няма правоў доступу да гэтага канала ці клана. Звярніцеся да адміністратара сервера, калі лічыце, што гэта памылка.",
     "goToWelcomeChannel": "Перайсці на прывітальны канал",
-	"goToFriendPage": "Перайсці на старонку сяброў",
+    "goToFriendPage": "Перайсці на старонку сяброў",
     "okayGotIt": "Добра, зразумела"
   },
   "reportMessage": {

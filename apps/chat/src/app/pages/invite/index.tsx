@@ -19,6 +19,13 @@ export default function InvitePage() {
 	const isLogin = useSelector(selectIsLogin);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [joinPending, setJoinPending] = useState(Boolean(selectInvite?.join_pending));
+
+	useEffect(() => {
+		if (selectInvite?.join_pending) {
+			setJoinPending(true);
+		}
+	}, [selectInvite?.join_pending]);
 
 	const clanId = useMemo(() => {
 		return selectInvite?.clan_id || '0';
@@ -33,12 +40,15 @@ export default function InvitePage() {
 			setLoading(true);
 			setError(null);
 			try {
-				await inviteUser(inviteIdParam).then(async (res) => {
-					if (res?.channel_id && res?.clan_id) {
-						await new Promise((resolve) => setTimeout(resolve, 1000));
-						navigate(`/chat/clans/${res.clan_id}/member-safety`);
-					}
-				});
+				const res = await inviteUser(inviteIdParam);
+				if (res?.join_pending) {
+					setJoinPending(true);
+					return true;
+				}
+				if (res?.channel_id && res?.clan_id) {
+					await new Promise((resolve) => setTimeout(resolve, 1000));
+					navigate(`/chat/clans/${res.clan_id}/member-safety`);
+				}
 				return true;
 			} catch (err) {
 				setError(t('invite.failedToJoin'));
@@ -134,14 +144,30 @@ export default function InvitePage() {
 				</div>
 
 				{error && <div className="w-full text-center text-red-400 text-sm mb-2">{error}</div>}
-				<button
-					onClick={handleJoinChannel}
-					disabled={loading}
-					className={`text-white w-full py-[10px] text-base font-medium rounded-md ${loading ? 'bg-gray-500 cursor-not-allowed' : 'btn-primary btn-primary-hover '}`}
-					data-e2e={generateE2eId('acceptModal.button.acceptInvite')}
-				>
-					{loading ? t('invite.joining') : t('invite.acceptInvite')}
-				</button>
+				{joinPending ? (
+					<div className="w-full flex flex-col items-center gap-3">
+						<div className="w-full rounded-md border border-indigo-500/40 bg-indigo-500/10 px-4 py-3 text-center">
+							<p className="text-sm font-semibold text-theme-primary-active">{t('invite.requestSentTitle')}</p>
+							<p className="text-xs text-theme-primary mt-1">{t('invite.requestSentDesc')}</p>
+						</div>
+						<button
+							type="button"
+							onClick={() => navigate('/chat/direct/friends')}
+							className="w-full py-[10px] text-base font-medium rounded-md border border-theme-primary text-theme-primary-active hover:bg-item-theme transition-colors"
+						>
+							{t('invite.backToMezon')}
+						</button>
+					</div>
+				) : (
+					<button
+						onClick={handleJoinChannel}
+						disabled={loading}
+						className={`text-white w-full py-[10px] text-base font-medium rounded-md ${loading ? 'bg-gray-500 cursor-not-allowed' : 'btn-primary btn-primary-hover '}`}
+						data-e2e={generateE2eId('acceptModal.button.acceptInvite')}
+					>
+						{loading ? t('invite.joining') : t('invite.acceptInvite')}
+					</button>
+				)}
 			</div>
 		</div>
 	);

@@ -62,6 +62,9 @@
 		"joining": "Đang tham gia...",
 		"toast": {
 			"alreadyMember": "Bạn đã là thành viên rồi!"
-		}
+		},
+		"requestSentTitle": "Đã gửi yêu cầu tham gia",
+		"requestSentDesc": "Yêu cầu tham gia clan của bạn đang chờ chủ sở hữu clan phê duyệt.",
+		"close": "Đóng"
 	}
 }
