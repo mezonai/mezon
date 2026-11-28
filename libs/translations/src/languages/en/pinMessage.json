@@ -6,6 +6,7 @@
 		"description": "Hey, just double-checking that you want to pin this message to #{{channelLabel}} for posterity and greatness?",
 		"descriptionDM": "Hey, just double-checking that you want to pin this message to the current channel for posterity and greatness?",
 		"cancel": "Cancel",
-		"confirm": "Oh yeah. Pin it"
+		"confirm": "Oh yeah. Pin it",
+		"remainingImages": "+{{count}} more images"
 	}
 }

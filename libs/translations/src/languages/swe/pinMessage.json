@@ -6,6 +6,7 @@
 		"description": "Hej, jag vill bara bekräfta en gång till att du vill spika detta meddelande till #{{channelLabel}} för att spara för evigt?",
 		"descriptionDM": "Hej, jag vill bara bekräfta en gång till att du vill spika detta meddelande till nuvarande samtal för att spara för evigt?",
 		"cancel": "Avbryt",
-		"confirm": "Spika för säkerhets skull"
+		"confirm": "Spika för säkerhets skull",
+		"remainingImages": "+{{count}} bilder till"
 	}
 }

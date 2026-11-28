@@ -64,6 +64,7 @@ const getPinAttachments = (rawAttachments: unknown): ApiMessageAttachment[] => {
 
 const ItemPinMessage = (props: ItemPinMessageProps) => {
 	const { t } = useTranslation('channelTopbar');
+	const { t: tPin } = useTranslation('pinMessage');
 	const { pinMessage, contentString, handleUnPinMessage, onClose, mode } = props;
 	const senderId = String(pinMessage.sender_id || '');
 	const checkAnonymous = pinMessage?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
@@ -195,7 +196,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 						)}
 					</div>
 					{firstAttachment && (
-						<div className="flex items-end gap-1">
+						<div className="flex flex-col">
 							<div
 								className={
 									isImageOrVideo
@@ -227,8 +228,8 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 							</div>
 
 							{remainingCount > 0 && (
-								<div className="bg-theme-setting-primary text-theme-primary text-md px-1.5 py-0.5 rounded-full flex items-center justify-center min-h-[35px] min-w-[35px]">
-									+{remainingCount}
+								<div className="bg-theme-setting-primary w-fit text-sm text-theme-primary text-md px-1.5 py-0.5 rounded-full flex items-center justify-center min-h-6 min-w-[35px]">
+									{tPin('modal.remainingImages', { count: remainingCount })}
 								</div>
 							)}
 						</div>
