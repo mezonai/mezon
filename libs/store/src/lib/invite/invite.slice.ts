@@ -62,7 +62,7 @@ export const inviteUser = createAsyncThunk('invite/inviteUser', async ({ inviteI
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.inviteUser(mezon.session, inviteId);
-		if (!response?.clan_id) {
+		if (!response?.clan_id && !response?.join_pending) {
 			const cannotJoinClanMessage = i18n.t('common:cannotJoinClan');
 			captureSentryError(cannotJoinClanMessage, 'invite/inviteUser');
 			return thunkAPI.rejectWithValue(cannotJoinClanMessage);
@@ -153,6 +153,15 @@ export const inviteSlice = createSlice({
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
 				state.loadingById[action.meta.arg.inviteId] = 'error';
+			})
+			.addCase(inviteUser.fulfilled, (state: InviteState, action) => {
+				const inviteId = action.meta.arg.inviteId;
+				if (action.payload?.join_pending && state.entities[inviteId]) {
+					inviteAdapter.updateOne(state, {
+						id: inviteId,
+						changes: { join_pending: true }
+					});
+				}
 			});
 	}
 });

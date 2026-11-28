@@ -14,5 +14,7 @@
 	"invalidInvite": {
 		"title": "無効な招待",
 		"message": "別の招待を送信してください!"
-	}
+	},
+	"requestSent": "Request Sent",
+	"requestSentDesc": "Your join request is waiting for approval from the clan owner."
 }

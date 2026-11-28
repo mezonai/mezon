@@ -62,7 +62,9 @@
 		"joining": "Присоединение...",
 		"toast": {
 			"alreadyMember": "Вы уже являетесь участником!"
-		}
+		},
+		"requestSentTitle": "Join request sent",
+		"requestSentDesc": "Your request to join this clan is waiting for approval from the clan owner.",
+		"close": "Close"
 	}
 }
-

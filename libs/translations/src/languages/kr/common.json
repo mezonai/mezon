@@ -371,7 +371,10 @@
 		"clanSettings": "클랜 설정",
 		"customizeAnytime": "이것들을 언제든지 커스터마이징할 수 있습니다",
 		"joining": "참가 중...",
-		"acceptInvite": "초대 수락"
+		"acceptInvite": "초대 수락",
+		"requestSentTitle": "Join request sent",
+		"requestSentDesc": "Your request to join this clan is waiting for approval from the clan owner.",
+		"backToMezon": "Back to Mezon"
 	},
 	"guide": {
 		"clan": "클랜",

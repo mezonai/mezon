@@ -371,7 +371,10 @@
 		"clanSettings": "クラン設定",
 		"customizeAnytime": "これらの設定はいつでもカスタマイズできます",
 		"joining": "参加中...",
-		"acceptInvite": "招待を承認"
+		"acceptInvite": "招待を承認",
+		"requestSentTitle": "Join request sent",
+		"requestSentDesc": "Your request to join this clan is waiting for approval from the clan owner.",
+		"backToMezon": "Back to Mezon"
 	},
 	"guide": {
 		"clan": "クラン",

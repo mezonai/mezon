@@ -14,6 +14,7 @@ const FirstJoinPopup = ({ openCreateClanModal }: IFirstJoinPopup) => {
 	const [isOpen, setIsOpen] = useState(true);
 	const [inputValue, setInputValue] = useState('');
 	const [error, setError] = useState(false);
+	const [joinPending, setJoinPending] = useState(false);
 	const navigate = useNavigate();
 	const { inviteUser } = useInvite();
 	const dispatch = useAppDispatch();
@@ -29,13 +30,16 @@ const FirstJoinPopup = ({ openCreateClanModal }: IFirstJoinPopup) => {
 		if (inputValue.startsWith(url) && inputValue.length === url.length + lengthInviteCode) {
 			const idInvite = inputValue.split('/').pop();
 			if (idInvite && idInvite.length === lengthInviteCode && idInvite.match('\\d+')) {
-				await inviteUser(idInvite).then((res) => {
-					if (res?.channel_id && res?.clan_id) {
-						navigate(`/chat/clans/${res.clan_id}/channels/${res.channel_id}`);
-						handleClose();
-					}
-				});
-				dispatch(clansActions.fetchClans({ noCache: true }));
+				const res = await inviteUser(idInvite);
+				if (res?.join_pending) {
+					setJoinPending(true);
+					return;
+				}
+				if (res?.channel_id && res?.clan_id) {
+					navigate(`/chat/clans/${res.clan_id}/channels/${res.channel_id}`);
+					handleClose();
+					dispatch(clansActions.fetchClans({ noCache: true }));
+				}
 			}
 		} else {
 			setError(true);
@@ -46,9 +50,12 @@ const FirstJoinPopup = ({ openCreateClanModal }: IFirstJoinPopup) => {
 			if (error) {
 				setError(false);
 			}
+			if (joinPending) {
+				setJoinPending(false);
+			}
 			setInputValue(e.target.value);
 		},
-		[error]
+		[error, joinPending]
 	);
 
 	if (!isOpen) {
@@ -78,6 +85,12 @@ const FirstJoinPopup = ({ openCreateClanModal }: IFirstJoinPopup) => {
 								className="bg-[#dfe0e2] outline-primary border border-white hover:border-[#979a9e] w-full rounded-md p-[10px] text-[15px]"
 							/>
 							<div className="text-xs flex flex-col gap-2">{t('firstJoinPopup.example')}</div>
+							{joinPending && (
+								<div className="mt-2 rounded-md border border-indigo-500/40 bg-indigo-500/10 px-3 py-2 text-xs text-indigo-700">
+									<div className="font-semibold">{t('invite.requestSentTitle')}</div>
+									<div>{t('invite.requestSentDesc')}</div>
+								</div>
+							)}
 						</div>
 					</div>
 					<div className="p-[16px] flex justify-between">
@@ -96,11 +109,11 @@ const FirstJoinPopup = ({ openCreateClanModal }: IFirstJoinPopup) => {
 							</div>
 						</div>
 						<button
-							onClick={handleJoinClan}
-							className={`${inputValue === '' ? 'bg-[#959cf1]' : 'bg-[#5865f2] hover:bg-[#444ec1]'} text-white px-[13px] py-[5px] rounded-sm select-none`}
-							disabled={inputValue === '' ? true : false}
+							onClick={joinPending ? handleClose : handleJoinClan}
+							className={`${inputValue === '' && !joinPending ? 'bg-[#959cf1]' : 'bg-[#5865f2] hover:bg-[#444ec1]'} text-white px-[13px] py-[5px] rounded-sm select-none`}
+							disabled={inputValue === '' && !joinPending}
 						>
-							{t('firstJoinPopup.joinClan')}
+							{joinPending ? t('close') : t('firstJoinPopup.joinClan')}
 						</button>
 					</div>
 				</div>

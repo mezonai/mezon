@@ -14,5 +14,7 @@
 	"invalidInvite": {
 		"title": "Несапраўднае запрашэнне",
 		"message": "Паспрабуйце даслаць іншае запрашэнне!"
-	}
+	},
+	"requestSent": "Request Sent",
+	"requestSentDesc": "Your join request is waiting for approval from the clan owner."
 }

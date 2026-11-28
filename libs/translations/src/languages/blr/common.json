@@ -371,7 +371,10 @@
 		"clanSettings": "Налады клана",
 		"customizeAnytime": "Вы можаце наладзіць гэтыя параметры ў любы час",
 		"joining": "Далучэнне...",
-		"acceptInvite": "Прыняць запрашэнне"
+		"acceptInvite": "Прыняць запрашэнне",
+		"requestSentTitle": "Join request sent",
+		"requestSentDesc": "Your request to join this clan is waiting for approval from the clan owner.",
+		"backToMezon": "Back to Mezon"
 	},
 	"guide": {
 		"clan": "клан",

@@ -34,6 +34,7 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 	const [loading, setLoading] = useState(false);
 	const joiningRef = useRef(false);
 	const [joiningInvite, setJoiningInvite] = useState(false);
+	const [joinPending, setJoinPending] = useState(false);
 
 	const [data, setData] = useState<PreviewData | null>(null);
 	const { fetchClanBannerById } = useFetchClanBanner();
@@ -44,6 +45,7 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 	}, []);
 
 	useEffect(() => {
+		setJoinPending(false);
 		if (!ogpLink || !ogpLink.url) {
 			setData(null);
 			dispatch(referencesActions.clearOgpData());
@@ -156,6 +158,11 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 		setJoiningInvite(true);
 		try {
 			const result = await inviteUser(inviteId);
+			if (result?.join_pending) {
+				setJoinPending(true);
+				toast.info(t('requestSentDesc'));
+				return;
+			}
 			if (result?.channel_id && result?.clan_id) {
 				dispatch(clansActions.fetchClans({ noCache: true }));
 				navigate(`/chat/clans/${result.clan_id}/channels/${result.channel_id}`);
@@ -266,14 +273,15 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 								{memberLabel}
 							</span>
 						</div>
+						{joinPending ? <p className="mt-2 text-xs text-indigo-400">{t('requestSentDesc')}</p> : null}
 						<button
 							onClick={handleJoinInvite}
-							disabled={joiningInvite}
+							disabled={joiningInvite || joinPending}
 							className={`mt-4 w-full h-10 rounded-lg text-white font-semibold text-base transition-colors ${
-								joiningInvite ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-500'
+								joiningInvite || joinPending ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-500'
 							}`}
 						>
-							{joiningInvite ? t('joining') : t('join')}
+							{joiningInvite ? t('joining') : joinPending ? t('requestSent') : t('join')}
 						</button>
 					</div>
 					<div className="absolute top-2 right-2 p-1 cursor-pointer rounded-full hover:bg-red-400" onClick={clearOgpData}>
