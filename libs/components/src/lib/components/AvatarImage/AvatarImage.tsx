@@ -35,11 +35,17 @@ export const AvatarImage = ({
 	classNameText,
 	...rest
 }: AvatarImageProp) => {
-	const [isError, setIsError] = useState(false);
+	const [failedProxySrc, setFailedProxySrc] = useState<string>();
+	const [failedSrc, setFailedSrc] = useState<string>();
+	const isError = !!srcImgProxy && failedProxySrc === srcImgProxy;
+	const canRetrySrc = !!src && src !== srcImgProxy && failedSrc !== src;
 
 	const computedClassName = `size-10 rounded-full object-cover min-w-5 min-h-5 cursor-pointer ${className}`;
 	const handleError = () => {
-		setIsError(true);
+		setFailedProxySrc(srcImgProxy);
+	};
+	const handleSrcError = () => {
+		setFailedSrc(src);
 	};
 
 	if (isAnonymous && !src)
@@ -56,8 +62,18 @@ export const AvatarImage = ({
 		return <MezonIcon icon={MzIcons20.mzUserCircle} className={`${className} text-[var(--mz-icon)]`} />;
 	}
 
-	if (srcImgProxy && src && isError) {
-		return <img loading="lazy" className={computedClassName} src={src} alt={alt} {...rest} data-e2e={generateE2eId('avatar.image')} />;
+	if (isError && canRetrySrc) {
+		return (
+			<img
+				loading="lazy"
+				onError={handleSrcError}
+				className={computedClassName}
+				src={src}
+				alt={alt}
+				{...rest}
+				data-e2e={generateE2eId('avatar.image')}
+			/>
+		);
 	}
 
 	if (!src || isError) {
