@@ -7,7 +7,7 @@ import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
 import { UserStatusIcon } from '../MemberProfile/IconStatus';
-import { DEFAULT_PRO_PALETTE, ProAvatarFrame, type ProPalette } from '../ProfileBadges';
+import { ProAvatarFrame } from '../ProfileBadges';
 type AvatarProfileProps = {
 	avatar?: string;
 	username?: string;
@@ -17,13 +17,13 @@ type AvatarProfileProps = {
 	styleAvatar?: string;
 	positionType?: string;
 	userID?: string;
+	frameUserId?: string;
 	isFooterProfile?: boolean;
 	activityByUserId?: ApiUserActivity;
 	statusOnline?: EUserStatus;
 	identifierE2E?: string;
 	isMobile?: boolean;
 	isPro?: boolean;
-	proPalette?: ProPalette;
 };
 
 const AvatarProfile = ({
@@ -33,12 +33,12 @@ const AvatarProfile = ({
 	isAnonymous,
 	styleAvatar,
 	userID,
+	frameUserId,
 	isFooterProfile,
 	activityByUserId,
 	statusOnline,
 	isMobile,
-	isPro,
-	proPalette
+	isPro
 }: AvatarProfileProps) => {
 	const currentClanId = useSelector(selectCurrentClanId);
 
@@ -71,11 +71,11 @@ const AvatarProfile = ({
 			data-e2e={generateE2eId('user_setting.profile.user_profile.preview.avatar')}
 		>
 			<div className="relative h-fit">
-				<ProAvatarFrame isPro={showProFrame} palette={proPalette ?? DEFAULT_PRO_PALETTE} glow ringWidth={3}>
+				<ProAvatarFrame isPro={showProFrame} userId={frameUserId || userID || ''} animated>
 					<AvatarImage
 						alt={username || ''}
 						username={username || ''}
-						className={`w-[90px] h-[90px] min-w-[90px] min-h-[90px] xl:w-[90px] xl:h-[90px] rounded-[50px] ${showProFrame ? 'border-[3px]' : 'border-[6px]'} border-color-avatar object-cover my-0 ${styleAvatar} ${isUserLeft ? 'opacity-60' : ''}`}
+						className={`w-[90px] h-[90px] min-w-[90px] min-h-[90px] xl:w-[90px] xl:h-[90px] rounded-[50px] border-[6px] border-color-avatar object-cover my-0 ${styleAvatar} ${isUserLeft ? 'opacity-60' : ''}`}
 						srcImgProxy={avatar ? createImgproxyUrl(avatar, { width: 300, height: 300, resizeType: 'fill-down' }) : undefined}
 						src={avatar || ''}
 						isAnonymous={isAnonymous}

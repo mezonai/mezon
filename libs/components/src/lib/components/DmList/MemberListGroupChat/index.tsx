@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import { shallowEqual } from 'react-redux';
 import { MemberContextMenuProvider } from '../../../contexts';
 import MemberItem from '../../MemberList/MemberItem';
-import { useProPalette } from '../../ProfileBadges';
 
 const EMPTY_PRO_USERS: Record<string, boolean> = {};
 
@@ -52,7 +51,6 @@ function MemberListGroupChat({ directMessageId, createId }: MemberListProps) {
 	const { directId } = useAppParams();
 	const rawMembers = useAppSelector((state) => selectMemberByGroupId(state, directId as string));
 	const proUsers = useAppSelector((state) => selectGroupProUsers(state, rawMembers), shallowEqual);
-	const proPalette = useProPalette();
 	const { userId } = useAuth();
 
 	return (
@@ -76,7 +74,6 @@ function MemberListGroupChat({ directMessageId, createId }: MemberListProps) {
 										isMe={userId === user.id}
 										createId={createId}
 										isPro={Boolean(proUsers[user.user?.id || user.id])}
-										proPalette={proPalette}
 									/>
 								</div>
 							))}
